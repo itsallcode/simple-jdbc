@@ -1,5 +1,8 @@
 plugins {
     id 'java-library'
+    id 'jacoco'
+    id 'org.sonarqube' version '3.3'
+    id 'com.github.ben-manes.versions' version '0.39.0'
 }
 
 repositories {
@@ -11,10 +14,48 @@ dependencies {
     testRuntimeOnly 'com.h2database:h2:2.0.206'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+    withJavadocJar()
+    withSourcesJar()
+}
+
+javadoc {
+    options.addBooleanOption('html5', true)
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-Xlint:all'
+    options.encoding = 'UTF-8'
+}
+
 testing {
     suites {
         test {
             useJUnitJupiter('5.7.2')
         }
     }
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
+}
+
+rootProject.tasks['sonarqube'].dependsOn(tasks['jacocoTestReport'])
+
+def isNonStable = { String version ->
+  def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+  def regex = /^[0-9,.v-]+(-r)?$/
+  return !stableKeyword && !(version ==~ regex)
+}
+
+tasks.named("dependencyUpdates").configure {
+  gradleReleaseChannel = "current"
+  rejectVersionIf {
+    isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
+  }
 }
