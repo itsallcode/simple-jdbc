@@ -1,0 +1,18 @@
+{
+    "editor.formatOnSave": true,
+    "java.completion.favoriteStaticMembers": [
+        "org.junit.jupiter.api.Assertions.*",
+        "org.junit.jupiter.api.Assumptions.*",
+        "org.junit.jupiter.api.DynamicContainer.*",
+        "org.junit.jupiter.api.DynamicTest.*",
+        "org.mockito.Mockito.*",
+        "org.mockito.ArgumentMatchers.*",
+        "org.mockito.Answers.*",
+        "org.assertj.core.api.Assertions.*",
+        "java.util.Arrays.*",
+        "java.util.Collections.*",
+        "java.util.Comparator",
+        "java.util.function.Predicate",
+        "java.util.stream.Collectors"
+    ]
+}
