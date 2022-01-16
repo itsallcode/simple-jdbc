@@ -5,6 +5,7 @@ Wrapper to simplify working with JDBC
 [![Java CI](https://github.com/itsallcode/simple-jdbc/actions/workflows/build.yml/badge.svg)](https://github.com/itsallcode/simple-jdbc/actions/workflows/build.yml)
 [![CodeQL](https://github.com/itsallcode/simple-jdbc/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/itsallcode/simple-jdbc/actions/workflows/codeql-analysis.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=simple-jdbc&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=simple-jdbc)
+[![Maven Central](https://img.shields.io/maven-central/v/org.itsallcode/simple-jdbc)](https://search.maven.org/artifact/org.itsallcode/simple-jdbc)
 
 * [Changelog](CHANGELOG.md)
 
