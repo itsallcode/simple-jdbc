@@ -1,23 +1,29 @@
-package org.itsallcode.jdbc;
+package org.itsallcode.jdbc.update;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.itsallcode.jdbc.Context;
+import org.itsallcode.jdbc.UncheckedSQLException;
+
 public class SimpleBatch
 {
     private final PreparedStatement statement;
+    private final Context context;
 
     public SimpleBatch(PreparedStatement statement, Context context)
     {
         this.statement = statement;
+        this.context = context;
     }
 
     public SimpleBatch add(Object... parameters)
     {
+        final ParameterMapper mapper = context.getParameterMapper();
         int parameterIndex = 1;
         for (final Object object : parameters)
         {
-            setParameter(parameterIndex, object);
+            setParameter(parameterIndex, mapper.map(object));
             parameterIndex++;
         }
         addBatch();

@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.itsallcode.jdbc.resultset.ResultSetRow;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.update.SimpleBatch;
 
 public class SimplePreparedStatement implements AutoCloseable
 {
