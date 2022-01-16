@@ -1,13 +1,19 @@
 plugins {
     id 'java-library'
     id 'jacoco'
+    id 'signing'
+    id 'maven-publish'
     id 'org.sonarqube' version '3.3'
-    id 'com.github.ben-manes.versions' version '0.39.0'
+    id 'io.codearte.nexus-staging' version '0.30.0'
+    id 'com.github.ben-manes.versions' version '0.41.0'
 }
 
 repositories {
     mavenCentral()
 }
+
+group 'org.itsallcode'
+version = '0.1.0'
 
 dependencies {
     testImplementation 'org.assertj:assertj-core:3.22.0'
@@ -23,7 +29,9 @@ java {
 }
 
 javadoc {
+    failOnError = true
     options.addBooleanOption('html5', true)
+    options.addStringOption('Xwerror', '-quiet')
 }
 
 tasks.withType(JavaCompile) {
@@ -34,7 +42,7 @@ tasks.withType(JavaCompile) {
 testing {
     suites {
         test {
-            useJUnitJupiter('5.7.2')
+            useJUnitJupiter('5.8.2')
         }
     }
 }
@@ -47,15 +55,78 @@ jacocoTestReport {
 
 rootProject.tasks['sonarqube'].dependsOn(tasks['jacocoTestReport'])
 
+def getOptionalProperty(String name) {
+    if(project.hasProperty(name)) {
+        return project.property(name)
+    }
+    logger.info("Project property '${name}' not available. Please it to ~/.gradle/gradle.properties")
+    return null
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            pom {
+                name = 'Simple JDBC API'
+                description = 'Library to simplify using JDBC'
+                url = 'https://github.com/itsallcode/simple-jdbc'
+
+                licenses {
+                    license {
+                        name = 'GNU General Public License, Version 3.0'
+                        url = 'https://www.gnu.org/licenses/gpl-3.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'kaklakariada'
+                        name = 'Christoph'
+                        email = 'kaklakariada@chp1.net'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/itsallcode/simple-jdbc.git'
+                    developerConnection = 'scm:git:https://github.com/itsallcode/simple-jdbc.git'
+                    url = 'https://github.com/itsallcode/simple-jdbc'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            allowInsecureProtocol = false
+            credentials(PasswordCredentials) {
+                username = getOptionalProperty("ossrhUsername")
+                password = getOptionalProperty("ossrhPassword")
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+nexusStaging {
+    packageGroup = project.group
+    username = getOptionalProperty("ossrhUsername")
+    password = getOptionalProperty("ossrhPassword")
+}
+
 def isNonStable = { String version ->
-  def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
-  def regex = /^[0-9,.v-]+(-r)?$/
-  return !stableKeyword && !(version ==~ regex)
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
 }
 
 tasks.named("dependencyUpdates").configure {
-  gradleReleaseChannel = "current"
-  rejectVersionIf {
-    isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
-  }
+    gradleReleaseChannel = "current"
+    rejectVersionIf {
+        isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
+    }
 }
