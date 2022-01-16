@@ -48,5 +48,5 @@ Install to local maven repository:
     $ ./gradlew clean check build publish closeAndReleaseRepository --info
     ```
 
-4. Create a new [release](https://github.com/kaklakariada/fritzbox-java-api/releases) on GitHub.
-5. After some time the release will be available at [Maven Central](https://repo1.maven.org/maven2/com/github/kaklakariada/fritzbox-java-api/).
+4. Create a new [release](https://github.com/itsallcode/simple-jdbc/releases) on GitHub.
+5. After some time the release will be available at [Maven Central](https://repo1.maven.org/maven2/org/itsallcode/simple-jdbc/).
