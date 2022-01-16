@@ -30,15 +30,7 @@ public class SimpleResultSet implements AutoCloseable, Iterable<ResultSetRow>
         {
             throw new IllegalStateException("Only one iterator allowed per ResultSet");
         }
-        final boolean firstRowExists = next();
-        if (firstRowExists)
-        {
-            iterator = new ResultSetIterator(this);
-        }
-        else
-        {
-            iterator = new EmptyIterator<ResultSetRow>();
-        }
+        iterator = ResultSetIterator.create(this);
         return iterator;
     }
 
@@ -86,15 +78,22 @@ public class SimpleResultSet implements AutoCloseable, Iterable<ResultSetRow>
 
     private static class ResultSetIterator implements Iterator<ResultSetRow>
     {
-        private boolean hasNext = true;
+        private boolean hasNext;
         private int currentRowIndex = 0;
         private final SimpleResultSet resultSet;
         private final ResultSetRowBuilder resultSetRowBuilder;
 
-        private ResultSetIterator(SimpleResultSet simpleResultSet)
+        private ResultSetIterator(SimpleResultSet simpleResultSet, boolean hasNext)
         {
             this.resultSet = simpleResultSet;
+            this.hasNext = hasNext;
             this.resultSetRowBuilder = new ResultSetRowBuilder(resultSet.resultSet, simpleResultSet.getMetaData());
+        }
+
+        public static Iterator<ResultSetRow> create(SimpleResultSet simpleResultSet)
+        {
+            final boolean firstRowExists = simpleResultSet.next();
+            return new ResultSetIterator(simpleResultSet, firstRowExists);
         }
 
         @Override
@@ -106,25 +105,14 @@ public class SimpleResultSet implements AutoCloseable, Iterable<ResultSetRow>
         @Override
         public ResultSetRow next()
         {
+            if (!hasNext)
+            {
+                throw new NoSuchElementException();
+            }
             final ResultSetRow row = resultSetRowBuilder.buildRow(currentRowIndex);
             hasNext = resultSet.next();
             currentRowIndex++;
             return row;
-        }
-    }
-
-    private static class EmptyIterator<E> implements Iterator<E>
-    {
-        @Override
-        public boolean hasNext()
-        {
-            return false;
-        }
-
-        @Override
-        public E next()
-        {
-            throw new NoSuchElementException();
         }
     }
 }

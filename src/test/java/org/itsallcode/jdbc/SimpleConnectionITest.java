@@ -3,9 +3,14 @@ package org.itsallcode.jdbc;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.itsallcode.jdbc.resultset.ResultSetRow;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
@@ -19,7 +24,7 @@ class SimpleConnectionITest
         try (SimpleConnection connection = H2TestFixture.createMemConnection())
         {
             connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.executeStatement("select count(*) from test");
+            assertDoesNotThrow(() -> connection.executeStatement("select count(*) from test"));
         }
     }
 
@@ -42,7 +47,7 @@ class SimpleConnectionITest
         {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
-            connection.executeStatement("select count(*) from test");
+            assertDoesNotThrow(() -> connection.executeStatement("select count(*) from test"));
         }
     }
 
@@ -57,9 +62,86 @@ class SimpleConnectionITest
             {
                 final List<ResultSetRow> rows = resultSet.stream().collect(toList());
                 assertThat(rows).hasSize(1);
-                assertThat(rows.get(0).getRowIndex()).isEqualTo(0);
+                assertThat(rows.get(0).getRowIndex()).isZero();
                 assertThat(rows.get(0).getColumnValues()).hasSize(1);
                 assertThat(rows.get(0).getColumnValue(0).getValue()).isEqualTo(1L);
+            }
+        }
+    }
+
+    @Test
+    void executeQueryEmptyResult()
+    {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection())
+        {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            try (SimpleResultSet resultSet = connection.prepareStatement("select * from test").executeQuery())
+            {
+                final Iterator<ResultSetRow> iterator = resultSet.iterator();
+                assertThat(iterator.hasNext()).isFalse();
+                assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class);
+            }
+        }
+    }
+
+    @Test
+    void executeQuerySingleRow()
+    {
+        try (final SimpleConnection connection = H2TestFixture.createMemConnection())
+        {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
+                    + "insert into test (id, name) values (1, 'test');");
+            try (final SimpleResultSet resultSet = connection.prepareStatement("select * from test").executeQuery())
+            {
+                final Iterator<ResultSetRow> iterator = resultSet.iterator();
+                assertThat(iterator.hasNext()).isTrue();
+                final ResultSetRow firstRow = iterator.next();
+
+                assertAll(
+                        () -> assertThat(firstRow.getRowIndex()).isZero(),
+                        () -> assertThat(firstRow.getColumnValues()).hasSize(2),
+                        () -> assertThat(firstRow.getColumnValues().get(0).getValue()).isEqualTo(1),
+                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getJdbcType())
+                                .isEqualTo(Types.INTEGER),
+                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getTypeName())
+                                .isEqualTo("INTEGER"),
+                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getClassName())
+                                .isEqualTo(Integer.class.getName()),
+                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getDisplaySize()).isEqualTo(11),
+                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getPrecision()).isEqualTo(32),
+                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getScale()).isZero(),
+
+                        () -> assertThat(firstRow.getColumnValues().get(1).getValue()).isEqualTo("test"),
+                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getJdbcType())
+                                .isEqualTo(Types.VARCHAR),
+                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getTypeName())
+                                .isEqualTo("CHARACTER VARYING"),
+                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getClassName())
+                                .isEqualTo(String.class.getName()),
+                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getDisplaySize()).isEqualTo(255),
+                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getPrecision()).isEqualTo(255),
+                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getScale()).isZero(),
+
+                        () -> assertThat(iterator.hasNext()).isFalse(),
+                        () -> assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class)
+
+                );
+            }
+        }
+    }
+
+    @Test
+    void executeQueryOnlyOneIteratorAllowed()
+    {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection())
+        {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            try (SimpleResultSet resultSet = connection.prepareStatement("select * from test").executeQuery())
+            {
+                final Iterator<ResultSetRow> iterator = resultSet.iterator();
+                assertThat(iterator).isNotNull();
+                assertThatThrownBy(() -> resultSet.iterator()).isInstanceOf(IllegalStateException.class)
+                        .hasMessage("Only one iterator allowed per ResultSet");
             }
         }
     }

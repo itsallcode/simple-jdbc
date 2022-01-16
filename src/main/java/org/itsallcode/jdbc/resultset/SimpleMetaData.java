@@ -100,5 +100,12 @@ public class SimpleMetaData
         {
             return valueExtractor;
         }
+
+        @Override
+        public String toString()
+        {
+            return "ColumnMetaData [columnIndex=" + columnIndex + ", name=" + name + ", label=" + label + ", type="
+                    + type + "]";
+        }
     }
 }
