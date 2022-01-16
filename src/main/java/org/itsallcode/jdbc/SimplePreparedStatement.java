@@ -1,9 +1,13 @@
 package org.itsallcode.jdbc;
 
+import static java.util.stream.Collectors.toList;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
+import org.itsallcode.jdbc.resultset.ResultSetRow;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 
 public class SimplePreparedStatement implements AutoCloseable
@@ -17,9 +21,22 @@ public class SimplePreparedStatement implements AutoCloseable
         this.context = context;
     }
 
+    public List<ResultSetRow> executeQueryGetRows()
+    {
+        try (SimpleResultSet resultSet = this.executeQuery())
+        {
+            return resultSet.stream().collect(toList());
+        }
+    }
+
     public SimpleResultSet executeQuery()
     {
         return new SimpleResultSet(execute(), context);
+    }
+
+    public SimpleBatch startBatch()
+    {
+        return new SimpleBatch(statement, context);
     }
 
     private ResultSet execute()

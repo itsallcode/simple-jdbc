@@ -123,9 +123,7 @@ class SimpleConnectionITest
                         () -> assertThat(firstRow.getColumnValues().get(1).getType().getScale()).isZero(),
 
                         () -> assertThat(iterator.hasNext()).isFalse(),
-                        () -> assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class)
-
-                );
+                        () -> assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class));
             }
         }
     }
@@ -143,6 +141,23 @@ class SimpleConnectionITest
                 assertThatThrownBy(() -> resultSet.iterator()).isInstanceOf(IllegalStateException.class)
                         .hasMessage("Only one iterator allowed per ResultSet");
             }
+        }
+    }
+
+    @Test
+    void batchInsert()
+    {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection())
+        {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.prepareStatement("insert into test (id, name) values (?, ?)").startBatch().add(1, "a")
+                    .add(2, "b").add(3, "c").executeBatch();
+
+            final List<ResultSetRow> result = connection.prepareStatement("select count(*) from test")
+                    .executeQueryGetRows();
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getColumnValues()).hasSize(1);
+            assertThat(result.get(0).getColumnValue(0).getValue()).isEqualTo(3L);
         }
     }
 }
