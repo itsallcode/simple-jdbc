@@ -21,8 +21,9 @@ jobs:
     - uses: actions/cache@v2.1.7
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        key: ${{ runner.os }}-gradle-java-${{ matrix.java }}-${{ hashFiles('**/*.gradle') }}
         restore-keys: |
+          ${{ runner.os }}-gradle-java-${{ matrix.java }}-
           ${{ runner.os }}-gradle-
 
     - name: Cache SonarQube packages
