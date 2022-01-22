@@ -6,9 +6,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.stream.Stream;
+
+import org.itsallcode.jdbc.update.RowMapper;
+import org.itsallcode.jdbc.update.SimpleBatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleConnection implements AutoCloseable
 {
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleConnection.class);
+
     private final Connection connection;
     private final Context context;
 
@@ -41,6 +49,15 @@ public class SimpleConnection implements AutoCloseable
     public SimplePreparedStatement prepareStatement(String sql)
     {
         return new SimplePreparedStatement(prepare(sql), context);
+    }
+
+    public <T> void insert(String sql, RowMapper<T> rowMapper, Stream<T> rows)
+    {
+        LOG.debug("Running insert statement '{}'...", sql);
+        try (SimpleBatch batch = prepareStatement(sql).startBatch())
+        {
+            rows.map(rowMapper::map).forEach(batch::add);
+        }
     }
 
     private PreparedStatement prepare(String sql)

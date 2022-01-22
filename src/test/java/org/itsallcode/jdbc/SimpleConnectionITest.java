@@ -151,7 +151,7 @@ class SimpleConnectionITest
         {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             connection.prepareStatement("insert into test (id, name) values (?, ?)").startBatch().add(1, "a")
-                    .add(2, "b").add(3, "c").executeBatch();
+                    .add(2, "b").add(3, "c").close();
 
             final List<ResultSetRow> result = connection.prepareStatement("select count(*) from test")
                     .executeQueryGetRows();

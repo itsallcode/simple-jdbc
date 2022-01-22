@@ -1,8 +1,16 @@
 package org.itsallcode.jdbc.update;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class ParameterMapper
 {
@@ -15,13 +23,28 @@ public class ParameterMapper
 
     public static ParameterMapper create()
     {
-        final Map<Class<?>, Mapper> mappers = new HashMap<>();
-        mappers.put(LocalDate.class, Object::toString);
-        return new ParameterMapper(mappers);
+        final List<Mapper<?>> mappers = new ArrayList<>();
+        final DateTimeFormatter instantFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        final ZoneId utc = ZoneId.of("UTC");
+
+        mappers.add(createMapper(LocalDate.class, Object::toString));
+        mappers.add(createMapper(Instant.class,
+                o -> instantFormatter.format(LocalDateTime.ofInstant(o, utc))));
+        mappers.add(createMapper(LocalDateTime.class, o -> instantFormatter.format(o)));
+        return new ParameterMapper(mappers.stream().collect(toMap(Mapper::getType, Function.identity())));
+    }
+
+    private static <T> Mapper<T> createMapper(Class<T> type, Function<T, Object> mapper)
+    {
+        return new Mapper<>(type, mapper);
     }
 
     public Object map(Object value)
     {
+        if (value == null)
+        {
+            return null;
+        }
         if (mappers.containsKey(value.getClass()))
         {
             return mappers.get(value.getClass()).map(value);
@@ -29,9 +52,25 @@ public class ParameterMapper
         return value;
     }
 
-    @FunctionalInterface
-    private interface Mapper
+    private static class Mapper<T>
     {
-        Object map(Object value);
+        private final Class<T> type;
+        private final Function<T, Object> mapper;
+
+        Mapper(Class<T> type, Function<T, Object> mapper)
+        {
+            this.type = type;
+            this.mapper = mapper;
+        }
+
+        Object map(T value)
+        {
+            return mapper.apply(value);
+        }
+
+        Class<T> getType()
+        {
+            return type;
+        }
     }
 }
