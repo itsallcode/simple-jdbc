@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2.4.0
+    - uses: actions/checkout@v2
 
     - name: Cache Gradle packages and wrapper
       uses: actions/cache@v2
@@ -24,10 +24,10 @@ jobs:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/*.gradle*') }}
+        key: ${{ runner.os }}-java-${{ matrix.java }}-gradle-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/*.gradle*') }}
         restore-keys: |
-          ${{ runner.os }}-gradle-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-          ${{ runner.os }}-gradle
+          ${{ runner.os }}-java-${{ matrix.java }}-gradle-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          ${{ runner.os }}-java-${{ matrix.java }}-gradle
 
     - name: Cache SonarQube packages
       uses: actions/cache@v2.1.7
