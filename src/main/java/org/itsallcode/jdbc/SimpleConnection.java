@@ -5,10 +5,15 @@ import static java.util.function.Predicate.not;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.update.RowMapper;
+import org.itsallcode.jdbc.resultset.GenericRowMapper;
+import org.itsallcode.jdbc.resultset.ResultSetRow;
+import org.itsallcode.jdbc.resultset.RowMapper;
+import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.update.ParamConverter;
 import org.itsallcode.jdbc.update.SimpleBatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +41,9 @@ public class SimpleConnection implements AutoCloseable
 
     public void executeStatement(String sql)
     {
-        try
+        try (Statement statement = connection.createStatement())
         {
-            connection.createStatement().execute(sql);
+            statement.execute(sql);
         }
         catch (final SQLException e)
         {
@@ -46,17 +51,45 @@ public class SimpleConnection implements AutoCloseable
         }
     }
 
-    public SimplePreparedStatement prepareStatement(String sql)
+    public SimpleResultSet<ResultSetRow> query(String sql)
     {
-        return new SimplePreparedStatement(prepare(sql), context);
+        return query(sql, new GenericRowMapper(context));
     }
 
-    public <T> void insert(String sql, RowMapper<T> rowMapper, Stream<T> rows)
+    public <T> SimpleResultSet<T> query(String sql, RowMapper<T> rowMapper)
+    {
+        return query(sql, ps -> {}, rowMapper);
+    }
+
+    public <T> SimpleResultSet<T> query(String sql, PreparedStatementSetter preparedStatementSetter,
+            RowMapper<T> rowMapper)
+    {
+        SimplePreparedStatement statement = prepareStatement(sql);
+        statement.setValues(preparedStatementSetter);
+        return statement.executeQuery(rowMapper);
+    }
+
+    public SimpleBatch batch(String sql)
+    {
+        return new SimpleBatch(prepareStatement(sql), context);
+    }
+
+    private SimplePreparedStatement prepareStatement(String sql)
+    {
+        return new SimplePreparedStatement(prepare(sql));
+    }
+
+    public <T> void insert(String sql, ParamConverter<T> rowMapper, Stream<T> rows)
     {
         LOG.debug("Running insert statement '{}'...", sql);
-        try (SimpleBatch batch = prepareStatement(sql).startBatch())
+        batch(sql).add();
+        try (SimpleBatch batch = batch(sql))
         {
             rows.map(rowMapper::map).forEach(batch::add);
+        }
+        finally
+        {
+            rows.close();
         }
     }
 

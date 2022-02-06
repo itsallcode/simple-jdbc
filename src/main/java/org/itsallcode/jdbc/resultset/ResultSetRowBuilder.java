@@ -10,28 +10,26 @@ import org.itsallcode.jdbc.resultset.SimpleMetaData.ColumnMetaData;
 
 class ResultSetRowBuilder
 {
-    private final ResultSet resultSet;
     private final SimpleMetaData metadata;
 
-    ResultSetRowBuilder(ResultSet resultSet, SimpleMetaData metaData)
+    ResultSetRowBuilder(SimpleMetaData metaData)
     {
-        this.resultSet = resultSet;
         this.metadata = metaData;
     }
 
-    ResultSetRow buildRow(int rowIndex)
+    ResultSetRow buildRow(ResultSet resultSet, int rowIndex)
     {
         final List<ColumnMetaData> columns = metadata.getColumns();
         final List<ResultSetValue> fields = new ArrayList<>(columns.size());
         for (final ColumnMetaData column : columns)
         {
-            final ResultSetValue field = getField(column, rowIndex);
+            final ResultSetValue field = getField(resultSet, column, rowIndex);
             fields.add(field);
         }
         return new ResultSetRow(rowIndex, fields);
     }
 
-    private ResultSetValue getField(final ColumnMetaData column, int rowIndex)
+    private ResultSetValue getField(ResultSet resultSet, final ColumnMetaData column, int rowIndex)
     {
         ResultSetValue field;
         try
@@ -45,5 +43,4 @@ class ResultSetRowBuilder
         }
         return field;
     }
-
 }

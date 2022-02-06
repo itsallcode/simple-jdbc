@@ -58,7 +58,7 @@ class SimpleConnectionITest
         {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
-            try (SimpleResultSet resultSet = connection.prepareStatement("select count(*) from test").executeQuery())
+            try (SimpleResultSet<ResultSetRow> resultSet = connection.query("select count(*) from test"))
             {
                 final List<ResultSetRow> rows = resultSet.stream().collect(toList());
                 assertThat(rows).hasSize(1);
@@ -75,7 +75,7 @@ class SimpleConnectionITest
         try (SimpleConnection connection = H2TestFixture.createMemConnection())
         {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            try (SimpleResultSet resultSet = connection.prepareStatement("select * from test").executeQuery())
+            try (SimpleResultSet<ResultSetRow> resultSet = connection.query("select * from test"))
             {
                 final Iterator<ResultSetRow> iterator = resultSet.iterator();
                 assertThat(iterator.hasNext()).isFalse();
@@ -91,7 +91,7 @@ class SimpleConnectionITest
         {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
-            try (final SimpleResultSet resultSet = connection.prepareStatement("select * from test").executeQuery())
+            try (final SimpleResultSet<ResultSetRow> resultSet = connection.query("select * from test"))
             {
                 final Iterator<ResultSetRow> iterator = resultSet.iterator();
                 assertThat(iterator.hasNext()).isTrue();
@@ -134,7 +134,7 @@ class SimpleConnectionITest
         try (SimpleConnection connection = H2TestFixture.createMemConnection())
         {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            try (SimpleResultSet resultSet = connection.prepareStatement("select * from test").executeQuery())
+            try (SimpleResultSet<ResultSetRow> resultSet = connection.query("select * from test"))
             {
                 final Iterator<ResultSetRow> iterator = resultSet.iterator();
                 assertThat(iterator).isNotNull();
@@ -150,11 +150,11 @@ class SimpleConnectionITest
         try (SimpleConnection connection = H2TestFixture.createMemConnection())
         {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.prepareStatement("insert into test (id, name) values (?, ?)").startBatch().add(1, "a")
+            connection.batch("insert into test (id, name) values (?, ?)").add(1, "a")
                     .add(2, "b").add(3, "c").close();
 
-            final List<ResultSetRow> result = connection.prepareStatement("select count(*) from test")
-                    .executeQueryGetRows();
+            final List<ResultSetRow> result = connection.query("select count(*) from test")
+                    .stream().collect(toList());
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getColumnValues()).hasSize(1);
             assertThat(result.get(0).getColumnValue(0).getValue()).isEqualTo(3L);

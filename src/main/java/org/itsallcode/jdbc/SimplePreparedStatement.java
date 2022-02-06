@@ -1,46 +1,28 @@
 package org.itsallcode.jdbc;
 
-import static java.util.stream.Collectors.toList;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
-import org.itsallcode.jdbc.resultset.ResultSetRow;
+import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
-import org.itsallcode.jdbc.update.SimpleBatch;
 
 public class SimplePreparedStatement implements AutoCloseable
 {
     private final PreparedStatement statement;
-    private final Context context;
 
-    public SimplePreparedStatement(PreparedStatement statement, Context context)
+    SimplePreparedStatement(PreparedStatement statement)
     {
         this.statement = statement;
-        this.context = context;
     }
 
-    public List<ResultSetRow> executeQueryGetRows()
+    <T> SimpleResultSet<T> executeQuery(RowMapper<T> rowMapper)
     {
-        try (SimpleResultSet resultSet = this.executeQuery())
-        {
-            return resultSet.stream().collect(toList());
-        }
+        ResultSet resultSet = doExecute();
+        return new SimpleResultSet<>(resultSet, rowMapper);
     }
 
-    public SimpleResultSet executeQuery()
-    {
-        return new SimpleResultSet(execute(), context);
-    }
-
-    public SimpleBatch startBatch()
-    {
-        return new SimpleBatch(statement, context);
-    }
-
-    private ResultSet execute()
+    private ResultSet doExecute()
     {
         try
         {
@@ -62,6 +44,43 @@ public class SimplePreparedStatement implements AutoCloseable
         catch (final SQLException e)
         {
             throw new UncheckedSQLException("Error closing statement", e);
+        }
+    }
+
+    public void setValues(PreparedStatementSetter preparedStatementSetter)
+    {
+        try
+        {
+            preparedStatementSetter.setValues(statement);
+        }
+        catch (SQLException e)
+        {
+            throw new UncheckedSQLException("Error setting values for prepared statement", e);
+        }
+
+    }
+
+    public void executeBatch()
+    {
+        try
+        {
+            statement.executeBatch();
+        }
+        catch (final SQLException e)
+        {
+            throw new UncheckedSQLException("Error executing batch", e);
+        }
+    }
+
+    public void addBatch()
+    {
+        try
+        {
+            this.statement.addBatch();
+        }
+        catch (final SQLException e)
+        {
+            throw new UncheckedSQLException("Error adding batch", e);
         }
     }
 }

@@ -1,7 +1,7 @@
 package org.itsallcode.jdbc.update;
 
 @FunctionalInterface
-public interface RowMapper<T>
+public interface ParamConverter<T>
 {
     Object[] map(T row);
 }

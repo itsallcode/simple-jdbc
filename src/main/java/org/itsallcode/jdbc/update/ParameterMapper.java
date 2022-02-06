@@ -14,9 +14,9 @@ import java.util.function.Function;
 
 public class ParameterMapper
 {
-    private final Map<Class<?>, Mapper> mappers;
+    private final Map<Class<?>, Mapper<?>> mappers;
 
-    private ParameterMapper(Map<Class<?>, Mapper> mappers)
+    private ParameterMapper(Map<Class<?>, Mapper<?>> mappers)
     {
         this.mappers = mappers;
     }
@@ -30,7 +30,7 @@ public class ParameterMapper
         mappers.add(createMapper(LocalDate.class, Object::toString));
         mappers.add(createMapper(Instant.class,
                 o -> instantFormatter.format(LocalDateTime.ofInstant(o, utc))));
-        mappers.add(createMapper(LocalDateTime.class, o -> instantFormatter.format(o)));
+        mappers.add(createMapper(LocalDateTime.class, instantFormatter::format));
         return new ParameterMapper(mappers.stream().collect(toMap(Mapper::getType, Function.identity())));
     }
 
@@ -55,17 +55,17 @@ public class ParameterMapper
     private static class Mapper<T>
     {
         private final Class<T> type;
-        private final Function<T, Object> mapper;
+        private final Function<T, Object> mapperFunction;
 
         Mapper(Class<T> type, Function<T, Object> mapper)
         {
             this.type = type;
-            this.mapper = mapper;
+            this.mapperFunction = mapper;
         }
 
-        Object map(T value)
+        Object map(Object value)
         {
-            return mapper.apply(value);
+            return mapperFunction.apply(type.cast(value));
         }
 
         Class<T> getType()

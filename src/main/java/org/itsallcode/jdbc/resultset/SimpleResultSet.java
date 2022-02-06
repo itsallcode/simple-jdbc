@@ -8,33 +8,32 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
 
-public class SimpleResultSet implements AutoCloseable, Iterable<ResultSetRow>
+public class SimpleResultSet<T> implements AutoCloseable, Iterable<T>
 {
     private final ResultSet resultSet;
-    private final Context context;
-    private Iterator<ResultSetRow> iterator;
+    private Iterator<T> iterator;
+    private RowMapper<T> rowMapper;
 
-    public SimpleResultSet(ResultSet resultSet, Context context)
+    public SimpleResultSet(ResultSet resultSet, RowMapper<T> rowMapper)
     {
         this.resultSet = resultSet;
-        this.context = context;
+        this.rowMapper = rowMapper;
     }
 
     @Override
-    public Iterator<ResultSetRow> iterator()
+    public Iterator<T> iterator()
     {
         if (iterator != null)
         {
             throw new IllegalStateException("Only one iterator allowed per ResultSet");
         }
-        iterator = ResultSetIterator.create(this);
+        iterator = ResultSetIterator.create(this, rowMapper);
         return iterator;
     }
 
-    public Stream<ResultSetRow> stream()
+    public Stream<T> stream()
     {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(this.iterator(), 0), false);
     }
@@ -64,36 +63,24 @@ public class SimpleResultSet implements AutoCloseable, Iterable<ResultSetRow>
         }
     }
 
-    private SimpleMetaData getMetaData()
-    {
-        try
-        {
-            return SimpleMetaData.create(resultSet.getMetaData(), context);
-        }
-        catch (final SQLException e)
-        {
-            throw new UncheckedSQLException("Error getting metadata", e);
-        }
-    }
-
-    private static class ResultSetIterator implements Iterator<ResultSetRow>
+    private static class ResultSetIterator<T> implements Iterator<T>
     {
         private boolean hasNext;
         private int currentRowIndex = 0;
-        private final SimpleResultSet resultSet;
-        private final ResultSetRowBuilder resultSetRowBuilder;
+        private final SimpleResultSet<T> resultSet;
+        private final RowMapper<T> rowMapper;
 
-        private ResultSetIterator(SimpleResultSet simpleResultSet, boolean hasNext)
+        private ResultSetIterator(SimpleResultSet<T> simpleResultSet, RowMapper<T> rowMapper, boolean hasNext)
         {
             this.resultSet = simpleResultSet;
+            this.rowMapper = rowMapper;
             this.hasNext = hasNext;
-            this.resultSetRowBuilder = new ResultSetRowBuilder(resultSet.resultSet, simpleResultSet.getMetaData());
         }
 
-        public static Iterator<ResultSetRow> create(SimpleResultSet simpleResultSet)
+        public static <T> Iterator<T> create(SimpleResultSet<T> simpleResultSet, RowMapper<T> rowMapper)
         {
             final boolean firstRowExists = simpleResultSet.next();
-            return new ResultSetIterator(simpleResultSet, firstRowExists);
+            return new ResultSetIterator<>(simpleResultSet, rowMapper, firstRowExists);
         }
 
         @Override
@@ -103,16 +90,28 @@ public class SimpleResultSet implements AutoCloseable, Iterable<ResultSetRow>
         }
 
         @Override
-        public ResultSetRow next()
+        public T next()
         {
             if (!hasNext)
             {
                 throw new NoSuchElementException();
             }
-            final ResultSetRow row = resultSetRowBuilder.buildRow(currentRowIndex);
+            T row = mapRow();
             hasNext = resultSet.next();
             currentRowIndex++;
             return row;
+        }
+
+        private T mapRow()
+        {
+            try
+            {
+                return rowMapper.mapRow(resultSet.resultSet, currentRowIndex);
+            }
+            catch (SQLException e)
+            {
+                throw new UncheckedSQLException("Error mapping row " + currentRowIndex, e);
+            }
         }
     }
 }
