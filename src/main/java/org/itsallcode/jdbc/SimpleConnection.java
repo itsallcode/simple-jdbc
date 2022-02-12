@@ -1,12 +1,14 @@
 package org.itsallcode.jdbc;
 
 import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.joining;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.resultset.GenericRowMapper;
@@ -64,7 +66,7 @@ public class SimpleConnection implements AutoCloseable
     public <T> SimpleResultSet<T> query(String sql, PreparedStatementSetter preparedStatementSetter,
             RowMapper<T> rowMapper)
     {
-        SimplePreparedStatement statement = prepareStatement(sql);
+        final SimplePreparedStatement statement = prepareStatement(sql);
         statement.setValues(preparedStatementSetter);
         return statement.executeQuery(rowMapper);
     }
@@ -77,6 +79,18 @@ public class SimpleConnection implements AutoCloseable
     private SimplePreparedStatement prepareStatement(String sql)
     {
         return new SimplePreparedStatement(prepare(sql));
+    }
+
+    public <T> void insert(String table, List<String> columnNames, ParamConverter<T> rowMapper, Stream<T> rows)
+    {
+        insert(createInsertStatement(table, columnNames), rowMapper, rows);
+    }
+
+    private String createInsertStatement(String table, List<String> columnNames)
+    {
+        final String columns = columnNames.stream().map(n -> "\"" + n + "\"").collect(joining(","));
+        final String placeholders = columnNames.stream().map(n -> "?").collect(joining(","));
+        return "insert into \"" + table + "\" (" + columns + ") values (" + placeholders + ")";
     }
 
     public <T> void insert(String sql, ParamConverter<T> rowMapper, Stream<T> rows)
