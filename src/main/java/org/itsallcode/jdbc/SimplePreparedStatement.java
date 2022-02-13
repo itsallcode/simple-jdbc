@@ -10,15 +10,17 @@ import org.itsallcode.jdbc.resultset.SimpleResultSet;
 public class SimplePreparedStatement implements AutoCloseable
 {
     private final PreparedStatement statement;
+    private final String sql;
 
-    SimplePreparedStatement(PreparedStatement statement)
+    SimplePreparedStatement(PreparedStatement statement, String sql)
     {
         this.statement = statement;
+        this.sql = sql;
     }
 
     <T> SimpleResultSet<T> executeQuery(RowMapper<T> rowMapper)
     {
-        ResultSet resultSet = doExecute();
+        final ResultSet resultSet = doExecute();
         return new SimpleResultSet<>(resultSet, rowMapper);
     }
 
@@ -30,7 +32,7 @@ public class SimplePreparedStatement implements AutoCloseable
         }
         catch (final SQLException e)
         {
-            throw new UncheckedSQLException("Error executing query", e);
+            throw new UncheckedSQLException("Error executing query '" + sql + "'", e);
         }
     }
 
@@ -53,7 +55,7 @@ public class SimplePreparedStatement implements AutoCloseable
         {
             preparedStatementSetter.setValues(statement);
         }
-        catch (SQLException e)
+        catch (final SQLException e)
         {
             throw new UncheckedSQLException("Error setting values for prepared statement", e);
         }
@@ -68,7 +70,7 @@ public class SimplePreparedStatement implements AutoCloseable
         }
         catch (final SQLException e)
         {
-            throw new UncheckedSQLException("Error executing batch", e);
+            throw new UncheckedSQLException("Error executing batch sql '" + sql + "'", e);
         }
     }
 
@@ -81,6 +83,18 @@ public class SimplePreparedStatement implements AutoCloseable
         catch (final SQLException e)
         {
             throw new UncheckedSQLException("Error adding batch", e);
+        }
+    }
+
+    public SimpleParameterMetaData getParameterMetadata()
+    {
+        try
+        {
+            return new SimpleParameterMetaData(statement.getParameterMetaData());
+        }
+        catch (final SQLException e)
+        {
+            throw new UncheckedSQLException("Error getting parameter metadata", e);
         }
     }
 }

@@ -3,8 +3,11 @@ package org.itsallcode.jdbc.resultset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -14,7 +17,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T>
 {
     private final ResultSet resultSet;
     private Iterator<T> iterator;
-    private RowMapper<T> rowMapper;
+    private final RowMapper<T> rowMapper;
 
     public SimpleResultSet(ResultSet resultSet, RowMapper<T> rowMapper)
     {
@@ -33,9 +36,15 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T>
         return iterator;
     }
 
+    public List<T> toList()
+    {
+        return stream().collect(Collectors.toList());
+    }
+
     public Stream<T> stream()
     {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(this.iterator(), 0), false);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(this.iterator(), Spliterator.ORDERED), false)
+                .onClose(this::close);
     }
 
     @Override
@@ -96,7 +105,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T>
             {
                 throw new NoSuchElementException();
             }
-            T row = mapRow();
+            final T row = mapRow();
             hasNext = resultSet.next();
             currentRowIndex++;
             return row;
@@ -108,7 +117,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T>
             {
                 return rowMapper.mapRow(resultSet.resultSet, currentRowIndex);
             }
-            catch (SQLException e)
+            catch (final SQLException e)
             {
                 throw new UncheckedSQLException("Error mapping row " + currentRowIndex, e);
             }
