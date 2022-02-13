@@ -1,4 +1,4 @@
-package org.itsallcode.jdbc.update;
+package org.itsallcode.jdbc;
 
 import static java.util.stream.Collectors.toMap;
 

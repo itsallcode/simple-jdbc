@@ -11,6 +11,7 @@ import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.resultset.ResultSetRow;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
@@ -145,16 +146,32 @@ class SimpleConnectionITest
     }
 
     @Test
+    void batchInsertEmptyInput()
+    {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection())
+        {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.insert("insert into test (id, name) values (?, ?)", ParamConverter.identity(),
+                    Stream.empty());
+
+            final List<ResultSetRow> result = connection.query("select * from test")
+                    .stream().toList();
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Test
     void batchInsert()
     {
         try (SimpleConnection connection = H2TestFixture.createMemConnection())
         {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.batch("insert into test (id, name) values (?, ?)").add(1, "a")
-                    .add(2, "b").add(3, "c").close();
+            connection.insert("insert into test (id, name) values (?, ?)", ParamConverter.identity(),
+                    Stream.of(new Object[]
+                    { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }));
 
             final List<ResultSetRow> result = connection.query("select count(*) from test")
-                    .stream().collect(toList());
+                    .stream().toList();
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getColumnValues()).hasSize(1);
             assertThat(result.get(0).getColumnValue(0).getValue()).isEqualTo(3L);

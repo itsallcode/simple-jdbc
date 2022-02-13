@@ -21,8 +21,6 @@ import org.itsallcode.jdbc.resultset.GenericRowMapper;
 import org.itsallcode.jdbc.resultset.ResultSetRow;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
-import org.itsallcode.jdbc.update.ParamConverter;
-import org.itsallcode.jdbc.update.SimpleBatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,11 +97,6 @@ public class SimpleConnection implements AutoCloseable
         return statement.executeQuery(rowMapper);
     }
 
-    public SimpleBatch batch(String sql)
-    {
-        return new SimpleBatch(prepareStatement(sql), context);
-    }
-
     private SimplePreparedStatement prepareStatement(String sql)
     {
         return new SimplePreparedStatement(prepare(sql), sql);
@@ -121,13 +114,12 @@ public class SimpleConnection implements AutoCloseable
         return "insert into " + table.quote() + " (" + columns + ") values (" + placeholders + ")";
     }
 
-    public <T> void insert(String sql, ParamConverter<T> rowMapper, Stream<T> rows)
+    public <T> void insert(String sql, ParamConverter<T> paramConverter, Stream<T> rows)
     {
         LOG.debug("Running insert statement '{}'...", sql);
-        batch(sql);
-        try (SimpleBatch batch = batch(sql))
+        try (SimpleBatch batch = new SimpleBatch(prepareStatement(sql), context))
         {
-            rows.map(rowMapper::map).forEach(batch::add);
+            rows.map(paramConverter::map).forEach(batch::add);
         }
         finally
         {

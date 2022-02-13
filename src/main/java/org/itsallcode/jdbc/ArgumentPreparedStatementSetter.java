@@ -3,8 +3,6 @@ package org.itsallcode.jdbc;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.itsallcode.jdbc.update.ParameterMapper;
-
 public class ArgumentPreparedStatementSetter implements PreparedStatementSetter
 {
     private Object[] args;

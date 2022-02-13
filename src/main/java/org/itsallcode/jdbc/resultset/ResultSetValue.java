@@ -30,4 +30,10 @@ public class ResultSetValue
     {
         return type.cast(value);
     }
+
+    @Override
+    public String toString()
+    {
+        return "ResultSetValue [type=" + type + ", value=" + value + "]";
+    }
 }

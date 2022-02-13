@@ -1,23 +1,19 @@
-package org.itsallcode.jdbc.update;
+package org.itsallcode.jdbc;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
-import org.itsallcode.jdbc.ArgumentPreparedStatementSetter;
-import org.itsallcode.jdbc.Context;
-import org.itsallcode.jdbc.PreparedStatementSetter;
 import org.itsallcode.jdbc.SimpleParameterMetaData.Parameter;
-import org.itsallcode.jdbc.SimplePreparedStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SimpleBatch implements AutoCloseable
 {
     private static final Logger LOG = LoggerFactory.getLogger(SimpleBatch.class);
-
     private static final int BATCH_SIZE = 200000;
+
     private final SimplePreparedStatement statement;
     private final Context context;
     private final List<Parameter> parameterMetadata;
@@ -69,6 +65,11 @@ public class SimpleBatch implements AutoCloseable
 
     private void executeBatch()
     {
+        if (currentBatchSize == 0)
+        {
+            LOG.debug("No rows added to batch, skip");
+            return;
+        }
         final Instant start = Instant.now();
         statement.executeBatch();
         final Duration duration = Duration.between(start, Instant.now());

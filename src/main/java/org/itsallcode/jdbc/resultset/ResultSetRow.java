@@ -27,4 +27,10 @@ public class ResultSetRow
     {
         return fields.get(columnIndex);
     }
+
+    @Override
+    public String toString()
+    {
+        return "ResultSetRow [rowIndex=" + rowIndex + ", fields=" + fields + "]";
+    }
 }

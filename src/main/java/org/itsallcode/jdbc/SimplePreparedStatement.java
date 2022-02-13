@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 
-public class SimplePreparedStatement implements AutoCloseable
+class SimplePreparedStatement implements AutoCloseable
 {
     private final PreparedStatement statement;
     private final String sql;
@@ -49,7 +49,7 @@ public class SimplePreparedStatement implements AutoCloseable
         }
     }
 
-    public void setValues(PreparedStatementSetter preparedStatementSetter)
+    void setValues(PreparedStatementSetter preparedStatementSetter)
     {
         try
         {
@@ -62,7 +62,7 @@ public class SimplePreparedStatement implements AutoCloseable
 
     }
 
-    public void executeBatch()
+    void executeBatch()
     {
         try
         {
@@ -74,7 +74,7 @@ public class SimplePreparedStatement implements AutoCloseable
         }
     }
 
-    public void addBatch()
+    void addBatch()
     {
         try
         {
@@ -86,7 +86,7 @@ public class SimplePreparedStatement implements AutoCloseable
         }
     }
 
-    public SimpleParameterMetaData getParameterMetadata()
+    SimpleParameterMetaData getParameterMetadata()
     {
         try
         {
