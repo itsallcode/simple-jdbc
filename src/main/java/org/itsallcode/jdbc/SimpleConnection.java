@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.identifier.Identifier;
@@ -21,12 +22,10 @@ import org.itsallcode.jdbc.resultset.GenericRowMapper;
 import org.itsallcode.jdbc.resultset.ResultSetRow;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SimpleConnection implements AutoCloseable
 {
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleConnection.class);
+    private static final Logger LOG = Logger.getLogger(SimpleConnection.class.getName());
 
     private final Connection connection;
     private final Context context;
@@ -92,6 +91,7 @@ public class SimpleConnection implements AutoCloseable
     public <T> SimpleResultSet<T> query(String sql, PreparedStatementSetter preparedStatementSetter,
             RowMapper<T> rowMapper)
     {
+        LOG.fine(() -> "Executing query '" + sql + "'...");
         final SimplePreparedStatement statement = prepareStatement(sql);
         statement.setValues(preparedStatementSetter);
         return statement.executeQuery(rowMapper);
@@ -116,7 +116,7 @@ public class SimpleConnection implements AutoCloseable
 
     public <T> void insert(String sql, ParamConverter<T> paramConverter, Stream<T> rows)
     {
-        LOG.debug("Running insert statement '{}'...", sql);
+        LOG.fine(() -> "Running insert statement '" + sql + "'...");
         try (SimpleBatch batch = new SimpleBatch(prepareStatement(sql), context))
         {
             rows.map(paramConverter::map).forEach(batch::add);

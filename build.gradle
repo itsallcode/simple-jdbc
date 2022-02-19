@@ -16,7 +16,6 @@ group 'org.itsallcode'
 version = '0.2.0'
 
 dependencies {
-    implementation 'org.slf4j:slf4j-api:1.7.36'
     testImplementation 'org.assertj:assertj-core:3.22.0'
     testRuntimeOnly 'com.h2database:h2:2.1.210'
 }
