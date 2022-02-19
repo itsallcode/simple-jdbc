@@ -18,19 +18,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Cache Gradle packages and wrapper
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-java-${{ matrix.java }}-gradle-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/*.gradle*') }}
-        restore-keys: |
-          ${{ runner.os }}-java-${{ matrix.java }}-gradle-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-          ${{ runner.os }}-java-${{ matrix.java }}-gradle
-
     - name: Cache SonarQube packages
-      uses: actions/cache@v2.1.7
+      uses: actions/cache@v2
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-sonar-${{ hashFiles('**/*.gradle') }}
@@ -43,6 +32,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
+        cache: 'gradle'
 
     - name: Build with Gradle
       run: ./gradlew clean build
