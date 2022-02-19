@@ -1,23 +1,23 @@
 package org.itsallcode.jdbc.identifier;
 
-public class SimpleIdentifier implements Identifier
-{
+public class SimpleIdentifier implements Identifier {
     private final String id;
 
-    public SimpleIdentifier(String id)
-    {
+    private SimpleIdentifier(String id) {
         this.id = id;
     }
 
+    public static Identifier of(String id) {
+        return new SimpleIdentifier(id);
+    }
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return id;
     }
 
     @Override
-    public String quote()
-    {
+    public String quote() {
         return "\"" + id + "\"";
     }
 }

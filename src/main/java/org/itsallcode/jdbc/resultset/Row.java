@@ -2,35 +2,29 @@ package org.itsallcode.jdbc.resultset;
 
 import java.util.List;
 
-public class ResultSetRow
-{
+public class Row {
     private final int rowIndex;
-    private final List<ResultSetValue> fields;
+    private final List<ColumnValue> fields;
 
-    ResultSetRow(int rowIndex, List<ResultSetValue> fields)
-    {
+    Row(int rowIndex, List<ColumnValue> fields) {
         this.rowIndex = rowIndex;
         this.fields = fields;
     }
 
-    public int getRowIndex()
-    {
+    public int getRowIndex() {
         return rowIndex;
     }
 
-    public List<ResultSetValue> getColumnValues()
-    {
+    public List<ColumnValue> getColumnValues() {
         return fields;
     }
 
-    public ResultSetValue getColumnValue(int columnIndex)
-    {
+    public ColumnValue getColumnValue(int columnIndex) {
         return fields.get(columnIndex);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "ResultSetRow [rowIndex=" + rowIndex + ", fields=" + fields + "]";
     }
 }

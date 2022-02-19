@@ -24,6 +24,14 @@ public class ConnectionFactory
         return create(url, new Properties());
     }
 
+    public SimpleConnection create(String url, String user, String password)
+    {
+        Properties info = new Properties();
+        info.put("user", user);
+        info.put("password", password);
+        return create(url, info);
+    }
+
     public SimpleConnection create(String url, Properties info)
     {
         return new SimpleConnection(createConnection(url, info), context);

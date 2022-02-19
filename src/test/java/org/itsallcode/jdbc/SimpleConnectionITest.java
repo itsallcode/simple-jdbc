@@ -13,27 +13,22 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.resultset.ResultSetRow;
+import org.itsallcode.jdbc.resultset.Row;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.junit.jupiter.api.Test;
 
-class SimpleConnectionITest
-{
+class SimpleConnectionITest {
     @Test
-    void executeStatement()
-    {
-        try (SimpleConnection connection = H2TestFixture.createMemConnection())
-        {
+    void executeStatement() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             assertDoesNotThrow(() -> connection.executeStatement("select count(*) from test"));
         }
     }
 
     @Test
-    void executeStatementFails()
-    {
-        try (SimpleConnection connection = H2TestFixture.createMemConnection())
-        {
+    void executeStatementFails() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             assertThatThrownBy(() -> connection.executeStatement("select count(*) from missingtable"))
                     .isInstanceOf(UncheckedSQLException.class)
                     .hasMessage("Error executing 'select count(*) from missingtable'")
@@ -42,10 +37,8 @@ class SimpleConnectionITest
     }
 
     @Test
-    void executeScript()
-    {
-        try (SimpleConnection connection = H2TestFixture.createMemConnection())
-        {
+    void executeScript() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
             assertDoesNotThrow(() -> connection.executeStatement("select count(*) from test"));
@@ -53,15 +46,12 @@ class SimpleConnectionITest
     }
 
     @Test
-    void executeQuery()
-    {
-        try (SimpleConnection connection = H2TestFixture.createMemConnection())
-        {
+    void executeQuery() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
-            try (SimpleResultSet<ResultSetRow> resultSet = connection.query("select count(*) from test"))
-            {
-                final List<ResultSetRow> rows = resultSet.stream().collect(toList());
+            try (SimpleResultSet<Row> resultSet = connection.query("select count(*) from test")) {
+                final List<Row> rows = resultSet.stream().collect(toList());
                 assertThat(rows).hasSize(1);
                 assertThat(rows.get(0).getRowIndex()).isZero();
                 assertThat(rows.get(0).getColumnValues()).hasSize(1);
@@ -71,14 +61,11 @@ class SimpleConnectionITest
     }
 
     @Test
-    void executeQueryEmptyResult()
-    {
-        try (SimpleConnection connection = H2TestFixture.createMemConnection())
-        {
+    void executeQueryEmptyResult() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            try (SimpleResultSet<ResultSetRow> resultSet = connection.query("select * from test"))
-            {
-                final Iterator<ResultSetRow> iterator = resultSet.iterator();
+            try (SimpleResultSet<Row> resultSet = connection.query("select * from test")) {
+                final Iterator<Row> iterator = resultSet.iterator();
                 assertThat(iterator.hasNext()).isFalse();
                 assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class);
             }
@@ -86,20 +73,16 @@ class SimpleConnectionITest
     }
 
     @Test
-    void executeQuerySingleRow()
-    {
-        try (final SimpleConnection connection = H2TestFixture.createMemConnection())
-        {
+    void executeQuerySingleRow() {
+        try (final SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
-            try (final SimpleResultSet<ResultSetRow> resultSet = connection.query("select * from test"))
-            {
-                final Iterator<ResultSetRow> iterator = resultSet.iterator();
+            try (final SimpleResultSet<Row> resultSet = connection.query("select * from test")) {
+                final Iterator<Row> iterator = resultSet.iterator();
                 assertThat(iterator.hasNext()).isTrue();
-                final ResultSetRow firstRow = iterator.next();
+                final Row firstRow = iterator.next();
 
-                assertAll(
-                        () -> assertThat(firstRow.getRowIndex()).isZero(),
+                assertAll(() -> assertThat(firstRow.getRowIndex()).isZero(),
                         () -> assertThat(firstRow.getColumnValues()).hasSize(2),
                         () -> assertThat(firstRow.getColumnValues().get(0).getValue()).isEqualTo(1),
                         () -> assertThat(firstRow.getColumnValues().get(0).getType().getJdbcType())
@@ -130,14 +113,11 @@ class SimpleConnectionITest
     }
 
     @Test
-    void executeQueryOnlyOneIteratorAllowed()
-    {
-        try (SimpleConnection connection = H2TestFixture.createMemConnection())
-        {
+    void executeQueryOnlyOneIteratorAllowed() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            try (SimpleResultSet<ResultSetRow> resultSet = connection.query("select * from test"))
-            {
-                final Iterator<ResultSetRow> iterator = resultSet.iterator();
+            try (SimpleResultSet<Row> resultSet = connection.query("select * from test")) {
+                final Iterator<Row> iterator = resultSet.iterator();
                 assertThat(iterator).isNotNull();
                 assertThatThrownBy(() -> resultSet.iterator()).isInstanceOf(IllegalStateException.class)
                         .hasMessage("Only one iterator allowed per ResultSet");
@@ -146,32 +126,24 @@ class SimpleConnectionITest
     }
 
     @Test
-    void batchInsertEmptyInput()
-    {
-        try (SimpleConnection connection = H2TestFixture.createMemConnection())
-        {
+    void batchInsertEmptyInput() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.insert("insert into test (id, name) values (?, ?)", ParamConverter.identity(),
-                    Stream.empty());
+            connection.insert("insert into test (id, name) values (?, ?)", ParamConverter.identity(), Stream.empty());
 
-            final List<ResultSetRow> result = connection.query("select * from test")
-                    .stream().toList();
+            final List<Row> result = connection.query("select * from test").stream().toList();
             assertThat(result).isEmpty();
         }
     }
 
     @Test
-    void batchInsert()
-    {
-        try (SimpleConnection connection = H2TestFixture.createMemConnection())
-        {
+    void batchInsert() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             connection.insert("insert into test (id, name) values (?, ?)", ParamConverter.identity(),
-                    Stream.of(new Object[]
-                    { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }));
+                    Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }));
 
-            final List<ResultSetRow> result = connection.query("select count(*) from test")
-                    .stream().toList();
+            final List<Row> result = connection.query("select count(*) from test").stream().toList();
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getColumnValues()).hasSize(1);
             assertThat(result.get(0).getColumnValue(0).getValue()).isEqualTo(3L);

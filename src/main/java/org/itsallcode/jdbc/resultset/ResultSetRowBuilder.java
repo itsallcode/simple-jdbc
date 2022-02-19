@@ -8,38 +8,29 @@ import java.util.List;
 import org.itsallcode.jdbc.UncheckedSQLException;
 import org.itsallcode.jdbc.resultset.SimpleMetaData.ColumnMetaData;
 
-class ResultSetRowBuilder
-{
+class ResultSetRowBuilder {
     private final SimpleMetaData metadata;
 
-    ResultSetRowBuilder(SimpleMetaData metaData)
-    {
+    ResultSetRowBuilder(SimpleMetaData metaData) {
         this.metadata = metaData;
     }
 
-    ResultSetRow buildRow(ResultSet resultSet, int rowIndex)
-    {
+    Row buildRow(ResultSet resultSet, int rowIndex) {
         final List<ColumnMetaData> columns = metadata.getColumns();
-        final List<ResultSetValue> fields = new ArrayList<>(columns.size());
-        for (final ColumnMetaData column : columns)
-        {
-            final ResultSetValue field = getField(resultSet, column, rowIndex);
+        final List<ColumnValue> fields = new ArrayList<>(columns.size());
+        for (final ColumnMetaData column : columns) {
+            final ColumnValue field = getField(resultSet, column, rowIndex);
             fields.add(field);
         }
-        return new ResultSetRow(rowIndex, fields);
+        return new Row(rowIndex, fields);
     }
 
-    private ResultSetValue getField(ResultSet resultSet, final ColumnMetaData column, int rowIndex)
-    {
-        ResultSetValue field;
-        try
-        {
+    private ColumnValue getField(ResultSet resultSet, final ColumnMetaData column, int rowIndex) {
+        ColumnValue field;
+        try {
             field = column.getValueExtractor().extractValue(resultSet, column.getColumnIndex());
-        }
-        catch (final SQLException e)
-        {
-            throw new UncheckedSQLException("Error extracting value for row " + rowIndex + " / column " + column,
-                    e);
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Error extracting value for row " + rowIndex + " / column " + column, e);
         }
         return field;
     }
