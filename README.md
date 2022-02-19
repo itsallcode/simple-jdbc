@@ -1,6 +1,8 @@
 # simple-jdbc
 
-Wrapper to simplify working with JDBC
+Wrapper to simplify working with JDBC.
+
+**This project is at an early development stage and the API will change without backwards compatibility.**
 
 [![Java CI](https://github.com/itsallcode/simple-jdbc/actions/workflows/build.yml/badge.svg)](https://github.com/itsallcode/simple-jdbc/actions/workflows/build.yml)
 [![CodeQL](https://github.com/itsallcode/simple-jdbc/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/itsallcode/simple-jdbc/actions/workflows/codeql-analysis.yml)
@@ -15,11 +17,14 @@ Wrapper to simplify working with JDBC
 
 ## Usage
 
+Add dependency to your gradle project:
+
 ```gradle
 dependencies {
     implementation 'org.itsallcode:simple-jdbc:0.3.0'
 }
 ```
+
 ```java
 record Name(int id, String name) {
     Object[] toRow() {
