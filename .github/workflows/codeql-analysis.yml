@@ -24,17 +24,9 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: 11
+        cache: 'gradle'
 
     - uses: gradle/wrapper-validation-action@v1
-
-    - name: Cache Gradle packages and wrapper
-      uses: actions/cache@v2.1.7
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-        restore-keys: ${{ runner.os }}-gradle-
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
