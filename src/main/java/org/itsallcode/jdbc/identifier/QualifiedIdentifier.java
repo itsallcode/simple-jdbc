@@ -17,7 +17,7 @@ public class QualifiedIdentifier implements Identifier {
 
     @Override
     public String toString() {
-        return Arrays.stream(id).map(Identifier::toString).collect(joining("."));
+        return quote();
     }
 
     @Override
