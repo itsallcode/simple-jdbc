@@ -13,7 +13,7 @@ public class SimpleIdentifier implements Identifier {
 
     @Override
     public String toString() {
-        return id;
+        return quote();
     }
 
     @Override
