@@ -9,12 +9,12 @@ public class GenericRowMapper implements RowMapper<Row> {
     private final Context context;
     private ResultSetRowBuilder rowBuilder;
 
-    public GenericRowMapper(Context context) {
+    public GenericRowMapper(final Context context) {
         this.context = context;
     }
 
     @Override
-    public Row mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+    public Row mapRow(final ResultSet resultSet, final int rowNum) throws SQLException {
         if (rowBuilder == null) {
             rowBuilder = new ResultSetRowBuilder(SimpleMetaData.create(resultSet.getMetaData(), context));
         }
