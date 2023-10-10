@@ -85,6 +85,5 @@ Install to local maven repository:
     ./gradlew clean check build publishToSonatype closeAndReleaseSonatypeStagingRepository --info
     ```
 
-
 5. Create a new [release](https://github.com/itsallcode/simple-jdbc/releases) on GitHub.
 6. After some time the release will be available at [Maven Central](https://repo1.maven.org/maven2/org/itsallcode/simple-jdbc/).
