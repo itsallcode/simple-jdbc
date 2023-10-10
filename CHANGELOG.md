@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] - unreleased
 
+- [PR #9](https://github.com/itsallcode/simple-jdbc/pull/9): Upgrade dependencies
+
 ## [0.3.0] - 2022-02-19
 
 Added simple insert method, validate parameters in batch insert.
