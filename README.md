@@ -48,14 +48,14 @@ try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "use
 
 ### Check if dependencies are up-to-date
 
-```bash
-$ ./gradlew dependencyUpdates
+```sh
+./gradlew dependencyUpdates
 ```
 
 ### Building
 
 Install to local maven repository:
-```bash
+```sh
 ./gradlew clean publishToMavenLocal
 ```
 
@@ -75,7 +75,7 @@ Install to local maven repository:
 2. Increment version number in `build.gradle` and `README.md`, update [CHANGELOG.md](CHANGELOG.md), commit and push.
 3. Run the following command:
 
-    ```bash
+    ```sh
     $ ./gradlew clean check build publish closeAndReleaseRepository --info
     ```
 
