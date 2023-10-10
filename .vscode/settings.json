@@ -1,18 +1,17 @@
 {
     "editor.formatOnSave": true,
-    "java.completion.favoriteStaticMembers": [
-        "org.junit.jupiter.api.Assertions.*",
-        "org.junit.jupiter.api.Assumptions.*",
-        "org.junit.jupiter.api.DynamicContainer.*",
-        "org.junit.jupiter.api.DynamicTest.*",
-        "org.mockito.Mockito.*",
-        "org.mockito.ArgumentMatchers.*",
-        "org.mockito.Answers.*",
-        "org.assertj.core.api.Assertions.*",
-        "java.util.Arrays.*",
-        "java.util.Collections.*",
-        "java.util.Comparator",
-        "java.util.function.Predicate",
-        "java.util.stream.Collectors"
-    ]
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true,
+        "source.generate.finalModifiers": true,
+        "source.fixAll": true
+    },
+    "java.codeGeneration.useBlocks": true,
+    "java.saveActions.organizeImports": true,
+    "java.sources.organizeImports.starThreshold": 3,
+    "java.sources.organizeImports.staticStarThreshold": 3,
+    "sonarlint.connectedMode.project": {
+        "connectionId": "itsallcode",
+        "projectKey": "org.itsallcode:simple-jdbc"
+    }
 }
