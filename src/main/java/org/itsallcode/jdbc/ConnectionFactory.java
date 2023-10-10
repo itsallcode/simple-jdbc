@@ -1,51 +1,39 @@
 package org.itsallcode.jdbc;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Properties;
 
-public class ConnectionFactory
-{
+public class ConnectionFactory {
     private final Context context;
 
-    private ConnectionFactory(Context context)
-    {
+    private ConnectionFactory(final Context context) {
         this.context = context;
     }
 
-    public static ConnectionFactory create()
-    {
+    public static ConnectionFactory create() {
         return new ConnectionFactory(new Context());
     }
 
-    public SimpleConnection create(String url)
-    {
+    public SimpleConnection create(final String url) {
         return create(url, new Properties());
     }
 
-    public SimpleConnection create(String url, String user, String password)
-    {
-        Properties info = new Properties();
+    public SimpleConnection create(final String url, final String user, final String password) {
+        final Properties info = new Properties();
         info.put("user", user);
         info.put("password", password);
         return create(url, info);
     }
 
-    public SimpleConnection create(String url, Properties info)
-    {
+    public SimpleConnection create(final String url, final Properties info) {
         return new SimpleConnection(createConnection(url, info), context);
     }
 
-    private Connection createConnection(String url, Properties info)
-    {
-        try
-        {
+    private Connection createConnection(final String url, final Properties info) {
+        try {
             return DriverManager.getConnection(url, info);
-        }
-        catch (final SQLException e)
-        {
-            throw new UncheckedSQLException("Error connecting to " + url, e);
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Error connecting to '" + url + "'", e);
         }
     }
 }

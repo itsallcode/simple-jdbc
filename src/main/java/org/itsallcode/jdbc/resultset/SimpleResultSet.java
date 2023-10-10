@@ -2,23 +2,17 @@ package org.itsallcode.jdbc.resultset;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.*;
+import java.util.stream.*;
 
 import org.itsallcode.jdbc.UncheckedSQLException;
 
 public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
     private final ResultSet resultSet;
-    private Iterator<T> iterator;
     private final RowMapper<T> rowMapper;
+    private Iterator<T> iterator;
 
-    public SimpleResultSet(ResultSet resultSet, RowMapper<T> rowMapper) {
+    public SimpleResultSet(final ResultSet resultSet, final RowMapper<T> rowMapper) {
         this.resultSet = resultSet;
         this.rowMapper = rowMapper;
     }
@@ -64,13 +58,14 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
         private final SimpleResultSet<T> resultSet;
         private final RowMapper<T> rowMapper;
 
-        private ResultSetIterator(SimpleResultSet<T> simpleResultSet, RowMapper<T> rowMapper, boolean hasNext) {
+        private ResultSetIterator(final SimpleResultSet<T> simpleResultSet, final RowMapper<T> rowMapper,
+                final boolean hasNext) {
             this.resultSet = simpleResultSet;
             this.rowMapper = rowMapper;
             this.hasNext = hasNext;
         }
 
-        public static <T> Iterator<T> create(SimpleResultSet<T> simpleResultSet, RowMapper<T> rowMapper) {
+        public static <T> Iterator<T> create(final SimpleResultSet<T> simpleResultSet, final RowMapper<T> rowMapper) {
             final boolean firstRowExists = simpleResultSet.next();
             return new ResultSetIterator<>(simpleResultSet, rowMapper, firstRowExists);
         }

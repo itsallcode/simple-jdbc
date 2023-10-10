@@ -8,11 +8,11 @@ public class ValueExtractorFactory {
         return new ValueExtractorFactory();
     }
 
-    public ResultSetValueExtractor create(ColumnType type) {
-        return (resultSet, columnIndex) -> new ColumnValue(type, getValue(type, resultSet, columnIndex));
+    public ResultSetValueExtractor create(final ColumnType type) {
+        return (resultSet, columnIndex) -> new ColumnValue(type, getValue(resultSet, columnIndex));
     }
 
-    private Object getValue(ColumnType type, ResultSet resultSet, int columnIndex) throws SQLException {
+    private Object getValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
         return resultSet.getObject(columnIndex);
     }
 }
