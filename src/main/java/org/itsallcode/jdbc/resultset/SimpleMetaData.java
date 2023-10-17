@@ -8,6 +8,9 @@ import java.util.List;
 import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
 
+/**
+ * A wrapper for {@link ResultSetMetaData} to simplify usage.
+ */
 public class SimpleMetaData {
     private final List<ColumnMetaData> columns;
 
@@ -30,10 +33,18 @@ public class SimpleMetaData {
         }
     }
 
+    /**
+     * Get all column metadata for the result set.
+     * 
+     * @return column metadata
+     */
     public List<ColumnMetaData> getColumns() {
         return columns;
     }
 
+    /**
+     * Represents the metadata of a single column.
+     */
     public static class ColumnMetaData {
         private final int columnIndex;
         private final String name;
@@ -64,18 +75,38 @@ public class SimpleMetaData {
             return new ColumnMetaData(columnIndex, name, label, columnType, valueExtractorFactory);
         }
 
+        /**
+         * Get the column index (1 based).
+         * 
+         * @return column index (1 based)
+         */
         public int getColumnIndex() {
             return columnIndex;
         }
 
+        /**
+         * Get the column name.
+         * 
+         * @return column name
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * Get the column label.
+         * 
+         * @return column label
+         */
         public String getLabel() {
             return label;
         }
 
+        /**
+         * Get the SQL type.
+         * 
+         * @return SQL type
+         */
         public ColumnType getType() {
             return type;
         }

@@ -4,14 +4,23 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Arrays;
 
+/**
+ * A qualified identifier, e.g. table name and schema name.
+ */
 public class QualifiedIdentifier implements Identifier {
     private final Identifier[] id;
 
-    private QualifiedIdentifier(Identifier... ids) {
+    private QualifiedIdentifier(final Identifier... ids) {
         this.id = ids;
     }
 
-    public static Identifier of(Identifier... ids) {
+    /**
+     * Create a new qualified identifier.
+     * 
+     * @param ids the IDs
+     * @return a new instance
+     */
+    public static Identifier of(final Identifier... ids) {
         return new QualifiedIdentifier(ids);
     }
 

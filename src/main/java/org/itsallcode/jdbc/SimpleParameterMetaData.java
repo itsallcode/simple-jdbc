@@ -4,6 +4,9 @@ import java.sql.ParameterMetaData;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * Wrapper for {@link ParameterMetaData} that simplifies usage.
+ */
 public class SimpleParameterMetaData {
 
     private final ParameterMetaData metaData;
@@ -12,6 +15,11 @@ public class SimpleParameterMetaData {
         this.metaData = parameterMetaData;
     }
 
+    /**
+     * Get all parameters.
+     * 
+     * @return all parameters
+     */
     public List<Parameter> getParameters() {
         try {
             final List<Parameter> parameters = new ArrayList<>(metaData.getParameterCount());
@@ -27,10 +35,17 @@ public class SimpleParameterMetaData {
         }
     }
 
+    /**
+     * Parameter type.
+     */
     public enum ParameterMode {
+        /** Parameter mode IN */
         IN(ParameterMetaData.parameterModeIn),
+        /** Parameter mode INOUT */
         INOUT(ParameterMetaData.parameterModeInOut),
+        /** Parameter mode OUT */
         OUT(ParameterMetaData.parameterModeOut),
+        /** Parameter mode is unknown */
         UNKNWON(ParameterMetaData.parameterModeUnknown);
 
         private final int mode;
@@ -39,7 +54,7 @@ public class SimpleParameterMetaData {
             this.mode = mode;
         }
 
-        public static ParameterMode of(final int mode) {
+        private static ParameterMode of(final int mode) {
             return Arrays.stream(values())
                     .filter(m -> m.mode == mode)
                     .findAny()
@@ -48,9 +63,15 @@ public class SimpleParameterMetaData {
         }
     }
 
+    /**
+     * Parameter nullability status.
+     */
     public enum ParameterNullable {
+        /** Parameter will not allow {@code NULL} values. */
         NO_NULLS(ParameterMetaData.parameterNoNulls),
+        /** Parameter will allow {@code NULL} values. */
         NULLABLE(ParameterMetaData.parameterNullable),
+        /** Parameter nullability status is unknown. */
         UNKNWON(ParameterMetaData.parameterNullableUnknown);
 
         private final int mode;
@@ -59,12 +80,15 @@ public class SimpleParameterMetaData {
             this.mode = mode;
         }
 
-        public static ParameterNullable of(final int mode) {
+        private static ParameterNullable of(final int mode) {
             return Arrays.stream(values()).filter(m -> m.mode == mode).findAny().orElseThrow(
                     () -> new IllegalArgumentException("No parameter mode found for value " + mode));
         }
     }
 
+    /**
+     * A parameter.
+     */
     public static record Parameter(String className, int type, String typeName, ParameterMode mode, int precision,
             int scale, boolean signed, ParameterNullable nullable) {
     }

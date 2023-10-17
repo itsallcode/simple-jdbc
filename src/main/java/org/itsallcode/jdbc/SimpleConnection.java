@@ -3,9 +3,6 @@ package org.itsallcode.jdbc;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
@@ -31,10 +28,11 @@ public class SimpleConnection implements AutoCloseable {
         this.context = context;
     }
 
-    public void executeScriptFromResource(final String resourceName) {
-        executeScript(readResource(resourceName));
-    }
-
+    /**
+     * Execute all commands in a SQL script, separated with {@code ;}.
+     * 
+     * @param sqlScript the script to execute.
+     */
     public void executeScript(final String sqlScript) {
         Arrays.stream(sqlScript.split(";"))
                 .map(String::trim)
@@ -42,6 +40,11 @@ public class SimpleConnection implements AutoCloseable {
                 .forEach(this::executeStatement);
     }
 
+    /**
+     * Execute a single SQL statement.
+     * 
+     * @param sql the statement
+     */
     public void executeStatement(final String sql) {
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
@@ -50,31 +53,41 @@ public class SimpleConnection implements AutoCloseable {
         }
     }
 
+    /**
+     * Execute a SQL query and return a {@link SimpleResultSet result set} with
+     * generic {@link Row}s.
+     * 
+     * @param sql the query
+     * @return the result set
+     */
     public SimpleResultSet<Row> query(final String sql) {
         return query(sql, new GenericRowMapper(context));
     }
 
-    public <T> SimpleResultSet<T> querySqlResource(final String resourceName, final RowMapper<T> rowMapper) {
-        return query(readResource(resourceName), rowMapper);
-    }
-
-    private String readResource(final String resourceName) {
-        final URL resource = getClass().getResource(resourceName);
-        if (resource == null) {
-            throw new IllegalArgumentException("No resource found for name '" + resourceName + "'");
-        }
-        try (InputStream stream = resource.openStream()) {
-            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (final IOException e) {
-            throw new UncheckedIOException("Error reading resource " + resource, e);
-        }
-    }
-
+    /**
+     * Execute a SQL query and return a {@link SimpleResultSet result set} with rows
+     * converted to a custom type {@link T}.
+     * 
+     * @param <T>       generic row type
+     * @param sql       SQL query
+     * @param rowMapper row mapper
+     * @return the result set
+     */
     public <T> SimpleResultSet<T> query(final String sql, final RowMapper<T> rowMapper) {
         return query(sql, ps -> {
         }, rowMapper);
     }
 
+    /**
+     * Execute a SQL query, set parameters and return a {@link SimpleResultSet
+     * result set} with rows converted to a custom type {@link T}.
+     * 
+     * @param <T>                     generic row type
+     * @param sql                     SQL query
+     * @param preparedStatementSetter the prepared statement setter
+     * @param rowMapper               row mapper
+     * @return the result set
+     */
     public <T> SimpleResultSet<T> query(final String sql, final PreparedStatementSetter preparedStatementSetter,
             final RowMapper<T> rowMapper) {
         LOG.fine(() -> "Executing query '" + sql + "'...");
@@ -87,14 +100,31 @@ public class SimpleConnection implements AutoCloseable {
         return new SimplePreparedStatement(prepare(sql), sql);
     }
 
+    /**
+     * Insert rows into a table using batch operation.
+     * 
+     * @param <T>         generic row type
+     * @param table       table name
+     * @param columnNames column names
+     * @param rowMapper   a mapper to convert each column
+     * @param rows        a stream of rows to insert
+     */
     public <T> void insert(final String table, final List<String> columnNames, final ParamConverter<T> rowMapper,
             final Stream<T> rows) {
         insert(SimpleIdentifier.of(table), columnNames.stream().map(SimpleIdentifier::of).toList(), rowMapper, rows);
     }
 
+    /**
+     * Insert rows into a table using batch operation.
+     * 
+     * @param <T>         generic row type
+     * @param table       table name
+     * @param columnNames column names
+     * @param rowMapper   a mapper to convert each column
+     * @param rows        a stream of rows to insert
+     */
     public <T> void insert(final Identifier table, final List<Identifier> columnNames,
-            final ParamConverter<T> rowMapper,
-            final Stream<T> rows) {
+            final ParamConverter<T> rowMapper, final Stream<T> rows) {
         insert(createInsertStatement(table, columnNames), rowMapper, rows);
     }
 
@@ -104,7 +134,7 @@ public class SimpleConnection implements AutoCloseable {
         return "insert into " + table.quote() + " (" + columns + ") values (" + placeholders + ")";
     }
 
-    public <T> void insert(final String sql, final ParamConverter<T> paramConverter, final Stream<T> rows) {
+    <T> void insert(final String sql, final ParamConverter<T> paramConverter, final Stream<T> rows) {
         LOG.fine(() -> "Running insert statement '" + sql + "'...");
         try (SimpleBatch batch = new SimpleBatch(prepareStatement(sql), context)) {
             rows.map(paramConverter::map).forEach(batch::add);

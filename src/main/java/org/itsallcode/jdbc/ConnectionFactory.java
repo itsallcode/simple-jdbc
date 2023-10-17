@@ -3,6 +3,9 @@ package org.itsallcode.jdbc;
 import java.sql.*;
 import java.util.Properties;
 
+/**
+ * This class connects to a database and returns new {@link SimpleConnection}s.
+ */
 public class ConnectionFactory {
     private final Context context;
 
@@ -10,14 +13,33 @@ public class ConnectionFactory {
         this.context = context;
     }
 
+    /**
+     * Create a new connection factory.
+     * 
+     * @return a new instance
+     */
     public static ConnectionFactory create() {
         return new ConnectionFactory(new Context());
     }
 
+    /**
+     * Create a connection using the given JDBC URL.
+     * 
+     * @param url JDBC URL
+     * @return a new connection
+     */
     public SimpleConnection create(final String url) {
         return create(url, new Properties());
     }
 
+    /**
+     * Create a connection using the given JDBC URL.
+     * 
+     * @param url      JDBC URL
+     * @param user     database user
+     * @param password database password
+     * @return a new connection
+     */
     public SimpleConnection create(final String url, final String user, final String password) {
         final Properties info = new Properties();
         info.put("user", user);
@@ -25,6 +47,13 @@ public class ConnectionFactory {
         return create(url, info);
     }
 
+    /**
+     * Create a connection using the given JDBC URL.
+     * 
+     * @param url  JDBC URL
+     * @param info connection properties
+     * @return a new connection
+     */
     public SimpleConnection create(final String url, final Properties info) {
         return new SimpleConnection(createConnection(url, info), context);
     }
