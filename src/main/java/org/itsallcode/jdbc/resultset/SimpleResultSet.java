@@ -2,27 +2,36 @@ package org.itsallcode.jdbc.resultset;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.*;
+import java.util.stream.*;
 
 import org.itsallcode.jdbc.UncheckedSQLException;
 
+/**
+ * This class wraps a {@link ResultSet} and allows easy iteration via
+ * {@link Iterator}, {@link List} or {@link Stream}.
+ */
 public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
     private final ResultSet resultSet;
-    private Iterator<T> iterator;
     private final RowMapper<T> rowMapper;
+    private Iterator<T> iterator;
 
-    public SimpleResultSet(ResultSet resultSet, RowMapper<T> rowMapper) {
+    /**
+     * Create a new instance.
+     * 
+     * @param resultSet the underlying result set
+     * @param rowMapper a row mapper for converting each row
+     */
+    public SimpleResultSet(final ResultSet resultSet, final RowMapper<T> rowMapper) {
         this.resultSet = resultSet;
         this.rowMapper = rowMapper;
     }
 
+    /**
+     * Get in {@link Iterator} of all rows.
+     * 
+     * @return an interator with all rows.
+     */
     @Override
     public Iterator<T> iterator() {
         if (iterator != null) {
@@ -32,15 +41,31 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
         return iterator;
     }
 
+    /**
+     * Collect all rows to a list.
+     * 
+     * @return a list with all rows.
+     */
     public List<T> toList() {
         return stream().collect(Collectors.toList());
     }
 
+    /**
+     * Get a stream of all rows.
+     * 
+     * @return a stream with all rows.
+     */
     public Stream<T> stream() {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(this.iterator(), Spliterator.ORDERED), false)
+        final Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(this.iterator(), Spliterator.ORDERED);
+        return StreamSupport.stream(spliterator, false)
                 .onClose(this::close);
     }
 
+    /**
+     * Close the underlying {@link ResultSet}.
+     * 
+     * @throws UncheckedSQLException if closing fails.
+     */
     @Override
     public void close() {
         try {
@@ -64,13 +89,14 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
         private final SimpleResultSet<T> resultSet;
         private final RowMapper<T> rowMapper;
 
-        private ResultSetIterator(SimpleResultSet<T> simpleResultSet, RowMapper<T> rowMapper, boolean hasNext) {
+        private ResultSetIterator(final SimpleResultSet<T> simpleResultSet, final RowMapper<T> rowMapper,
+                final boolean hasNext) {
             this.resultSet = simpleResultSet;
             this.rowMapper = rowMapper;
             this.hasNext = hasNext;
         }
 
-        public static <T> Iterator<T> create(SimpleResultSet<T> simpleResultSet, RowMapper<T> rowMapper) {
+        public static <T> Iterator<T> create(final SimpleResultSet<T> simpleResultSet, final RowMapper<T> rowMapper) {
             final boolean firstRowExists = simpleResultSet.next();
             return new ResultSetIterator<>(simpleResultSet, rowMapper, firstRowExists);
         }

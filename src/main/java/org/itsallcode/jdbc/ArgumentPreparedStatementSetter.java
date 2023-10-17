@@ -3,22 +3,18 @@ package org.itsallcode.jdbc;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class ArgumentPreparedStatementSetter implements PreparedStatementSetter
-{
-    private Object[] args;
-    private ParameterMapper mapper;
+class ArgumentPreparedStatementSetter implements PreparedStatementSetter {
+    private final Object[] args;
+    private final ParameterMapper mapper;
 
-    public ArgumentPreparedStatementSetter(ParameterMapper mapper, Object[] args)
-    {
+    ArgumentPreparedStatementSetter(final ParameterMapper mapper, final Object[] args) {
         this.mapper = mapper;
         this.args = args;
     }
 
-    public void setValues(PreparedStatement preparedStatement) throws SQLException
-    {
+    public void setValues(final PreparedStatement preparedStatement) throws SQLException {
         int parameterIndex = 1;
-        for (final Object arg : args)
-        {
+        for (final Object arg : args) {
             preparedStatement.setObject(parameterIndex, mapper.map(arg));
             parameterIndex++;
         }

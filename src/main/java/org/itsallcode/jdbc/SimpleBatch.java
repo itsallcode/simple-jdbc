@@ -8,8 +8,7 @@ import java.util.logging.Logger;
 
 import org.itsallcode.jdbc.SimpleParameterMetaData.Parameter;
 
-public class SimpleBatch implements AutoCloseable
-{
+class SimpleBatch implements AutoCloseable {
     private static final Logger LOG = Logger.getLogger(SimpleBatch.class.getName());
     private static final int BATCH_SIZE = 200000;
 
@@ -20,52 +19,43 @@ public class SimpleBatch implements AutoCloseable
     private int rows = 0;
     private int currentBatchSize = 0;
 
-    public SimpleBatch(SimplePreparedStatement statement, Context context)
-    {
+    SimpleBatch(final SimplePreparedStatement statement, final Context context) {
         this.statement = statement;
         this.context = context;
         this.parameterMetadata = statement.getParameterMetadata().getParameters();
     }
 
-    public SimpleBatch add(Object... args)
-    {
+    SimpleBatch add(final Object... args) {
         validateParameters(args);
         return add(new ArgumentPreparedStatementSetter(context.getParameterMapper(), args));
     }
 
-    private void validateParameters(Object... args)
-    {
-        if (args.length != this.parameterMetadata.size())
-        {
+    private void validateParameters(final Object... args) {
+        if (args.length != this.parameterMetadata.size()) {
             throw new IllegalStateException(
                     "Expected " + this.parameterMetadata.size() + " arguments but got " + args.length + ": "
                             + Arrays.toString(args) + ", " + parameterMetadata);
         }
     }
 
-    private SimpleBatch add(PreparedStatementSetter preparedStatementSetter)
-    {
+    private SimpleBatch add(final PreparedStatementSetter preparedStatementSetter) {
         statement.setValues(preparedStatementSetter);
         statement.addBatch();
         currentBatchSize++;
-        if (++rows % BATCH_SIZE == 0)
-        {
+        if (++rows % BATCH_SIZE == 0) {
             executeBatch();
         }
         return this;
     }
 
     @Override
-    public void close()
-    {
+    public void close() {
         executeBatch();
         statement.close();
     }
 
-    private void executeBatch()
-    {
-        if (currentBatchSize == 0)
-        {
+    private void executeBatch() {
+        if (currentBatchSize == 0) {
             LOG.fine("No rows added to batch, skip");
             return;
         }

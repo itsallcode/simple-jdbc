@@ -2,6 +2,9 @@ package org.itsallcode.jdbc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -17,16 +20,28 @@ class ExampleTest {
                 return new Object[] { id, name };
             }
         }
-        ConnectionFactory connectionFactory = ConnectionFactory.create();
+        final ConnectionFactory connectionFactory = ConnectionFactory.create();
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
-            connection.executeScriptFromResource("/schema.sql");
+            connection.executeScript(readResource("/schema.sql"));
             connection.insert("NAMES", List.of("ID", "NAME"), Name::toRow,
                     Stream.of(new Name(1, "a"), new Name(2, "b"), new Name(3, "c")));
             try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
-                List<Row> result = rs.stream().toList();
+                final List<Row> result = rs.stream().toList();
                 assertEquals(3, result.size());
                 assertEquals(1, result.get(0).getColumnValue(0).getValue());
             }
+        }
+    }
+
+    private String readResource(final String resourceName) {
+        final URL resource = getClass().getResource(resourceName);
+        if (resource == null) {
+            throw new IllegalArgumentException("No resource found for name '" + resourceName + "'");
+        }
+        try (InputStream stream = resource.openStream()) {
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (final IOException e) {
+            throw new UncheckedIOException("Error reading resource " + resource, e);
         }
     }
 }
