@@ -21,7 +21,7 @@ Add dependency to your gradle project:
 
 ```gradle
 dependencies {
-    implementation 'org.itsallcode:simple-jdbc:0.3.0'
+    implementation 'org.itsallcode:simple-jdbc:0.4.0'
 }
 ```
 

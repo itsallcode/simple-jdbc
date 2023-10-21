@@ -13,7 +13,7 @@ repositories {
 }
 
 group 'org.itsallcode'
-version = '0.3.0'
+version = '0.4.0'
 
 dependencies {
     testImplementation 'org.assertj:assertj-core:3.24.2'
