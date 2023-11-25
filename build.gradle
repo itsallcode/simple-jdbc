@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'jacoco'
+    id 'jacoco-report-aggregation'
     id 'signing'
     id 'maven-publish'
     id 'org.sonarqube' version '4.4.1.3373'
