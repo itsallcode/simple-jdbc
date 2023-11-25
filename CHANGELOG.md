@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.0] - unreleased
 
+- [PR #13](https://github.com/itsallcode/simple-jdbc/pull/13): Allow converting legacy types Timestamp & Date
+
 ## [0.4.0] - 2023-10-21
 
 - [PR #10](https://github.com/itsallcode/simple-jdbc/pull/10): Code cleanup, add Javadoc comments
