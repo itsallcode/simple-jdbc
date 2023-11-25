@@ -25,6 +25,7 @@ public class ConnectionFactory {
     /**
      * Create a new connection factory with a custom context.
      * 
+     * @param context a custom context
      * @return a new instance
      */
     public static ConnectionFactory create(final Context context) {

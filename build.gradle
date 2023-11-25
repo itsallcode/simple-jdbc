@@ -35,6 +35,7 @@ javadoc {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << '-Xlint:all'
+    options.compilerArgs << '-Werror'
     options.encoding = 'UTF-8'
 }
 

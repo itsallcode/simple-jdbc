@@ -3,7 +3,7 @@ package org.itsallcode.jdbc.resultset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-class ClassicValueExtractorFactor implements ValueExtractorFactory {
+class OriginalValueExtractorFactor implements ValueExtractorFactory {
     @Override
     public ResultSetValueExtractor create(final ColumnType type) {
         return (resultSet, columnIndex) -> new ColumnValue(type, getValue(resultSet, columnIndex));

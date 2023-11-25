@@ -40,7 +40,7 @@ jobs:
         cache: 'gradle'
 
     - name: Build with Gradle
-      run: ./gradlew clean build
+      run: ./gradlew clean build --info
 
     - name: Publish Test Report
       uses: scacap/action-surefire-report@v1
