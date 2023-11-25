@@ -147,7 +147,7 @@ public class SimpleConnection implements AutoCloseable {
         try {
             return connection.prepareStatement(sql);
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error preparing statement '" + sql + "'", e);
+            throw new UncheckedSQLException("Error preparing statement '" + sql + "': " + e.getMessage(), e);
         }
     }
 
