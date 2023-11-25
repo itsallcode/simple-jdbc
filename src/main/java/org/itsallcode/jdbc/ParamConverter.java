@@ -3,6 +3,8 @@ package org.itsallcode.jdbc;
 /**
  * This converts a domain object to types supported by the database when
  * inserting rows.
+ * 
+ * @param <T> row type
  */
 @FunctionalInterface
 public interface ParamConverter<T> {

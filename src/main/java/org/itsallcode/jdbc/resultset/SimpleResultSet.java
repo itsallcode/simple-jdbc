@@ -10,6 +10,8 @@ import org.itsallcode.jdbc.UncheckedSQLException;
 /**
  * This class wraps a {@link ResultSet} and allows easy iteration via
  * {@link Iterator}, {@link List} or {@link Stream}.
+ * 
+ * @param <T> row type
  */
 public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
     private final ResultSet resultSet;
