@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'jvm-test-suite'
     id 'jacoco'
     id 'jacoco-report-aggregation'
     id 'signing'
@@ -9,15 +10,10 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.50.0'
 }
 
-repositories {
-    mavenCentral()
-}
-
 group 'org.itsallcode'
 version = '0.5.0'
 
 dependencies {
-
 }
 
 java {
@@ -100,7 +96,7 @@ sonar {
   }
 }
 
-rootProject.tasks['sonarqube'].dependsOn(tasks['jacocoTestReport'])
+rootProject.tasks['sonarqube'].dependsOn(tasks['testCodeCoverageReport'], tasks['integrationTestCodeCoverageReport'])
 
 def getPropertyWithDefault(String name, String defaultValue) {
     if(project.hasProperty(name)) {
