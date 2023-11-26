@@ -22,8 +22,17 @@ class ModernValueExtractorFactor implements ValueExtractorFactory {
         case Types.TIMESTAMP:
             final Timestamp timestamp = resultSet.getTimestamp(columnIndex, utcCalendar);
             return timestamp.toInstant();
+        case Types.TIME:
+            final Time time = resultSet.getTime(columnIndex);
+            return time.toLocalTime();
         case Types.DATE:
             return resultSet.getDate(columnIndex, utcCalendar).toLocalDate();
+        case Types.CLOB:
+            final Clob clob = resultSet.getClob(columnIndex);
+            return clob.getSubString(1, (int) clob.length());
+        case Types.BLOB:
+            final Blob blob = resultSet.getBlob(columnIndex);
+            return blob.getBytes(1, (int) blob.length());
         default:
             return object;
         }

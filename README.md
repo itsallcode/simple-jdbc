@@ -17,11 +17,13 @@ Wrapper to simplify working with JDBC.
 
 ## Usage
 
+This project requires Java 17 or later.
+
 Add dependency to your gradle project:
 
-```gradle
+```groovy
 dependencies {
-    implementation 'org.itsallcode:simple-jdbc:0.4.0'
+    implementation 'org.itsallcode:simple-jdbc:0.5.0'
 }
 ```
 
@@ -55,6 +57,7 @@ try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "use
 ### Building
 
 Install to local maven repository:
+
 ```sh
 ./gradlew clean publishToMavenLocal
 ```

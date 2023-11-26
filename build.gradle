@@ -59,7 +59,7 @@ testing {
         }
         test {
             dependencies {
-                runtimeOnly libs.h2
+                implementation libs.h2
             }
         }
         integrationTest(JvmTestSuite) {
