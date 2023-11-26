@@ -8,6 +8,7 @@ on:
 
 jobs:
   matrix-build:
+    name: Build and test with Java ${{ matrix.java }}
     strategy:
       matrix:
         java: ['17', '21']
@@ -57,6 +58,9 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build:
+    name: Build and test with all Java versions
     needs: matrix-build
     runs-on: ubuntu-latest
     continue-on-error: false
+    steps:
+      - run: echo Build successful
