@@ -1,28 +1,24 @@
 plugins {
     id 'java-library'
+    id 'jvm-test-suite'
     id 'jacoco'
+    id 'jacoco-report-aggregation'
     id 'signing'
     id 'maven-publish'
     id 'org.sonarqube' version '4.4.1.3373'
     id "io.github.gradle-nexus.publish-plugin" version "1.3.0"
-    id 'com.github.ben-manes.versions' version '0.49.0'
-}
-
-repositories {
-    mavenCentral()
+    id 'com.github.ben-manes.versions' version '0.50.0'
 }
 
 group 'org.itsallcode'
-version = '0.4.0'
+version = '0.5.0'
 
 dependencies {
-    testImplementation 'org.assertj:assertj-core:3.24.2'
-    testRuntimeOnly 'com.h2database:h2:2.2.224'
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(getPropertyWithDefault('javaVersion', '17'))
     }
     withJavadocJar()
     withSourcesJar()
@@ -36,23 +32,55 @@ javadoc {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << '-Xlint:all'
+    options.compilerArgs << '-Werror'
     options.encoding = 'UTF-8'
 }
 
 testing {
     suites {
+        configureEach {
+            useJUnitJupiter('5.10.1')
+            dependencies {
+                implementation project()
+                implementation libs.assertj
+                runtimeOnly libs.slf4jLogger
+            }
+            targets {
+                all {
+                    testTask.configure {
+                        if(logger.infoEnabled) {
+                            testLogging.showStandardStreams = true
+                        }
+                        jvmArgs '-enableassertions'
+                        systemProperty 'java.util.logging.config.file', file('src/test/resources/logging.properties')
+                    }
+                }
+            }
+        }
         test {
-            useJUnitJupiter('5.10.0')
+            dependencies {
+                implementation libs.h2
+            }
+        }
+        integrationTest(JvmTestSuite) {
+            testType = TestSuiteType.INTEGRATION_TEST
+            dependencies {
+                implementation libs.exasolTestcontainers
+                runtimeOnly libs.exasolJdbc
+            }
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
         }
     }
 }
 
-test {
-    if(logger.infoEnabled) {
-        testLogging.showStandardStreams = true
-    }
-    jvmArgs '-XX:+HeapDumpOnOutOfMemoryError', '-enableassertions'
-    systemProperty 'java.util.logging.config.file', file('src/test/resources/logging.properties')
+tasks.named('check') {
+    dependsOn(testing.suites.integrationTest)
 }
 
 jacocoTestReport {
@@ -68,7 +96,17 @@ sonar {
   }
 }
 
-rootProject.tasks['sonarqube'].dependsOn(tasks['jacocoTestReport'])
+rootProject.tasks['sonarqube'].dependsOn(tasks['testCodeCoverageReport'], tasks['integrationTestCodeCoverageReport'])
+
+def getPropertyWithDefault(String name, String defaultValue) {
+    if(project.hasProperty(name)) {
+        def value = project.property(name)
+        logger.info("Found value '${value}' for project property '${name}'")
+        return value
+    }
+    logger.info("Project property '${name}' not defined, using default '${defaultValue}'")
+    return defaultValue
+}
 
 def getOptionalProperty(String name) {
     if(project.hasProperty(name)) {

@@ -7,12 +7,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  matrix-build:
+    name: Build and test with Java ${{ matrix.java }}
     strategy:
       matrix:
-        java: [11, 17, 21]
+        java: ['17', '21']
     env:
-      DEFAULT_JAVA: 17
+      DEFAULT_JAVA: '17'
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.java }}
@@ -39,8 +40,8 @@ jobs:
         java-version: ${{ matrix.java }}
         cache: 'gradle'
 
-    - name: Build with Gradle
-      run: ./gradlew clean build
+    - name: Build with Java ${{ matrix.java }}
+      run: ./gradlew clean build --info -PjavaVersion=${{matrix.java}}
 
     - name: Publish Test Report
       uses: scacap/action-surefire-report@v1
@@ -55,3 +56,11 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  build:
+    name: Build and test with all Java versions
+    needs: matrix-build
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - run: echo Build successful

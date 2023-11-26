@@ -8,11 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.identifier.Identifier;
 import org.itsallcode.jdbc.resultset.Row;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.junit.jupiter.api.Test;
@@ -46,7 +45,7 @@ class SimpleConnectionITest {
     }
 
     @Test
-    void executeQuery() {
+    void executeQueryWithGenericRowMapper() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
@@ -56,6 +55,21 @@ class SimpleConnectionITest {
                 assertThat(rows.get(0).getRowIndex()).isZero();
                 assertThat(rows.get(0).getColumnValues()).hasSize(1);
                 assertThat(rows.get(0).getColumnValue(0).getValue()).isEqualTo(1L);
+            }
+        }
+    }
+
+    @Test
+    void executeQueryWithListRowMapper() {
+        final ConnectionFactory factory = ConnectionFactory.create();
+        try (SimpleConnection connection = factory.create("jdbc:h2:mem:")) {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
+                    + "insert into test (id, name) values (1, 'test');");
+            try (SimpleResultSet<List<Object>> resultSet = connection.query("select * from test",
+                    factory.createListRowMapper())) {
+                final List<List<Object>> rows = resultSet.toList();
+                assertThat(rows).hasSize(1);
+                assertThat(rows.get(0)).containsExactly(1, "test");
             }
         }
     }
@@ -147,6 +161,21 @@ class SimpleConnectionITest {
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getColumnValues()).hasSize(1);
             assertThat(result.get(0).getColumnValue(0).getValue()).isEqualTo(3L);
+        }
+    }
+
+    @Test
+    void insert() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.insert(Identifier.simple("TEST"), List.of(Identifier.simple("ID"), Identifier.simple("NAME")),
+                    ParamConverter.identity(),
+                    Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }));
+
+            final List<List<Object>> result = connection.query("select * from test").stream()
+                    .map(row -> row.getColumnValues().stream().map(value -> value.getValue()).toList()).toList();
+            assertThat(result).hasSize(3);
+            assertThat(result).isEqualTo(List.of(List.of(1, "a"), List.of(2, "b"), List.of(3, "c")));
         }
     }
 }

@@ -1,7 +1,11 @@
 package org.itsallcode.jdbc;
 
 import java.sql.*;
+import java.util.List;
 import java.util.Properties;
+
+import org.itsallcode.jdbc.resultset.Row;
+import org.itsallcode.jdbc.resultset.RowMapper;
 
 /**
  * This class connects to a database and returns new {@link SimpleConnection}s.
@@ -14,12 +18,22 @@ public class ConnectionFactory {
     }
 
     /**
-     * Create a new connection factory.
+     * Create a new connection factory with a default context.
      * 
      * @return a new instance
      */
     public static ConnectionFactory create() {
-        return new ConnectionFactory(new Context());
+        return create(Context.builder().build());
+    }
+
+    /**
+     * Create a new connection factory with a custom context.
+     * 
+     * @param context a custom context
+     * @return a new instance
+     */
+    public static ConnectionFactory create(final Context context) {
+        return new ConnectionFactory(context);
     }
 
     /**
@@ -64,5 +78,24 @@ public class ConnectionFactory {
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error connecting to '" + url + "'", e);
         }
+    }
+
+    /**
+     * Create a {@link RowMapper} that creates generic {@link Row} objects.
+     * 
+     * @return a new row mapper
+     */
+    public RowMapper<Row> createGenericRowMapper() {
+        return RowMapper.createGenericRowMapper(context);
+    }
+
+    /**
+     * Create a {@link RowMapper} that creates {@link List}s of simple column
+     * objects.
+     * 
+     * @return a new row mapper
+     */
+    public RowMapper<List<Object>> createListRowMapper() {
+        return RowMapper.createListRowMapper(context);
     }
 }

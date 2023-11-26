@@ -87,7 +87,16 @@ public class SimpleParameterMetaData {
     }
 
     /**
-     * A parameter.
+     * A parameter for a prepared statement.
+     * 
+     * @param className class name of the parameter type
+     * @param type      JDBC type of the parameter
+     * @param typeName  name of the parameter type
+     * @param mode      parameter mode
+     * @param precision parameter precision
+     * @param scale     parameter scale
+     * @param signed    {@code true} if the parameter is signed
+     * @param nullable  nullability of the parameter
      */
     public static record Parameter(String className, int type, String typeName, ParameterMode mode, int precision,
             int scale, boolean signed, ParameterNullable nullable) {
