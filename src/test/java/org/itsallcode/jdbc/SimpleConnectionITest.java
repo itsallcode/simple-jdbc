@@ -45,7 +45,7 @@ class SimpleConnectionITest {
     }
 
     @Test
-    void executeQuery() {
+    void executeQueryWithGenericRowMapper() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
@@ -55,6 +55,21 @@ class SimpleConnectionITest {
                 assertThat(rows.get(0).getRowIndex()).isZero();
                 assertThat(rows.get(0).getColumnValues()).hasSize(1);
                 assertThat(rows.get(0).getColumnValue(0).getValue()).isEqualTo(1L);
+            }
+        }
+    }
+
+    @Test
+    void executeQueryWithListRowMapper() {
+        final ConnectionFactory factory = ConnectionFactory.create();
+        try (SimpleConnection connection = factory.create("jdbc:h2:mem:")) {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
+                    + "insert into test (id, name) values (1, 'test');");
+            try (SimpleResultSet<List<Object>> resultSet = connection.query("select * from test",
+                    factory.createListRowMapper())) {
+                final List<List<Object>> rows = resultSet.toList();
+                assertThat(rows).hasSize(1);
+                assertThat(rows.get(0)).containsExactly(1, "test");
             }
         }
     }

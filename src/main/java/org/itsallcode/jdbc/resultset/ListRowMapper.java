@@ -10,9 +10,10 @@ import org.itsallcode.jdbc.UncheckedSQLException;
 import org.itsallcode.jdbc.resultset.SimpleMetaData.ColumnMetaData;
 
 /**
- * This {@link RowMapper} converts a row to the generic {@link Row} type.
+ * This {@link RowMapper} converts a row to a {@link List} of simple column
+ * values.
  */
-class GenericRowMapper implements RowMapper<Row> {
+class ListRowMapper implements RowMapper<List<Object>> {
     private final Context context;
     private ResultSetRowBuilder rowBuilder;
 
@@ -21,12 +22,12 @@ class GenericRowMapper implements RowMapper<Row> {
      * 
      * @param context context
      */
-    GenericRowMapper(final Context context) {
+    ListRowMapper(final Context context) {
         this.context = context;
     }
 
     @Override
-    public Row mapRow(final ResultSet resultSet, final int rowNum) throws SQLException {
+    public List<Object> mapRow(final ResultSet resultSet, final int rowNum) throws SQLException {
         if (rowBuilder == null) {
             rowBuilder = new ResultSetRowBuilder(SimpleMetaData.create(resultSet.getMetaData(), context));
         }
@@ -40,19 +41,19 @@ class GenericRowMapper implements RowMapper<Row> {
             this.metadata = metaData;
         }
 
-        private Row buildRow(final ResultSet resultSet, final int rowIndex) {
+        private List<Object> buildRow(final ResultSet resultSet, final int rowIndex) {
             final List<ColumnMetaData> columns = metadata.getColumns();
-            final List<ColumnValue> fields = new ArrayList<>(columns.size());
+            final List<Object> fields = new ArrayList<>(columns.size());
             for (final ColumnMetaData column : columns) {
-                final ColumnValue field = getField(resultSet, column, rowIndex);
+                final Object field = getField(resultSet, column, rowIndex);
                 fields.add(field);
             }
-            return new Row(rowIndex, fields);
+            return fields;
         }
 
-        private ColumnValue getField(final ResultSet resultSet, final ColumnMetaData column, final int rowIndex) {
+        private Object getField(final ResultSet resultSet, final ColumnMetaData column, final int rowIndex) {
             try {
-                return column.getValueExtractor().extractValue(resultSet, column.getColumnIndex());
+                return column.getValueExtractor().extractValue(resultSet, column.getColumnIndex()).getValue();
             } catch (final SQLException e) {
                 throw new UncheckedSQLException(
                         "Error extracting value for row " + rowIndex + " / column " + column + ": " + e.getMessage(),
@@ -60,5 +61,4 @@ class GenericRowMapper implements RowMapper<Row> {
             }
         }
     }
-
 }
