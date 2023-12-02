@@ -44,7 +44,7 @@ class LegacyTypeITest {
     void type(final TypeTest test) {
         try (SimpleResultSet<Row> result = connect()
                 .query("select cast('" + test.value() + "' as " + test.type() + ")")) {
-            final Object value = result.toList().get(0).getColumnValue(0).getValue();
+            final Object value = result.toList().get(0).get(0).getValue();
             assertAll(
                     () -> assertThat(value.getClass()).isEqualTo(test.expectedValue().getClass()),
                     () -> assertThat(value).isEqualTo(test.expectedValue()));
@@ -56,7 +56,7 @@ class LegacyTypeITest {
     void nullValue(final TypeTest test) {
         try (SimpleResultSet<Row> result = connect()
                 .query("select cast(NULL as " + test.type() + ")")) {
-            assertThat(result.toList().get(0).getColumnValue(0).getValue())
+            assertThat(result.toList().get(0).get(0).getValue())
                     .isNull();
         }
     }

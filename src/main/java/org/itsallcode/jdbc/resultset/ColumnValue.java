@@ -6,9 +6,11 @@ package org.itsallcode.jdbc.resultset;
 public class ColumnValue {
     private final ColumnType type;
     private final Object value;
+    private final ValueConverter converter;
 
-    ColumnValue(final ColumnType type, final Object value) {
+    ColumnValue(final ColumnType type, final ValueConverter converter, final Object value) {
         this.type = type;
+        this.converter = converter;
         this.value = value;
     }
 
@@ -28,6 +30,17 @@ public class ColumnValue {
      */
     public Object getValue() {
         return value;
+    }
+
+    /**
+     * Get the column value converted to the given type.
+     * 
+     * @param type expected type
+     * @param <T>  result type
+     * @return value of the given type
+     */
+    public <T> T getValue(final Class<T> type) {
+        return converter.convert(this.value, type);
     }
 
     /**

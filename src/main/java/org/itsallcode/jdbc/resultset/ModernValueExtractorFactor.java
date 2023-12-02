@@ -6,10 +6,12 @@ import java.util.TimeZone;
 
 class ModernValueExtractorFactor implements ValueExtractorFactory {
     private final Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    private final ValueConverterFactory converterFactory = new ValueConverterFactory();
 
     @Override
     public ResultSetValueExtractor create(final ColumnType type) {
-        return (resultSet, columnIndex) -> new ColumnValue(type, getValue(type, resultSet, columnIndex));
+        return (resultSet, columnIndex) -> new ColumnValue(type, converterFactory.build(type),
+                getValue(type, resultSet, columnIndex));
     }
 
     private Object getValue(final ColumnType type, final ResultSet resultSet, final int columnIndex)

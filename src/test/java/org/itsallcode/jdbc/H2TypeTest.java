@@ -22,7 +22,7 @@ class H2TypeTest {
         try (SimpleConnection connection = H2TestFixture.createMemConnectionWithModernTypes();
                 SimpleResultSet<Row> result = connection
                         .query("select cast('" + test.value() + "' as " + test.type() + ")")) {
-            final Object value = result.toList().get(0).getColumnValue(0).getValue();
+            final Object value = result.toList().get(0).get(0).getValue();
             assertAll(
                     () -> assertThat(value.getClass()).isEqualTo(test.expectedValue().getClass()),
                     () -> assertThat(value).isEqualTo(test.expectedValue()));
@@ -35,7 +35,7 @@ class H2TypeTest {
         try (SimpleConnection connection = H2TestFixture.createMemConnectionWithModernTypes();
                 SimpleResultSet<Row> result = connection
                         .query("select cast(NULL as " + test.type() + ")")) {
-            final Object value = result.toList().get(0).getColumnValue(0).getValue();
+            final Object value = result.toList().get(0).get(0).getValue();
             assertThat(value).isNull();
         }
     }

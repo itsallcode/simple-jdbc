@@ -61,7 +61,7 @@ public class SimpleConnection implements AutoCloseable {
      * @return the result set
      */
     public SimpleResultSet<Row> query(final String sql) {
-        return query(sql, RowMapper.createGenericRowMapper(context));
+        return query(sql, RowMapper.generic());
     }
 
     /**
@@ -97,7 +97,7 @@ public class SimpleConnection implements AutoCloseable {
     }
 
     private SimplePreparedStatement prepareStatement(final String sql) {
-        return new SimplePreparedStatement(prepare(sql), sql);
+        return new SimplePreparedStatement(context, prepare(sql), sql);
     }
 
     /**

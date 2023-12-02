@@ -2,6 +2,8 @@ package org.itsallcode.jdbc.resultset;
 
 import java.util.List;
 
+import org.itsallcode.jdbc.resultset.SimpleMetaData.ColumnMetaData;
+
 /**
  * Represents a generic row from a result set.
  */
@@ -9,9 +11,13 @@ public class Row {
     private final int rowIndex;
     private final List<ColumnValue> fields;
 
-    Row(final int rowIndex, final List<ColumnValue> fields) {
+    private Row(final int rowIndex, final List<ColumnValue> fields) {
         this.rowIndex = rowIndex;
         this.fields = fields;
+    }
+
+    static Row create(final int rowIndex, final List<ColumnMetaData> columns, final List<ColumnValue> fields) {
+        return new Row(rowIndex, fields);
     }
 
     /**
@@ -26,7 +32,7 @@ public class Row {
     /**
      * Values for each column.
      * 
-     * @return column values
+     * @return column valuespublic
      */
     public List<ColumnValue> getColumnValues() {
         return fields;
@@ -38,8 +44,21 @@ public class Row {
      * @param columnIndex column index
      * @return column value
      */
-    public ColumnValue getColumnValue(final int columnIndex) {
+    public ColumnValue get(final int columnIndex) {
         return fields.get(columnIndex);
+    }
+
+    /**
+     * Get the value at a given column index (zero based) converted to the given
+     * type.
+     * 
+     * @param columnIndex column index
+     * @param type        expected type
+     * @param <T>         expected type
+     * @return column value
+     */
+    public <T> T get(final int columnIndex, final Class<T> type) {
+        return get(columnIndex).getValue(type);
     }
 
     @Override

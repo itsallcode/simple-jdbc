@@ -12,8 +12,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.identifier.Identifier;
-import org.itsallcode.jdbc.resultset.Row;
-import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.*;
 import org.junit.jupiter.api.Test;
 
 class SimpleConnectionITest {
@@ -54,7 +53,7 @@ class SimpleConnectionITest {
                 assertThat(rows).hasSize(1);
                 assertThat(rows.get(0).getRowIndex()).isZero();
                 assertThat(rows.get(0).getColumnValues()).hasSize(1);
-                assertThat(rows.get(0).getColumnValue(0).getValue()).isEqualTo(1L);
+                assertThat(rows.get(0).get(0).getValue()).isEqualTo(1L);
             }
         }
     }
@@ -66,7 +65,7 @@ class SimpleConnectionITest {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
             try (SimpleResultSet<List<Object>> resultSet = connection.query("select * from test",
-                    factory.createListRowMapper())) {
+                    RowMapper.columnValueList())) {
                 final List<List<Object>> rows = resultSet.toList();
                 assertThat(rows).hasSize(1);
                 assertThat(rows.get(0)).containsExactly(1, "test");
@@ -160,7 +159,7 @@ class SimpleConnectionITest {
             final List<Row> result = connection.query("select count(*) from test").stream().toList();
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getColumnValues()).hasSize(1);
-            assertThat(result.get(0).getColumnValue(0).getValue()).isEqualTo(3L);
+            assertThat(result.get(0).get(0).getValue()).isEqualTo(3L);
         }
     }
 

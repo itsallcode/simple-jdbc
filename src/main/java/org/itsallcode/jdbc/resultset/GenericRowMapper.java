@@ -12,25 +12,24 @@ import org.itsallcode.jdbc.resultset.SimpleMetaData.ColumnMetaData;
 /**
  * This {@link RowMapper} converts a row to the generic {@link Row} type.
  */
-class GenericRowMapper implements RowMapper<Row> {
-    private final Context context;
+class GenericRowMapper<T> implements RowMapper<T> {
     private ResultSetRowBuilder rowBuilder;
+    private final ColumnValuesConverter<T> converter;
 
     /**
      * Create a new instance.
-     * 
-     * @param context context
      */
-    GenericRowMapper(final Context context) {
-        this.context = context;
+    GenericRowMapper(final ColumnValuesConverter<T> converter) {
+        this.converter = converter;
     }
 
     @Override
-    public Row mapRow(final ResultSet resultSet, final int rowNum) throws SQLException {
+    public T mapRow(final Context context, final ResultSet resultSet, final int rowNum) throws SQLException {
         if (rowBuilder == null) {
             rowBuilder = new ResultSetRowBuilder(SimpleMetaData.create(resultSet.getMetaData(), context));
         }
-        return rowBuilder.buildRow(resultSet, rowNum);
+        final Row row = rowBuilder.buildRow(resultSet, rowNum);
+        return converter.mapRow(row);
     }
 
     private class ResultSetRowBuilder {
@@ -47,7 +46,7 @@ class GenericRowMapper implements RowMapper<Row> {
                 final ColumnValue field = getField(resultSet, column, rowIndex);
                 fields.add(field);
             }
-            return new Row(rowIndex, fields);
+            return Row.create(rowIndex, columns, fields);
         }
 
         private ColumnValue getField(final ResultSet resultSet, final ColumnMetaData column, final int rowIndex) {
@@ -60,5 +59,4 @@ class GenericRowMapper implements RowMapper<Row> {
             }
         }
     }
-
 }
