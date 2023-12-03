@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.*;
 import java.sql.Date;
@@ -277,9 +278,10 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public ResultSetMetaData getMetaData() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMetaData'");
+    void getMetaData() throws SQLException {
+        final ResultSetMetaData metadata = mock(ResultSetMetaData.class);
+        when(resultSetMock.getMetaData()).thenReturn(metadata);
+        assertSame(metadata, testee().getMetaData());
     }
 
     @Test
@@ -303,15 +305,17 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public Reader getCharacterStream(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCharacterStream'");
+    void getCharacterStream(final int columnIndex) throws SQLException {
+        final Reader reader = new StringReader("s");
+        when(resultSetMock.getCharacterStream(COL_INDEX)).thenReturn(reader);
+        assertSame(reader, testee().getCharacterStream(COL_INDEX));
     }
 
     @Test
-    public Reader getCharacterStream(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCharacterStream'");
+    void getCharacterStream(final String columnLabel) throws SQLException {
+        final Reader reader = new StringReader("s");
+        when(resultSetMock.getCharacterStream(COL_LABEL)).thenReturn(reader);
+        assertSame(reader, testee().getCharacterStream(COL_LABEL));
     }
 
     @Test
@@ -859,15 +863,17 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public URL getURL(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getURL'");
+    void getURL(final int columnIndex) throws SQLException, MalformedURLException {
+        final URL url = new URL("https://example.com");
+        when(resultSetMock.getURL(COL_INDEX)).thenReturn(url);
+        assertSame(url, testee().getURL(COL_INDEX));
     }
 
     @Test
-    public URL getURL(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getURL'");
+    void getURL(final String columnLabel) throws SQLException, MalformedURLException {
+        final URL url = new URL("https://example.com");
+        when(resultSetMock.getURL(COL_LABEL)).thenReturn(url);
+        assertSame(url, testee().getURL(COL_LABEL));
     }
 
     @Test
@@ -927,15 +933,17 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public RowId getRowId(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRowId'");
+    void getRowId(final int columnIndex) throws SQLException {
+        final RowId rowId = mock(RowId.class);
+        when(resultSetMock.getRowId(COL_INDEX)).thenReturn(rowId);
+        assertSame(rowId, testee().getRowId(COL_INDEX));
     }
 
     @Test
-    public RowId getRowId(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRowId'");
+    void getRowId(final String columnLabel) throws SQLException {
+        final RowId rowId = mock(RowId.class);
+        when(resultSetMock.getRowId(COL_LABEL)).thenReturn(rowId);
+        assertSame(rowId, testee().getRowId(COL_LABEL));
     }
 
     @Test
@@ -991,27 +999,31 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public NClob getNClob(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNClob'");
+    void getNClob(final int columnIndex) throws SQLException {
+        final NClob clob = mock(NClob.class);
+        when(resultSetMock.getNClob(COL_INDEX)).thenReturn(clob);
+        assertSame(clob, testee().getNClob(COL_INDEX));
     }
 
     @Test
-    public NClob getNClob(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNClob'");
+    void getNClob(final String columnLabel) throws SQLException {
+        final NClob clob = mock(NClob.class);
+        when(resultSetMock.getNClob(COL_LABEL)).thenReturn(clob);
+        assertSame(clob, testee().getNClob(COL_LABEL));
     }
 
     @Test
-    public SQLXML getSQLXML(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSQLXML'");
+    void getSQLXML(final int columnIndex) throws SQLException {
+        final SQLXML xml = mock(SQLXML.class);
+        when(resultSetMock.getSQLXML(COL_INDEX)).thenReturn(xml);
+        assertSame(xml, testee().getSQLXML(COL_INDEX));
     }
 
     @Test
-    public SQLXML getSQLXML(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSQLXML'");
+    void getSQLXML(final String columnLabel) throws SQLException {
+        final SQLXML xml = mock(SQLXML.class);
+        when(resultSetMock.getSQLXML(COL_LABEL)).thenReturn(xml);
+        assertSame(xml, testee().getSQLXML(COL_LABEL));
     }
 
     @Test
@@ -1041,15 +1053,17 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public Reader getNCharacterStream(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNCharacterStream'");
+    void getNCharacterStream(final int columnIndex) throws SQLException {
+        final Reader reader = new StringReader("s");
+        when(resultSetMock.getNCharacterStream(COL_INDEX)).thenReturn(reader);
+        assertSame(reader, testee().getNCharacterStream(COL_INDEX));
     }
 
     @Test
-    public Reader getNCharacterStream(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNCharacterStream'");
+    void getNCharacterStream(final String columnLabel) throws SQLException {
+        final Reader reader = new StringReader("s");
+        when(resultSetMock.getNCharacterStream(COL_LABEL)).thenReturn(reader);
+        assertSame(reader, testee().getNCharacterStream(COL_LABEL));
     }
 
     @Test
@@ -1255,15 +1269,15 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public <T> T getObject(final int columnIndex, final Class<T> type) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getObject'");
+    void getObjectIndexType() throws SQLException {
+        when(resultSetMock.getObject(COL_INDEX, String.class)).thenReturn("s");
+        assertEquals("s", testee().getObject(COL_INDEX, String.class));
     }
 
     @Test
-    public <T> T getObject(final String columnLabel, final Class<T> type) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getObject'");
+    void getObjectLableType() throws SQLException {
+        when(resultSetMock.getObject(COL_LABEL, String.class)).thenReturn("s");
+        assertEquals("s", testee().getObject(COL_LABEL, String.class));
     }
 
     ResultSet testee() {
