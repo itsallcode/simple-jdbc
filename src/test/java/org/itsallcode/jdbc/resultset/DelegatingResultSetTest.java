@@ -59,99 +59,101 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void getString(final int columnIndex) throws SQLException {
+    void getStringIndex() throws SQLException {
         when(resultSetMock.getString(COL_INDEX)).thenReturn("c");
         assertEquals("c", testee().getString(COL_INDEX));
     }
 
     @Test
-    void getBoolean(final int columnIndex) throws SQLException {
+    void getBooleanIndex() throws SQLException {
         when(resultSetMock.getBoolean(1)).thenReturn(true);
         assertEquals(true, testee().getBoolean(1));
     }
 
     @Test
-    void getByte(final int columnIndex) throws SQLException {
+    void getByteIndex() throws SQLException {
         when(resultSetMock.getByte(COL_INDEX)).thenReturn((byte) 2);
         assertEquals((byte) 2, testee().getByte(COL_INDEX));
     }
 
     @Test
-    void getShort(final int columnIndex) throws SQLException {
+    void getShortIndex() throws SQLException {
         when(resultSetMock.getShort(COL_INDEX)).thenReturn((short) 2);
         assertEquals((short) 2, testee().getShort(COL_INDEX));
     }
 
     @Test
-    void getInt(final int columnIndex) throws SQLException {
+    void getIntIndex() throws SQLException {
         when(resultSetMock.getInt(COL_INDEX)).thenReturn(2);
         assertEquals(2, testee().getInt(COL_INDEX));
     }
 
     @Test
-    void getLong(final int columnIndex) throws SQLException {
+    void getLongIndex() throws SQLException {
         when(resultSetMock.getLong(COL_INDEX)).thenReturn(2L);
         assertEquals(2L, testee().getLong(COL_INDEX));
     }
 
     @Test
-    void getFloat(final int columnIndex) throws SQLException {
+    void getFloatIndex() throws SQLException {
         when(resultSetMock.getFloat(COL_INDEX)).thenReturn(2.2F);
         assertEquals(2, testee().getFloat(COL_INDEX));
     }
 
     @Test
-    void getDouble(final int columnIndex) throws SQLException {
+    void getDoubleIndex() throws SQLException {
         when(resultSetMock.getDouble(COL_INDEX)).thenReturn(2.2);
         assertEquals(2.2, testee().getDouble(COL_INDEX));
     }
 
     @Test
-    void getBigDecimal(final int columnIndex, final int scale) throws SQLException {
+    @SuppressWarnings("deprecation")
+    void getBigDecimalIndexScale() throws SQLException {
         when(resultSetMock.getBigDecimal(COL_INDEX, 2)).thenReturn(BigDecimal.TEN);
         assertEquals(BigDecimal.TEN, testee().getBigDecimal(COL_INDEX, 2));
     }
 
     @Test
-    void getBytes(final int columnIndex) throws SQLException {
+    void getBytesIndex() throws SQLException {
         when(resultSetMock.getBytes(COL_INDEX)).thenReturn(new byte[] { 2 });
         assertEquals(new byte[] { 2 }, testee().getBytes(COL_INDEX));
     }
 
     @Test
-    void getDate(final int columnIndex) throws SQLException {
+    void getDateIndex() throws SQLException {
         when(resultSetMock.getDate(COL_INDEX)).thenReturn(new Date(3));
         assertEquals(new Date(3), testee().getDate(COL_INDEX));
     }
 
     @Test
-    void getTime(final int columnIndex) throws SQLException {
+    void getTimeIndex() throws SQLException {
         when(resultSetMock.getTime(COL_INDEX)).thenReturn(new Time(3));
         assertEquals(new Time(3), testee().getTime(COL_INDEX));
     }
 
     @Test
-    void getTimestamp(final int columnIndex) throws SQLException {
+    void getTimestampIndex() throws SQLException {
         when(resultSetMock.getTimestamp(COL_INDEX)).thenReturn(new Timestamp(3));
         assertEquals(new Timestamp(3), testee().getTimestamp(COL_INDEX));
     }
 
     @Test
-    void getAsciiStream(final int columnIndex) throws SQLException {
+    void getAsciiStreamIndex() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         when(resultSetMock.getAsciiStream(COL_INDEX)).thenReturn(stream);
         assertSame(stream, testee().getAsciiStream(COL_INDEX));
     }
 
     @Test
-    void getUnicodeStream(final int columnIndex) throws SQLException {
+    @SuppressWarnings("deprecation")
+    void getUnicodeStreamIndex() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         when(resultSetMock.getUnicodeStream(COL_INDEX)).thenReturn(stream);
         assertSame(stream, testee().getUnicodeStream(COL_INDEX));
     }
 
     @Test
-    void getBinaryStream(final int columnIndex) throws SQLException {
+    void getBinaryStreamIndex() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         when(resultSetMock.getBinaryStream(COL_INDEX)).thenReturn(stream);
         assertSame(stream, testee().getBinaryStream(COL_INDEX));
@@ -159,7 +161,7 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void getString(final String columnLabel) throws SQLException {
+    void getStringLabel() throws SQLException {
         when(resultSetMock.getString(COL_LABEL)).thenReturn("c");
         assertEquals("c", testee().getString(COL_LABEL));
     }
@@ -171,87 +173,89 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void getByte(final String columnLabel) throws SQLException {
+    void getByteLabel() throws SQLException {
         when(resultSetMock.getByte(COL_LABEL)).thenReturn((byte) 2);
         assertEquals((byte) 2, testee().getByte(COL_LABEL));
     }
 
     @Test
-    void getShort(final String columnLabel) throws SQLException {
+    void getShortLabel() throws SQLException {
         when(resultSetMock.getShort(COL_LABEL)).thenReturn((short) 2);
         assertEquals((short) 2, testee().getShort(COL_LABEL));
     }
 
     @Test
-    void getInt(final String columnLabel) throws SQLException {
+    void getIntLabel() throws SQLException {
         when(resultSetMock.getInt(COL_LABEL)).thenReturn(2);
         assertEquals(2, testee().getInt(COL_LABEL));
     }
 
     @Test
-    void getLong(final String columnLabel) throws SQLException {
+    void getLongLabel() throws SQLException {
         when(resultSetMock.getLong(COL_LABEL)).thenReturn(2L);
         assertEquals(2L, testee().getLong(COL_LABEL));
     }
 
     @Test
-    void getFloat(final String columnLabel) throws SQLException {
+    void getFloatLabel() throws SQLException {
         when(resultSetMock.getFloat(COL_LABEL)).thenReturn(2.2F);
         assertEquals(2, testee().getFloat(COL_LABEL));
     }
 
     @Test
-    void getDouble(final String columnLabel) throws SQLException {
+    void getDoubleLabel() throws SQLException {
         when(resultSetMock.getDouble(COL_LABEL)).thenReturn(2.2);
         assertEquals(2.2, testee().getDouble(COL_LABEL));
     }
 
     @Test
-    void getBigDecimal(final String columnLabel, final int scale) throws SQLException {
+    @SuppressWarnings("deprecation")
+    void getBigDecimalLabel(final int scale) throws SQLException {
         when(resultSetMock.getBigDecimal(COL_LABEL, 2)).thenReturn(BigDecimal.TEN);
         assertEquals(BigDecimal.TEN, testee().getBigDecimal(COL_LABEL, 2));
     }
 
     @Test
-    void getBytes(final String columnLabel) throws SQLException {
+    void getBytesLabel() throws SQLException {
         when(resultSetMock.getBytes(COL_LABEL)).thenReturn(new byte[] { 2 });
         assertEquals(new byte[] { 2 }, testee().getBytes(COL_LABEL));
     }
 
     @Test
-    void getDate(final String columnLabel) throws SQLException {
+    void getDateLabel() throws SQLException {
         when(resultSetMock.getDate(COL_LABEL)).thenReturn(new Date(3));
         assertEquals(new Date(3), testee().getDate(COL_LABEL));
     }
 
     @Test
-    void getTime(final String columnLabel) throws SQLException {
+    void getTimeLabel() throws SQLException {
         when(resultSetMock.getTime(COL_LABEL)).thenReturn(new Time(3));
         assertEquals(new Time(3), testee().getTime(COL_LABEL));
     }
 
     @Test
-    void getTimestamp(final String columnLabel) throws SQLException {
+    void getTimestampLabel() throws SQLException {
         when(resultSetMock.getTimestamp(COL_LABEL)).thenReturn(new Timestamp(3));
         assertEquals(new Timestamp(3), testee().getTimestamp(COL_LABEL));
     }
 
     @Test
-    void getAsciiStream(final String columnLabel) throws SQLException {
+    void getAsciiStreamLabel() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         when(resultSetMock.getAsciiStream(COL_LABEL)).thenReturn(stream);
         assertSame(stream, testee().getAsciiStream(COL_LABEL));
     }
 
     @Test
-    void getUnicodeStream(final String columnLabel) throws SQLException {
+    @SuppressWarnings("deprecation")
+    void getUnicodeStreamLabel() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         when(resultSetMock.getUnicodeStream(COL_LABEL)).thenReturn(stream);
         assertSame(stream, testee().getUnicodeStream(COL_LABEL));
     }
 
     @Test
-    void getBinaryStream(final String columnLabel) throws SQLException {
+    void getBinaryStreamLabel() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         when(resultSetMock.getBinaryStream(COL_LABEL)).thenReturn(stream);
         assertSame(stream, testee().getBinaryStream(COL_LABEL));
@@ -285,47 +289,47 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void getObject(final int columnIndex) throws SQLException {
+    void getObjectIndex() throws SQLException {
         final Object object = new Object();
         when(resultSetMock.getObject(COL_INDEX)).thenReturn(object);
         assertSame(object, testee().getObject(COL_INDEX));
     }
 
     @Test
-    void getObject(final String columnLabel) throws SQLException {
+    void getObjectLabel() throws SQLException {
         final Object object = new Object();
         when(resultSetMock.getObject(COL_LABEL)).thenReturn(object);
         assertSame(object, testee().getObject(COL_LABEL));
     }
 
     @Test
-    void findColumn(final String columnLabel) throws SQLException {
+    void findColumnLabel() throws SQLException {
         when(resultSetMock.findColumn(COL_LABEL)).thenReturn(2);
         assertEquals(2, testee().findColumn(COL_LABEL));
     }
 
     @Test
-    void getCharacterStream(final int columnIndex) throws SQLException {
+    void getCharacterStreamIndex() throws SQLException {
         final Reader reader = new StringReader("s");
         when(resultSetMock.getCharacterStream(COL_INDEX)).thenReturn(reader);
         assertSame(reader, testee().getCharacterStream(COL_INDEX));
     }
 
     @Test
-    void getCharacterStream(final String columnLabel) throws SQLException {
+    void getCharacterStreamLabel() throws SQLException {
         final Reader reader = new StringReader("s");
         when(resultSetMock.getCharacterStream(COL_LABEL)).thenReturn(reader);
         assertSame(reader, testee().getCharacterStream(COL_LABEL));
     }
 
     @Test
-    void getBigDecimal(final int columnIndex) throws SQLException {
+    void getBigDecimalIndex() throws SQLException {
         when(resultSetMock.getBigDecimal(COL_INDEX)).thenReturn(BigDecimal.TEN);
         assertEquals(BigDecimal.TEN, testee().getBigDecimal(COL_INDEX));
     }
 
     @Test
-    void getBigDecimal(final String columnLabel) throws SQLException {
+    void getBigDecimalLabel() throws SQLException {
         when(resultSetMock.getBigDecimal(COL_LABEL)).thenReturn(BigDecimal.TEN);
         assertEquals(BigDecimal.TEN, testee().getBigDecimal(COL_LABEL));
     }
@@ -403,7 +407,7 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void setFetchDirection(final int direction) throws SQLException {
+    void setFetchDirection() throws SQLException {
         testee().setFetchDirection(1);
         verify(resultSetMock).setFetchDirection(1);
     }
@@ -415,7 +419,7 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void setFetchSize(final int rows) throws SQLException {
+    void setFetchSize() throws SQLException {
         testee().setFetchSize(1);
         verify(resultSetMock).setFetchSize(1);
     }
@@ -457,218 +461,218 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void updateNull(final int columnIndex) throws SQLException {
+    void updateNullIndex() throws SQLException {
         testee().updateNull(1);
         verify(resultSetMock).updateNull(1);
     }
 
     @Test
-    void updateBoolean(final int columnIndex, final boolean x) throws SQLException {
+    void updateBooleanIndex() throws SQLException {
         testee().updateBoolean(COL_INDEX, true);
         verify(resultSetMock).updateBoolean(COL_INDEX, true);
     }
 
     @Test
-    void updateByte(final int columnIndex, final byte x) throws SQLException {
+    void updateByteIndex() throws SQLException {
         testee().updateByte(COL_INDEX, (byte) 2);
         verify(resultSetMock).updateByte(COL_INDEX, (byte) 2);
     }
 
     @Test
-    void updateShort(final int columnIndex, final short x) throws SQLException {
+    void updateShortIndex() throws SQLException {
         testee().updateShort(COL_INDEX, (short) 2);
         verify(resultSetMock).updateShort(COL_INDEX, (short) 2);
     }
 
     @Test
-    void updateInt(final int columnIndex, final int x) throws SQLException {
+    void updateIntIndex() throws SQLException {
         testee().updateInt(COL_INDEX, 2);
         verify(resultSetMock).updateInt(COL_INDEX, 2);
     }
 
     @Test
-    void updateLong(final int columnIndex, final long x) throws SQLException {
+    void updateLongIndex() throws SQLException {
         testee().updateLong(COL_INDEX, 2);
         verify(resultSetMock).updateLong(COL_INDEX, 2);
     }
 
     @Test
-    void updateFloat(final int columnIndex, final float x) throws SQLException {
+    void updateFloatIndex() throws SQLException {
         testee().updateFloat(COL_INDEX, 2.2F);
         verify(resultSetMock).updateFloat(COL_INDEX, 2.2F);
     }
 
     @Test
-    void updateDouble(final int columnIndex, final double x) throws SQLException {
+    void updateDoubleIndex() throws SQLException {
         testee().updateDouble(COL_INDEX, 2.2);
         verify(resultSetMock).updateDouble(COL_INDEX, 2.2);
     }
 
     @Test
-    void updateBigDecimal(final int columnIndex, final BigDecimal x) throws SQLException {
+    void updateBigDecimalIndex() throws SQLException {
         testee().updateBigDecimal(COL_INDEX, BigDecimal.TEN);
         verify(resultSetMock).updateBigDecimal(COL_INDEX, BigDecimal.TEN);
     }
 
     @Test
-    void updateString(final int columnIndex, final String x) throws SQLException {
+    void updateStringIndex() throws SQLException {
         testee().updateString(COL_INDEX, "a");
         verify(resultSetMock).updateString(COL_INDEX, "a");
     }
 
     @Test
-    void updateBytes(final int columnIndex, final byte[] x) throws SQLException {
+    void updateBytesIndex() throws SQLException {
         testee().updateBytes(COL_INDEX, new byte[] { 1 });
         verify(resultSetMock).updateBytes(COL_INDEX, new byte[] { 1 });
     }
 
     @Test
-    void updateDate(final int columnIndex, final Date x) throws SQLException {
+    void updateDateIndex() throws SQLException {
         testee().updateDate(COL_INDEX, new Date(2));
         verify(resultSetMock).updateDate(COL_INDEX, new Date(2));
     }
 
     @Test
-    void updateTime(final int columnIndex, final Time x) throws SQLException {
+    void updateTimeIndex() throws SQLException {
         testee().updateTime(COL_INDEX, new Time(2));
         verify(resultSetMock).updateTime(COL_INDEX, new Time(2));
     }
 
     @Test
-    void updateTimestamp(final int columnIndex, final Timestamp x) throws SQLException {
+    void updateTimestampIndex() throws SQLException {
         testee().updateTimestamp(COL_INDEX, new Timestamp(2));
         verify(resultSetMock).updateTimestamp(COL_INDEX, new Timestamp(2));
     }
 
     @Test
-    void updateAsciiStream(final int columnIndex, final InputStream x, final int length) throws SQLException {
+    void updateAsciiStreamIndexInt() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_INDEX, stream, 3);
         verify(resultSetMock).updateAsciiStream(eq(COL_INDEX), same(stream), eq(3));
     }
 
     @Test
-    void updateBinaryStream(final int columnIndex, final InputStream x, final int length) throws SQLException {
+    void updateBinaryStreamIndexInt() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_INDEX, stream, 3);
         verify(resultSetMock).updateBinaryStream(eq(COL_INDEX), same(stream), eq(3));
     }
 
     @Test
-    void updateCharacterStream(final int columnIndex, final Reader x, final int length) throws SQLException {
+    void updateCharacterStreamIndexInt() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateCharacterStream(COL_INDEX, reader, 3);
         verify(resultSetMock).updateCharacterStream(eq(COL_INDEX), same(reader), eq(3));
     }
 
     @Test
-    void updateObject(final int columnIndex, final Object x, final int scaleOrLength) throws SQLException {
+    void updateObjectIndexScaleOrLength() throws SQLException {
         final Object object = new Object();
         testee().updateObject(COL_INDEX, object, 3);
         verify(resultSetMock).updateObject(eq(COL_INDEX), same(object), eq(3));
     }
 
     @Test
-    void updateObject(final int columnIndex, final Object x) throws SQLException {
+    void updateObjectIndex() throws SQLException {
         final Object object = new Object();
         testee().updateObject(COL_INDEX, object);
         verify(resultSetMock).updateObject(eq(COL_INDEX), same(object));
     }
 
     @Test
-    void updateNull(final String columnLabel) throws SQLException {
+    void updateNullLabel() throws SQLException {
         testee().updateNull("c");
         verify(resultSetMock).updateNull("c");
     }
 
     @Test
-    void updateBoolean(final String columnLabel, final boolean x) throws SQLException {
+    void updateBooleanLabel() throws SQLException {
         testee().updateBoolean("c", true);
         verify(resultSetMock).updateBoolean("c", true);
     }
 
     @Test
-    void updateByte(final String columnLabel, final byte x) throws SQLException {
+    void updateByteLabel() throws SQLException {
         testee().updateByte("c", (byte) 2);
         verify(resultSetMock).updateByte("c", (byte) 2);
     }
 
     @Test
-    void updateShort(final String columnLabel, final short x) throws SQLException {
+    void updateShortLabel() throws SQLException {
         testee().updateShort("c", (short) 2);
         verify(resultSetMock).updateShort("c", (short) 2);
 
     }
 
     @Test
-    void updateInt(final String columnLabel, final int x) throws SQLException {
+    void updateIntLabel() throws SQLException {
         testee().updateInt("c", 2);
         verify(resultSetMock).updateInt("c", 2);
     }
 
     @Test
-    void updateLong(final String columnLabel, final long x) throws SQLException {
+    void updateLongLabel() throws SQLException {
         testee().updateLong("c", 2);
         verify(resultSetMock).updateLong("c", 2);
     }
 
     @Test
-    void updateFloat(final String columnLabel, final float x) throws SQLException {
+    void updateFloatLabel() throws SQLException {
         testee().updateFloat(COL_LABEL, 2.2F);
         verify(resultSetMock).updateFloat(COL_LABEL, 2.2F);
     }
 
     @Test
-    void updateDouble(final String columnLabel, final double x) throws SQLException {
+    void updateDoubleLabel() throws SQLException {
         testee().updateDouble(COL_LABEL, 2.2);
         verify(resultSetMock).updateDouble(COL_LABEL, 2.2);
     }
 
     @Test
-    void updateBigDecimal(final String columnLabel, final BigDecimal x) throws SQLException {
+    void updateBigDecimalLabel() throws SQLException {
         testee().updateBigDecimal(COL_LABEL, BigDecimal.TEN);
         verify(resultSetMock).updateBigDecimal(COL_LABEL, BigDecimal.TEN);
     }
 
     @Test
-    void updateString(final String columnLabel, final String x) throws SQLException {
+    void updateStringLabel() throws SQLException {
         testee().updateString(COL_LABEL, "a");
         verify(resultSetMock).updateString(COL_LABEL, "a");
     }
 
     @Test
-    void updateBytes(final String columnLabel, final byte[] x) throws SQLException {
+    void updateBytesLabel() throws SQLException {
         testee().updateBytes(COL_LABEL, new byte[] { 1 });
         verify(resultSetMock).updateBytes(COL_LABEL, new byte[] { 1 });
     }
 
     @Test
-    void updateDate(final String columnLabel, final Date x) throws SQLException {
+    void updateDateLabel() throws SQLException {
         testee().updateDate(COL_LABEL, new Date(2));
         verify(resultSetMock).updateDate(COL_LABEL, new Date(2));
     }
 
     @Test
-    void updateTime(final String columnLabel, final Time x) throws SQLException {
+    void updateTimeLabel() throws SQLException {
         testee().updateTime(COL_LABEL, new Time(2));
         verify(resultSetMock).updateTime(COL_LABEL, new Time(2));
     }
 
     @Test
-    void updateTimestamp(final String columnLabel, final Timestamp x) throws SQLException {
+    void updateTimestampLabel() throws SQLException {
         testee().updateTimestamp(COL_LABEL, new Timestamp(2));
         verify(resultSetMock).updateTimestamp(COL_LABEL, new Timestamp(2));
     }
 
     @Test
-    void updateAsciiStream(final String columnLabel, final InputStream x, final int length) throws SQLException {
+    void updateAsciiStreamLabelInt() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_LABEL, stream, 3);
         verify(resultSetMock).updateAsciiStream(eq(COL_LABEL), same(stream), eq(3));
     }
 
     @Test
-    void updateBinaryStream(final String columnLabel, final InputStream x, final int length)
+    void updateBinaryStreamLabelInt()
             throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_LABEL, stream, 3);
@@ -676,7 +680,7 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void updateCharacterStream(final String columnLabel, final Reader r, final int length)
+    void updateCharacterStreamLabelInt()
             throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateCharacterStream(COL_LABEL, reader, 3);
@@ -684,14 +688,14 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void updateObject(final String columnLabel, final Object x, final int scaleOrLength) throws SQLException {
+    void updateObjectLabelScaleOrLenght() throws SQLException {
         final Object object = new Object();
         testee().updateObject(COL_LABEL, object, 3);
         verify(resultSetMock).updateObject(eq(COL_LABEL), same(object), eq(3));
     }
 
     @Test
-    void updateObject(final String columnLabel, final Object x) throws SQLException {
+    void updateObjectLabel() throws SQLException {
         final Object object = new Object();
         testee().updateObject(COL_LABEL, object);
         verify(resultSetMock).updateObject(eq(COL_LABEL), same(object));
@@ -747,7 +751,7 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void getObject(final int columnIndex, final Map<String, Class<?>> m) throws SQLException {
+    void getObjectIndexMap() throws SQLException {
         final Object object = new Object();
         final Map<String, Class<?>> map = new HashMap<>();
         when(resultSetMock.getObject(eq(COL_INDEX), same(map))).thenReturn(object);
@@ -755,35 +759,35 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void getRef(final int columnIndex) throws SQLException {
+    void getRefIndex() throws SQLException {
         final Ref ref = mock(Ref.class);
         when(resultSetMock.getRef(COL_INDEX)).thenReturn(ref);
         assertSame(ref, testee().getRef(COL_INDEX));
     }
 
     @Test
-    void getBlob(final int columnIndex) throws SQLException {
+    void getBlobIndex() throws SQLException {
         final Blob blob = mock(Blob.class);
         when(resultSetMock.getBlob(COL_INDEX)).thenReturn(blob);
         assertSame(blob, testee().getBlob(COL_INDEX));
     }
 
     @Test
-    void getClob(final int columnIndex) throws SQLException {
+    void getClobIndex() throws SQLException {
         final Clob clob = mock(Clob.class);
         when(resultSetMock.getClob(COL_INDEX)).thenReturn(clob);
         assertSame(clob, testee().getClob(COL_INDEX));
     }
 
     @Test
-    void getArray(final int columnIndex) throws SQLException {
+    void getArrayIndex() throws SQLException {
         final Array array = mock(Array.class);
         when(resultSetMock.getArray(COL_INDEX)).thenReturn(array);
         assertSame(array, testee().getArray(COL_INDEX));
     }
 
     @Test
-    void getObject(final String columnLabel, final Map<String, Class<?>> m) throws SQLException {
+    void getObjectLabelMap() throws SQLException {
         final Object object = new Object();
         final Map<String, Class<?>> map = new HashMap<>();
         when(resultSetMock.getObject(eq(COL_LABEL), same(map))).thenReturn(object);
@@ -791,7 +795,7 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void getRef(final String columnLabel) throws SQLException {
+    void getRefLabel() throws SQLException {
         final Ref ref = mock(Ref.class);
         when(resultSetMock.getRef(COL_LABEL)).thenReturn(ref);
         assertSame(ref, testee().getRef(COL_LABEL));
@@ -799,7 +803,7 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void getBlob(final String columnLabel) throws SQLException {
+    void getBlobLabel() throws SQLException {
         final Blob blob = mock(Blob.class);
         when(resultSetMock.getBlob(COL_LABEL)).thenReturn(blob);
         assertSame(blob, testee().getBlob(COL_LABEL));
@@ -807,154 +811,154 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void getClob(final String columnLabel) throws SQLException {
+    void getClobLabel() throws SQLException {
         final Clob clob = mock(Clob.class);
         when(resultSetMock.getClob(COL_LABEL)).thenReturn(clob);
         assertSame(clob, testee().getClob(COL_LABEL));
     }
 
     @Test
-    void getArray(final String columnLabel) throws SQLException {
+    void getArrayLabel() throws SQLException {
         final Array array = mock(Array.class);
         when(resultSetMock.getArray(COL_LABEL)).thenReturn(array);
         assertSame(array, testee().getArray(COL_LABEL));
     }
 
     @Test
-    void getDate(final int columnIndex, final Calendar c) throws SQLException {
+    void getDateIndexCal() throws SQLException {
         final Calendar cal = Calendar.getInstance();
         when(resultSetMock.getDate(eq(COL_INDEX), same(cal))).thenReturn(new Date(3));
         assertEquals(new Date(3), testee().getDate(COL_INDEX, cal));
     }
 
     @Test
-    void getDate(final String columnLabel, final Calendar c) throws SQLException {
+    void getDateLabelCal() throws SQLException {
         final Calendar cal = Calendar.getInstance();
         when(resultSetMock.getDate(eq(COL_LABEL), same(cal))).thenReturn(new Date(3));
         assertEquals(new Date(3), testee().getDate(COL_LABEL, cal));
     }
 
     @Test
-    void getTime(final int columnIndex, final Calendar c) throws SQLException {
+    void getTimeIndexCal() throws SQLException {
         final Calendar cal = Calendar.getInstance();
         when(resultSetMock.getTime(eq(COL_INDEX), same(cal))).thenReturn(new Time(3));
         assertEquals(new Time(3), testee().getTime(COL_INDEX, cal));
     }
 
     @Test
-    void getTime(final String columnLabel, final Calendar c) throws SQLException {
+    void getTimeLabelCal() throws SQLException {
         final Calendar cal = Calendar.getInstance();
         when(resultSetMock.getTime(eq(COL_LABEL), same(cal))).thenReturn(new Time(3));
         assertEquals(new Time(3), testee().getTime(COL_LABEL, cal));
     }
 
     @Test
-    void getTimestamp(final int columnIndex, final Calendar c) throws SQLException {
+    void getTimestampIndexCal() throws SQLException {
         final Calendar cal = Calendar.getInstance();
         when(resultSetMock.getTimestamp(eq(COL_INDEX), same(cal))).thenReturn(new Timestamp(3));
         assertEquals(new Timestamp(3), testee().getTimestamp(COL_INDEX, cal));
     }
 
     @Test
-    void getTimestamp(final String columnLabel, final Calendar c) throws SQLException {
+    void getTimestampLabelCal() throws SQLException {
         final Calendar cal = Calendar.getInstance();
         when(resultSetMock.getTimestamp(eq(COL_LABEL), same(cal))).thenReturn(new Timestamp(3));
         assertEquals(new Timestamp(3), testee().getTimestamp(COL_LABEL, cal));
     }
 
     @Test
-    void getURL(final int columnIndex) throws SQLException, MalformedURLException {
+    void getURLIndex() throws SQLException, MalformedURLException {
         final URL url = new URL("https://example.com");
         when(resultSetMock.getURL(COL_INDEX)).thenReturn(url);
         assertSame(url, testee().getURL(COL_INDEX));
     }
 
     @Test
-    void getURL(final String columnLabel) throws SQLException, MalformedURLException {
+    void getURLLabel() throws SQLException, MalformedURLException {
         final URL url = new URL("https://example.com");
         when(resultSetMock.getURL(COL_LABEL)).thenReturn(url);
         assertSame(url, testee().getURL(COL_LABEL));
     }
 
     @Test
-    void updateRef(final int columnIndex, final Ref x) throws SQLException {
+    void updateRefIndex() throws SQLException {
         final Ref ref = mock(Ref.class);
         testee().updateRef(COL_INDEX, ref);
         verify(resultSetMock).updateRef(eq(COL_INDEX), same(ref));
     }
 
     @Test
-    void updateRef(final String columnLabel, final Ref x) throws SQLException {
+    void updateRefLabel() throws SQLException {
         final Ref ref = mock(Ref.class);
         testee().updateRef(COL_LABEL, ref);
         verify(resultSetMock).updateRef(eq(COL_LABEL), same(ref));
     }
 
     @Test
-    void updateBlob(final int columnIndex, final Blob x) throws SQLException {
+    void updateBlobIndex() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBlob(COL_INDEX, stream);
         verify(resultSetMock).updateBlob(eq(COL_INDEX), same(stream));
     }
 
     @Test
-    void updateBlob(final String columnLabel, final Blob x) throws SQLException {
+    void updateBlobLabel() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBlob(COL_LABEL, stream);
         verify(resultSetMock).updateBlob(eq(COL_LABEL), same(stream));
     }
 
     @Test
-    void updateClob(final int columnIndex, final Clob x) throws SQLException {
+    void updateClobIndex() throws SQLException {
         final Clob clob = mock(Clob.class);
         testee().updateClob(COL_INDEX, clob);
         verify(resultSetMock).updateClob(eq(COL_INDEX), same(clob));
     }
 
     @Test
-    void updateClob(final String columnLabel, final Clob x) throws SQLException {
+    void updateClobLabel() throws SQLException {
         final Clob clob = mock(Clob.class);
         testee().updateClob(COL_LABEL, clob);
         verify(resultSetMock).updateClob(eq(COL_LABEL), same(clob));
     }
 
     @Test
-    void updateArray(final int columnIndex, final Array x) throws SQLException {
+    void updateArrayIndex() throws SQLException {
         final Array array = mock(Array.class);
         testee().updateArray(COL_INDEX, array);
         verify(resultSetMock).updateArray(eq(COL_INDEX), same(array));
     }
 
     @Test
-    void updateArray(final String columnLabel, final Array x) throws SQLException {
+    void updateArrayLabel() throws SQLException {
         final Array array = mock(Array.class);
         testee().updateArray(COL_LABEL, array);
         verify(resultSetMock).updateArray(eq(COL_LABEL), same(array));
     }
 
     @Test
-    void getRowId(final int columnIndex) throws SQLException {
+    void getRowIdIndex() throws SQLException {
         final RowId rowId = mock(RowId.class);
         when(resultSetMock.getRowId(COL_INDEX)).thenReturn(rowId);
         assertSame(rowId, testee().getRowId(COL_INDEX));
     }
 
     @Test
-    void getRowId(final String columnLabel) throws SQLException {
+    void getRowIdLabel() throws SQLException {
         final RowId rowId = mock(RowId.class);
         when(resultSetMock.getRowId(COL_LABEL)).thenReturn(rowId);
         assertSame(rowId, testee().getRowId(COL_LABEL));
     }
 
     @Test
-    void updateRowId(final int columnIndex, final RowId x) throws SQLException {
+    void updateRowIdIndex() throws SQLException {
         final RowId rowId = mock(RowId.class);
         testee().updateRowId(COL_INDEX, rowId);
         verify(resultSetMock).updateRowId(eq(COL_INDEX), same(rowId));
     }
 
     @Test
-    void updateRowId(final String columnLabel, final RowId x) throws SQLException {
+    void updateRowIdLabel() throws SQLException {
         final RowId rowId = mock(RowId.class);
         testee().updateRowId(COL_LABEL, rowId);
         verify(resultSetMock).updateRowId(eq(COL_LABEL), same(rowId));
@@ -973,296 +977,290 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void updateNString(final int columnIndex, final String nString) throws SQLException {
+    void updateNStringIndex() throws SQLException {
         testee().updateNString(COL_INDEX, "a");
         verify(resultSetMock).updateNString(COL_INDEX, "a");
     }
 
     @Test
-    void updateNString(final String columnLabel, final String nString) throws SQLException {
+    void updateNStringLabel() throws SQLException {
         testee().updateNString(COL_LABEL, "a");
         verify(resultSetMock).updateNString(COL_LABEL, "a");
     }
 
     @Test
-    void updateNClob(final int columnIndex, final NClob nClob) throws SQLException {
+    void updateNClobIndex() throws SQLException {
         final NClob clob = mock(NClob.class);
         testee().updateNClob(COL_INDEX, clob);
         verify(resultSetMock).updateNClob(eq(COL_INDEX), same(clob));
     }
 
     @Test
-    void updateNClob(final String columnLabel, final NClob nClob) throws SQLException {
+    void updateNClobLabel() throws SQLException {
         final NClob clob = mock(NClob.class);
         testee().updateNClob(COL_LABEL, clob);
         verify(resultSetMock).updateNClob(eq(COL_LABEL), same(clob));
     }
 
     @Test
-    void getNClob(final int columnIndex) throws SQLException {
+    void getNClobIndex() throws SQLException {
         final NClob clob = mock(NClob.class);
         when(resultSetMock.getNClob(COL_INDEX)).thenReturn(clob);
         assertSame(clob, testee().getNClob(COL_INDEX));
     }
 
     @Test
-    void getNClob(final String columnLabel) throws SQLException {
+    void getNClobLabel() throws SQLException {
         final NClob clob = mock(NClob.class);
         when(resultSetMock.getNClob(COL_LABEL)).thenReturn(clob);
         assertSame(clob, testee().getNClob(COL_LABEL));
     }
 
     @Test
-    void getSQLXML(final int columnIndex) throws SQLException {
+    void getSQLXMLIndex() throws SQLException {
         final SQLXML xml = mock(SQLXML.class);
         when(resultSetMock.getSQLXML(COL_INDEX)).thenReturn(xml);
         assertSame(xml, testee().getSQLXML(COL_INDEX));
     }
 
     @Test
-    void getSQLXML(final String columnLabel) throws SQLException {
+    void getSQLXMLLabel() throws SQLException {
         final SQLXML xml = mock(SQLXML.class);
         when(resultSetMock.getSQLXML(COL_LABEL)).thenReturn(xml);
         assertSame(xml, testee().getSQLXML(COL_LABEL));
     }
 
     @Test
-    void updateSQLXML(final int columnIndex, final SQLXML xmlObject) throws SQLException {
+    void updateSQLXMLIndex() throws SQLException {
         final SQLXML xml = mock(SQLXML.class);
         testee().updateSQLXML(COL_INDEX, xml);
         verify(resultSetMock).updateSQLXML(eq(COL_INDEX), same(xml));
     }
 
     @Test
-    void updateSQLXML(final String columnLabel, final SQLXML xmlObject) throws SQLException {
+    void updateSQLXMLLabel() throws SQLException {
         final SQLXML xml = mock(SQLXML.class);
         testee().updateSQLXML(COL_LABEL, xml);
         verify(resultSetMock).updateSQLXML(eq(COL_LABEL), same(xml));
     }
 
     @Test
-    void getNString(final int columnIndex) throws SQLException {
+    void getNStringIndex() throws SQLException {
         when(resultSetMock.getNString(COL_INDEX)).thenReturn("c");
         assertEquals("c", testee().getNString(COL_INDEX));
     }
 
     @Test
-    void getNString(final String columnLabel) throws SQLException {
+    void getNStringLabel() throws SQLException {
         when(resultSetMock.getNString(COL_LABEL)).thenReturn("c");
         assertEquals("c", testee().getNString(COL_LABEL));
     }
 
     @Test
-    void getNCharacterStream(final int columnIndex) throws SQLException {
+    void getNCharacterStreamIndex() throws SQLException {
         final Reader reader = new StringReader("s");
         when(resultSetMock.getNCharacterStream(COL_INDEX)).thenReturn(reader);
         assertSame(reader, testee().getNCharacterStream(COL_INDEX));
     }
 
     @Test
-    void getNCharacterStream(final String columnLabel) throws SQLException {
+    void getNCharacterStreamLabel() throws SQLException {
         final Reader reader = new StringReader("s");
         when(resultSetMock.getNCharacterStream(COL_LABEL)).thenReturn(reader);
         assertSame(reader, testee().getNCharacterStream(COL_LABEL));
     }
 
     @Test
-    void updateNCharacterStream(final int columnIndex, final Reader x, final long length) throws SQLException {
+    void updateNCharacterStreamIndexLong() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateNCharacterStream(COL_INDEX, reader, 3L);
         verify(resultSetMock).updateNCharacterStream(eq(COL_INDEX), same(reader), eq(3L));
     }
 
     @Test
-    void updateNCharacterStream(final String columnLabel, final Reader r, final long length)
-            throws SQLException {
+    void updateNCharacterStreamLabelLong() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateNCharacterStream(COL_LABEL, reader, 3L);
         verify(resultSetMock).updateNCharacterStream(eq(COL_LABEL), same(reader), eq(3L));
     }
 
     @Test
-    void updateAsciiStream(final int columnIndex, final InputStream x, final long length) throws SQLException {
+    void updateAsciiStreamIndexLong() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_INDEX, stream, 3L);
         verify(resultSetMock).updateAsciiStream(eq(COL_INDEX), same(stream), eq(3L));
     }
 
     @Test
-    void updateBinaryStream(final int columnIndex, final InputStream x, final long length) throws SQLException {
+    void updateBinaryStreamIndexLong() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_INDEX, stream, 3L);
         verify(resultSetMock).updateBinaryStream(eq(COL_INDEX), same(stream), eq(3L));
     }
 
     @Test
-    void updateCharacterStream(final int columnIndex, final Reader x, final long length) throws SQLException {
+    void updateCharacterStreamIndexLong() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateCharacterStream(COL_INDEX, reader, 3L);
         verify(resultSetMock).updateCharacterStream(eq(COL_INDEX), same(reader), eq(3L));
     }
 
     @Test
-    void updateAsciiStream(final String columnLabel, final InputStream x, final long length)
-            throws SQLException {
+    void updateAsciiStreamLabelLong() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_LABEL, stream, 3L);
         verify(resultSetMock).updateAsciiStream(eq(COL_LABEL), same(stream), eq(3L));
     }
 
     @Test
-    void updateBinaryStream(final String columnLabel, final InputStream x, final long length)
-            throws SQLException {
+    void updateBinaryStreamLabelLong() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_LABEL, stream, 3L);
         verify(resultSetMock).updateBinaryStream(eq(COL_LABEL), same(stream), eq(3L));
     }
 
     @Test
-    void updateCharacterStream(final String columnLabel, final Reader r, final long length)
-            throws SQLException {
+    void updateCharacterStreamLabelLong() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateCharacterStream(COL_LABEL, reader, 3L);
         verify(resultSetMock).updateCharacterStream(eq(COL_LABEL), same(reader), eq(3L));
     }
 
     @Test
-    void updateBlob(final int columnIndex, final InputStream inputStream, final long length)
-            throws SQLException {
+    void updateBlobIndexLong() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBlob(COL_INDEX, stream, 3L);
         verify(resultSetMock).updateBlob(eq(COL_INDEX), same(stream), eq(3L));
     }
 
     @Test
-    void updateBlob(final String columnLabel, final InputStream inputStream, final long length)
-            throws SQLException {
+    void updateBlobLabelLong() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBlob(COL_LABEL, stream, 3L);
         verify(resultSetMock).updateBlob(eq(COL_LABEL), same(stream), eq(3L));
     }
 
     @Test
-    void updateClob(final int columnIndex, final Reader r, final long length) throws SQLException {
+    void updateClobIndexLong() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateClob(COL_INDEX, reader, 3L);
         verify(resultSetMock).updateClob(eq(COL_INDEX), same(reader), eq(3L));
     }
 
     @Test
-    void updateClob(final String columnLabel, final Reader r, final long length) throws SQLException {
+    void updateClobLabelLong() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateClob(COL_LABEL, reader, 3L);
         verify(resultSetMock).updateClob(eq(COL_LABEL), same(reader), eq(3L));
     }
 
     @Test
-    void updateNClob(final int columnIndex, final Reader r, final long length) throws SQLException {
+    void updateNClobIndexLong() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateNClob(COL_INDEX, reader, 3L);
         verify(resultSetMock).updateNClob(eq(COL_INDEX), same(reader), eq(3L));
     }
 
     @Test
-    void updateNClob(final String columnLabel, final Reader r, final long length) throws SQLException {
+    void updateNClobLabelLong() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateNClob(COL_LABEL, reader, 3L);
         verify(resultSetMock).updateNClob(eq(COL_LABEL), same(reader), eq(3L));
     }
 
     @Test
-    void updateNCharacterStream(final int columnIndex, final Reader x) throws SQLException {
+    void updateNCharacterStreamIndex() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateNCharacterStream(COL_INDEX, reader);
         verify(resultSetMock).updateNCharacterStream(eq(COL_INDEX), same(reader));
     }
 
     @Test
-    void updateNCharacterStream(final String columnLabel, final Reader r) throws SQLException {
+    void updateNCharacterStreamLabel() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateNCharacterStream(COL_LABEL, reader);
         verify(resultSetMock).updateNCharacterStream(eq(COL_LABEL), same(reader));
     }
 
     @Test
-    void updateAsciiStream(final int columnIndex, final InputStream x) throws SQLException {
+    void updateAsciiStreamIndex() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_INDEX, stream);
         verify(resultSetMock).updateAsciiStream(eq(COL_INDEX), same(stream));
     }
 
     @Test
-    void updateBinaryStream(final int columnIndex, final InputStream x) throws SQLException {
+    void updateBinaryStreamIndex() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_INDEX, stream);
         verify(resultSetMock).updateBinaryStream(eq(COL_INDEX), same(stream));
     }
 
     @Test
-    void updateCharacterStream(final int columnIndex, final Reader x) throws SQLException {
+    void updateCharacterStreamIndex() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateCharacterStream(COL_INDEX, reader);
         verify(resultSetMock).updateCharacterStream(eq(COL_INDEX), same(reader));
     }
 
     @Test
-    void updateAsciiStream(final String columnLabel, final InputStream x) throws SQLException {
+    void updateAsciiStreamLabel() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_LABEL, stream);
         verify(resultSetMock).updateAsciiStream(eq(COL_LABEL), same(stream));
     }
 
     @Test
-    void updateBinaryStream(final String columnLabel, final InputStream x) throws SQLException {
+    void updateBinaryStreamLabel() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_LABEL, stream);
         verify(resultSetMock).updateBinaryStream(eq(COL_LABEL), same(stream));
     }
 
     @Test
-    void updateCharacterStream(final String columnLabel, final Reader r) throws SQLException {
+    void updateCharacterStreamLabel() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateCharacterStream(COL_LABEL, reader);
         verify(resultSetMock).updateCharacterStream(eq(COL_LABEL), same(reader));
     }
 
     @Test
-    void updateBlob(final int columnIndex, final InputStream inputStream) throws SQLException {
+    void updateBlobIndexNoLength() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBlob(COL_INDEX, stream);
         verify(resultSetMock).updateBlob(eq(COL_INDEX), same(stream));
     }
 
     @Test
-    void updateBlob(final String columnLabel, final InputStream inputStream) throws SQLException {
+    void updateBlobLabelNoLength() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBlob(COL_LABEL, stream);
         verify(resultSetMock).updateBlob(eq(COL_LABEL), same(stream));
     }
 
     @Test
-    void updateClob(final int columnIndex, final Reader r) throws SQLException {
+    void updateClobIndexNoLength() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateClob(COL_INDEX, reader);
         verify(resultSetMock).updateClob(eq(COL_INDEX), same(reader));
     }
 
     @Test
-    void updateClob(final String columnLabel, final Reader r) throws SQLException {
+    void updateClobLabelNoLength() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateClob(COL_LABEL, reader);
         verify(resultSetMock).updateClob(eq(COL_LABEL), same(reader));
     }
 
     @Test
-    void updateNClob(final int columnIndex, final Reader r) throws SQLException {
+    void updateNClobIndexNoLength() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateNClob(COL_INDEX, reader);
         verify(resultSetMock).updateNClob(eq(COL_INDEX), same(reader));
     }
 
     @Test
-    void updateNClob(final String columnLabel, final Reader r) throws SQLException {
+    void updateNClobLabelNoLength() throws SQLException {
         final Reader reader = new StringReader("a");
         testee().updateNClob(COL_LABEL, reader);
         verify(resultSetMock).updateNClob(eq(COL_LABEL), same(reader));
