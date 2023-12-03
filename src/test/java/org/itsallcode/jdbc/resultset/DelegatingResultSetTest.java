@@ -97,7 +97,7 @@ class DelegatingResultSetTest {
     @Test
     void getFloatIndex() throws SQLException {
         when(resultSetMock.getFloat(COL_INDEX)).thenReturn(2.2F);
-        assertEquals(2, testee().getFloat(COL_INDEX));
+        assertEquals(2.2F, testee().getFloat(COL_INDEX));
     }
 
     @Test
@@ -115,8 +115,9 @@ class DelegatingResultSetTest {
 
     @Test
     void getBytesIndex() throws SQLException {
-        when(resultSetMock.getBytes(COL_INDEX)).thenReturn(new byte[] { 2 });
-        assertEquals(new byte[] { 2 }, testee().getBytes(COL_INDEX));
+        final byte[] value = new byte[] { 2 };
+        when(resultSetMock.getBytes(COL_INDEX)).thenReturn(value);
+        assertSame(value, testee().getBytes(COL_INDEX));
     }
 
     @Test
@@ -199,7 +200,7 @@ class DelegatingResultSetTest {
     @Test
     void getFloatLabel() throws SQLException {
         when(resultSetMock.getFloat(COL_LABEL)).thenReturn(2.2F);
-        assertEquals(2, testee().getFloat(COL_LABEL));
+        assertEquals(2.2F, testee().getFloat(COL_LABEL));
     }
 
     @Test
@@ -210,15 +211,16 @@ class DelegatingResultSetTest {
 
     @Test
     @SuppressWarnings("deprecation")
-    void getBigDecimalLabel(final int scale) throws SQLException {
+    void getBigDecimalLabelScale() throws SQLException {
         when(resultSetMock.getBigDecimal(COL_LABEL, 2)).thenReturn(BigDecimal.TEN);
         assertEquals(BigDecimal.TEN, testee().getBigDecimal(COL_LABEL, 2));
     }
 
     @Test
     void getBytesLabel() throws SQLException {
-        when(resultSetMock.getBytes(COL_LABEL)).thenReturn(new byte[] { 2 });
-        assertEquals(new byte[] { 2 }, testee().getBytes(COL_LABEL));
+        final byte[] value = new byte[] { 2 };
+        when(resultSetMock.getBytes(COL_LABEL)).thenReturn(value);
+        assertSame(value, testee().getBytes(COL_LABEL));
     }
 
     @Test
@@ -389,13 +391,13 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void absolute(final int row) throws SQLException {
+    void absolute() throws SQLException {
         when(resultSetMock.absolute(1)).thenReturn(true);
         assertEquals(true, testee().absolute(1));
     }
 
     @Test
-    void relative(final int rows) throws SQLException {
+    void relative() throws SQLException {
         when(resultSetMock.relative(1)).thenReturn(true);
         assertEquals(true, testee().relative(1));
     }
