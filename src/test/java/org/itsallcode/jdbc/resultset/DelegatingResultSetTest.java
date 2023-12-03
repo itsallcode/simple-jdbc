@@ -1,6 +1,7 @@
 package org.itsallcode.jdbc.resultset;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
@@ -9,8 +10,8 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
-import java.util.Calendar;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,9 +58,9 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public String getString(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getString'");
+    void getString(final int columnIndex) throws SQLException {
+        when(resultSetMock.getString(COL_INDEX)).thenReturn("c");
+        assertEquals("c", testee().getString(COL_INDEX));
     }
 
     @Test
@@ -99,16 +100,15 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public double getDouble(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDouble'");
+    void getDouble(final int columnIndex) throws SQLException {
+        when(resultSetMock.getDouble(COL_INDEX)).thenReturn(2.2);
+        assertEquals(2.2, testee().getDouble(COL_INDEX));
     }
 
     @Test
-    @Deprecated
-    public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBigDecimal'");
+    void getBigDecimal(final int columnIndex, final int scale) throws SQLException {
+        when(resultSetMock.getBigDecimal(COL_INDEX, 2)).thenReturn(BigDecimal.TEN);
+        assertEquals(BigDecimal.TEN, testee().getBigDecimal(COL_INDEX, 2));
     }
 
     @Test
@@ -118,46 +118,49 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public Date getDate(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDate'");
+    void getDate(final int columnIndex) throws SQLException {
+        when(resultSetMock.getDate(COL_INDEX)).thenReturn(new Date(3));
+        assertEquals(new Date(3), testee().getDate(COL_INDEX));
     }
 
     @Test
-    public Time getTime(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTime'");
+    void getTime(final int columnIndex) throws SQLException {
+        when(resultSetMock.getTime(COL_INDEX)).thenReturn(new Time(3));
+        assertEquals(new Time(3), testee().getTime(COL_INDEX));
     }
 
     @Test
-    public Timestamp getTimestamp(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTimestamp'");
+    void getTimestamp(final int columnIndex) throws SQLException {
+        when(resultSetMock.getTimestamp(COL_INDEX)).thenReturn(new Timestamp(3));
+        assertEquals(new Timestamp(3), testee().getTimestamp(COL_INDEX));
     }
 
     @Test
-    public InputStream getAsciiStream(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAsciiStream'");
+    void getAsciiStream(final int columnIndex) throws SQLException {
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        when(resultSetMock.getAsciiStream(COL_INDEX)).thenReturn(stream);
+        assertSame(stream, testee().getAsciiStream(COL_INDEX));
     }
 
     @Test
-    @Deprecated
-    public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUnicodeStream'");
+    void getUnicodeStream(final int columnIndex) throws SQLException {
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        when(resultSetMock.getUnicodeStream(COL_INDEX)).thenReturn(stream);
+        assertSame(stream, testee().getUnicodeStream(COL_INDEX));
     }
 
     @Test
-    public InputStream getBinaryStream(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBinaryStream'");
+    void getBinaryStream(final int columnIndex) throws SQLException {
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        when(resultSetMock.getBinaryStream(COL_INDEX)).thenReturn(stream);
+        assertSame(stream, testee().getBinaryStream(COL_INDEX));
+
     }
 
     @Test
-    public String getString(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getString'");
+    void getString(final String columnLabel) throws SQLException {
+        when(resultSetMock.getString(COL_LABEL)).thenReturn("c");
+        assertEquals("c", testee().getString(COL_LABEL));
     }
 
     @Test
@@ -197,16 +200,15 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public double getDouble(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDouble'");
+    void getDouble(final String columnLabel) throws SQLException {
+        when(resultSetMock.getDouble(COL_LABEL)).thenReturn(2.2);
+        assertEquals(2.2, testee().getDouble(COL_LABEL));
     }
 
     @Test
-    @Deprecated
-    public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBigDecimal'");
+    void getBigDecimal(final String columnLabel, final int scale) throws SQLException {
+        when(resultSetMock.getBigDecimal(COL_LABEL, 2)).thenReturn(BigDecimal.TEN);
+        assertEquals(BigDecimal.TEN, testee().getBigDecimal(COL_LABEL, 2));
     }
 
     @Test
@@ -216,46 +218,49 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public Date getDate(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDate'");
+    void getDate(final String columnLabel) throws SQLException {
+        when(resultSetMock.getDate(COL_LABEL)).thenReturn(new Date(3));
+        assertEquals(new Date(3), testee().getDate(COL_LABEL));
     }
 
     @Test
-    public Time getTime(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTime'");
+    void getTime(final String columnLabel) throws SQLException {
+        when(resultSetMock.getTime(COL_LABEL)).thenReturn(new Time(3));
+        assertEquals(new Time(3), testee().getTime(COL_LABEL));
     }
 
     @Test
-    public Timestamp getTimestamp(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTimestamp'");
+    void getTimestamp(final String columnLabel) throws SQLException {
+        when(resultSetMock.getTimestamp(COL_LABEL)).thenReturn(new Timestamp(3));
+        assertEquals(new Timestamp(3), testee().getTimestamp(COL_LABEL));
     }
 
     @Test
-    public InputStream getAsciiStream(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAsciiStream'");
+    void getAsciiStream(final String columnLabel) throws SQLException {
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        when(resultSetMock.getAsciiStream(COL_LABEL)).thenReturn(stream);
+        assertSame(stream, testee().getAsciiStream(COL_LABEL));
     }
 
     @Test
-    @Deprecated
-    public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUnicodeStream'");
+    void getUnicodeStream(final String columnLabel) throws SQLException {
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        when(resultSetMock.getUnicodeStream(COL_LABEL)).thenReturn(stream);
+        assertSame(stream, testee().getUnicodeStream(COL_LABEL));
     }
 
     @Test
-    public InputStream getBinaryStream(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBinaryStream'");
+    void getBinaryStream(final String columnLabel) throws SQLException {
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        when(resultSetMock.getBinaryStream(COL_LABEL)).thenReturn(stream);
+        assertSame(stream, testee().getBinaryStream(COL_LABEL));
     }
 
     @Test
-    public SQLWarning getWarnings() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getWarnings'");
+    void getWarnings() throws SQLException {
+        final SQLWarning warning = mock(SQLWarning.class);
+        when(resultSetMock.getWarnings()).thenReturn(warning);
+        assertSame(warning, testee().getWarnings());
     }
 
     @Test
@@ -265,9 +270,10 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public String getCursorName() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCursorName'");
+    void getCursorName() throws SQLException {
+        when(resultSetMock.getCursorName()).thenReturn("c");
+        assertEquals("c", testee().getCursorName());
+
     }
 
     @Test
@@ -277,15 +283,17 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public Object getObject(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getObject'");
+    void getObject(final int columnIndex) throws SQLException {
+        final Object object = new Object();
+        when(resultSetMock.getObject(COL_INDEX)).thenReturn(object);
+        assertSame(object, testee().getObject(COL_INDEX));
     }
 
     @Test
-    public Object getObject(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getObject'");
+    void getObject(final String columnLabel) throws SQLException {
+        final Object object = new Object();
+        when(resultSetMock.getObject(COL_LABEL)).thenReturn(object);
+        assertSame(object, testee().getObject(COL_LABEL));
     }
 
     @Test
@@ -307,15 +315,15 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBigDecimal'");
+    void getBigDecimal(final int columnIndex) throws SQLException {
+        when(resultSetMock.getBigDecimal(COL_INDEX)).thenReturn(BigDecimal.TEN);
+        assertEquals(BigDecimal.TEN, testee().getBigDecimal(COL_INDEX));
     }
 
     @Test
-    public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBigDecimal'");
+    void getBigDecimal(final String columnLabel) throws SQLException {
+        when(resultSetMock.getBigDecimal(COL_LABEL)).thenReturn(BigDecimal.TEN);
+        assertEquals(BigDecimal.TEN, testee().getBigDecimal(COL_LABEL));
     }
 
     @Test
@@ -530,14 +538,14 @@ class DelegatingResultSetTest {
 
     @Test
     void updateAsciiStream(final int columnIndex, final InputStream x, final int length) throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_INDEX, stream, 3);
         verify(resultSetMock).updateAsciiStream(eq(COL_INDEX), same(stream), eq(3));
     }
 
     @Test
     void updateBinaryStream(final int columnIndex, final InputStream x, final int length) throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_INDEX, stream, 3);
         verify(resultSetMock).updateBinaryStream(eq(COL_INDEX), same(stream), eq(3));
     }
@@ -650,7 +658,7 @@ class DelegatingResultSetTest {
 
     @Test
     void updateAsciiStream(final String columnLabel, final InputStream x, final int length) throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_LABEL, stream, 3);
         verify(resultSetMock).updateAsciiStream(eq(COL_LABEL), same(stream), eq(3));
     }
@@ -658,7 +666,7 @@ class DelegatingResultSetTest {
     @Test
     void updateBinaryStream(final String columnLabel, final InputStream x, final int length)
             throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_LABEL, stream, 3);
         verify(resultSetMock).updateBinaryStream(eq(COL_LABEL), same(stream), eq(3));
     }
@@ -728,105 +736,126 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public Statement getStatement() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getStatement'");
+    void getStatement() throws SQLException {
+        final Statement stmt = mock(Statement.class);
+        when(resultSetMock.getStatement()).thenReturn(stmt);
+        assertSame(stmt, testee().getStatement());
     }
 
     @Test
-    public Object getObject(final int columnIndex, final Map<String, Class<?>> map) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getObject'");
+    void getObject(final int columnIndex, final Map<String, Class<?>> m) throws SQLException {
+        final Object object = new Object();
+        final Map<String, Class<?>> map = new HashMap<>();
+        when(resultSetMock.getObject(eq(COL_INDEX), same(map))).thenReturn(object);
+        assertSame(object, testee().getObject(COL_INDEX, map));
     }
 
     @Test
-    public Ref getRef(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRef'");
+    void getRef(final int columnIndex) throws SQLException {
+        final Ref ref = mock(Ref.class);
+        when(resultSetMock.getRef(COL_INDEX)).thenReturn(ref);
+        assertSame(ref, testee().getRef(COL_INDEX));
     }
 
     @Test
-    public Blob getBlob(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBlob'");
+    void getBlob(final int columnIndex) throws SQLException {
+        final Blob blob = mock(Blob.class);
+        when(resultSetMock.getBlob(COL_INDEX)).thenReturn(blob);
+        assertSame(blob, testee().getBlob(COL_INDEX));
     }
 
     @Test
-    public Clob getClob(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getClob'");
+    void getClob(final int columnIndex) throws SQLException {
+        final Clob clob = mock(Clob.class);
+        when(resultSetMock.getClob(COL_INDEX)).thenReturn(clob);
+        assertSame(clob, testee().getClob(COL_INDEX));
     }
 
     @Test
-    public Array getArray(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getArray'");
+    void getArray(final int columnIndex) throws SQLException {
+        final Array array = mock(Array.class);
+        when(resultSetMock.getArray(COL_INDEX)).thenReturn(array);
+        assertSame(array, testee().getArray(COL_INDEX));
     }
 
     @Test
-    public Object getObject(final String columnLabel, final Map<String, Class<?>> map) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getObject'");
+    void getObject(final String columnLabel, final Map<String, Class<?>> m) throws SQLException {
+        final Object object = new Object();
+        final Map<String, Class<?>> map = new HashMap<>();
+        when(resultSetMock.getObject(eq(COL_LABEL), same(map))).thenReturn(object);
+        assertSame(object, testee().getObject(COL_LABEL, map));
     }
 
     @Test
-    public Ref getRef(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRef'");
+    void getRef(final String columnLabel) throws SQLException {
+        final Ref ref = mock(Ref.class);
+        when(resultSetMock.getRef(COL_LABEL)).thenReturn(ref);
+        assertSame(ref, testee().getRef(COL_LABEL));
+
     }
 
     @Test
-    public Blob getBlob(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBlob'");
+    void getBlob(final String columnLabel) throws SQLException {
+        final Blob blob = mock(Blob.class);
+        when(resultSetMock.getBlob(COL_LABEL)).thenReturn(blob);
+        assertSame(blob, testee().getBlob(COL_LABEL));
+
     }
 
     @Test
-    public Clob getClob(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getClob'");
+    void getClob(final String columnLabel) throws SQLException {
+        final Clob clob = mock(Clob.class);
+        when(resultSetMock.getClob(COL_LABEL)).thenReturn(clob);
+        assertSame(clob, testee().getClob(COL_LABEL));
     }
 
     @Test
-    public Array getArray(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getArray'");
+    void getArray(final String columnLabel) throws SQLException {
+        final Array array = mock(Array.class);
+        when(resultSetMock.getArray(COL_LABEL)).thenReturn(array);
+        assertSame(array, testee().getArray(COL_LABEL));
     }
 
     @Test
-    public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDate'");
+    void getDate(final int columnIndex, final Calendar c) throws SQLException {
+        final Calendar cal = Calendar.getInstance();
+        when(resultSetMock.getDate(eq(COL_INDEX), same(cal))).thenReturn(new Date(3));
+        assertEquals(new Date(3), testee().getDate(COL_INDEX, cal));
     }
 
     @Test
-    public Date getDate(final String columnLabel, final Calendar cal) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDate'");
+    void getDate(final String columnLabel, final Calendar c) throws SQLException {
+        final Calendar cal = Calendar.getInstance();
+        when(resultSetMock.getDate(eq(COL_LABEL), same(cal))).thenReturn(new Date(3));
+        assertEquals(new Date(3), testee().getDate(COL_LABEL, cal));
     }
 
     @Test
-    public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTime'");
+    void getTime(final int columnIndex, final Calendar c) throws SQLException {
+        final Calendar cal = Calendar.getInstance();
+        when(resultSetMock.getTime(eq(COL_INDEX), same(cal))).thenReturn(new Time(3));
+        assertEquals(new Time(3), testee().getTime(COL_INDEX, cal));
     }
 
     @Test
-    public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTime'");
+    void getTime(final String columnLabel, final Calendar c) throws SQLException {
+        final Calendar cal = Calendar.getInstance();
+        when(resultSetMock.getTime(eq(COL_LABEL), same(cal))).thenReturn(new Time(3));
+        assertEquals(new Time(3), testee().getTime(COL_LABEL, cal));
     }
 
     @Test
-    public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTimestamp'");
+    void getTimestamp(final int columnIndex, final Calendar c) throws SQLException {
+        final Calendar cal = Calendar.getInstance();
+        when(resultSetMock.getTimestamp(eq(COL_INDEX), same(cal))).thenReturn(new Timestamp(3));
+        assertEquals(new Timestamp(3), testee().getTimestamp(COL_INDEX, cal));
     }
 
     @Test
-    public Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTimestamp'");
+    void getTimestamp(final String columnLabel, final Calendar c) throws SQLException {
+        final Calendar cal = Calendar.getInstance();
+        when(resultSetMock.getTimestamp(eq(COL_LABEL), same(cal))).thenReturn(new Timestamp(3));
+        assertEquals(new Timestamp(3), testee().getTimestamp(COL_LABEL, cal));
     }
 
     @Test
@@ -1000,15 +1029,15 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    public String getNString(final int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNString'");
+    void getNString(final int columnIndex) throws SQLException {
+        when(resultSetMock.getNString(COL_INDEX)).thenReturn("c");
+        assertEquals("c", testee().getNString(COL_INDEX));
     }
 
     @Test
-    public String getNString(final String columnLabel) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNString'");
+    void getNString(final String columnLabel) throws SQLException {
+        when(resultSetMock.getNString(COL_LABEL)).thenReturn("c");
+        assertEquals("c", testee().getNString(COL_LABEL));
     }
 
     @Test
@@ -1040,14 +1069,14 @@ class DelegatingResultSetTest {
 
     @Test
     void updateAsciiStream(final int columnIndex, final InputStream x, final long length) throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_INDEX, stream, 3L);
         verify(resultSetMock).updateAsciiStream(eq(COL_INDEX), same(stream), eq(3L));
     }
 
     @Test
     void updateBinaryStream(final int columnIndex, final InputStream x, final long length) throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_INDEX, stream, 3L);
         verify(resultSetMock).updateBinaryStream(eq(COL_INDEX), same(stream), eq(3L));
     }
@@ -1062,7 +1091,7 @@ class DelegatingResultSetTest {
     @Test
     void updateAsciiStream(final String columnLabel, final InputStream x, final long length)
             throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_LABEL, stream, 3L);
         verify(resultSetMock).updateAsciiStream(eq(COL_LABEL), same(stream), eq(3L));
     }
@@ -1070,7 +1099,7 @@ class DelegatingResultSetTest {
     @Test
     void updateBinaryStream(final String columnLabel, final InputStream x, final long length)
             throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_LABEL, stream, 3L);
         verify(resultSetMock).updateBinaryStream(eq(COL_LABEL), same(stream), eq(3L));
     }
@@ -1143,14 +1172,14 @@ class DelegatingResultSetTest {
 
     @Test
     void updateAsciiStream(final int columnIndex, final InputStream x) throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_INDEX, stream);
         verify(resultSetMock).updateAsciiStream(eq(COL_INDEX), same(stream));
     }
 
     @Test
     void updateBinaryStream(final int columnIndex, final InputStream x) throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_INDEX, stream);
         verify(resultSetMock).updateBinaryStream(eq(COL_INDEX), same(stream));
     }
@@ -1164,14 +1193,14 @@ class DelegatingResultSetTest {
 
     @Test
     void updateAsciiStream(final String columnLabel, final InputStream x) throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateAsciiStream(COL_LABEL, stream);
         verify(resultSetMock).updateAsciiStream(eq(COL_LABEL), same(stream));
     }
 
     @Test
     void updateBinaryStream(final String columnLabel, final InputStream x) throws SQLException {
-        final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[] { 2 });
+        final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBinaryStream(COL_LABEL, stream);
         verify(resultSetMock).updateBinaryStream(eq(COL_LABEL), same(stream));
     }
