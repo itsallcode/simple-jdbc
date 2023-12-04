@@ -60,6 +60,7 @@ testing {
         test {
             dependencies {
                 implementation libs.h2
+                implementation libs.mockitoJunit
             }
         }
         integrationTest(JvmTestSuite) {
