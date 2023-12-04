@@ -19,7 +19,7 @@ class H2TypeTest {
     @ParameterizedTest
     @MethodSource("testTypes")
     void types(final TypeTest test) {
-        try (SimpleConnection connection = H2TestFixture.createMemConnectionWithModernTypes();
+        try (SimpleConnection connection = H2TestFixture.createMemConnection();
                 SimpleResultSet<Row> result = connection
                         .query("select cast('" + test.value() + "' as " + test.type() + ")")) {
             final Object value = result.toList().get(0).get(0).getValue();
@@ -32,7 +32,7 @@ class H2TypeTest {
     @ParameterizedTest
     @MethodSource("testTypes")
     void nullValues(final TypeTest test) {
-        try (SimpleConnection connection = H2TestFixture.createMemConnectionWithModernTypes();
+        try (SimpleConnection connection = H2TestFixture.createMemConnection();
                 SimpleResultSet<Row> result = connection
                         .query("select cast(NULL as " + test.type() + ")")) {
             final Object value = result.toList().get(0).get(0).getValue();

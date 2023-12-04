@@ -35,7 +35,7 @@ class LegacyTypeITest {
     }
 
     SimpleConnection connect() {
-        return ConnectionFactory.create(Context.builder().useModernTypes(true).build()).create(container.getJdbcUrl(),
+        return ConnectionFactory.create(Context.builder().build()).create(container.getJdbcUrl(),
                 container.getUsername(), container.getPassword());
     }
 
