@@ -31,7 +31,7 @@ public interface RowMapper<T> {
      * @return a new row mapper
      */
     public static RowMapper<Row> generic() {
-        return simple(row -> row);
+        return generic(row -> row);
     }
 
     /**
@@ -41,18 +41,28 @@ public interface RowMapper<T> {
      * @return a new row mapper
      */
     public static RowMapper<List<Object>> columnValueList() {
-        return simple(row -> row.getColumnValues().stream().map(ColumnValue::getValue).toList());
+        return generic(row -> row.getColumnValues().stream().map(ColumnValue::getValue).toList());
     }
 
-    /**
-     * Create a {@link RowMapper} that builds custom objects for each row.
-     * 
-     * @param converter row type converter
-     * @param <T>       row type
-     * @return a new row mapper
-     */
-    public static <T> RowMapper<T> simple(final ColumnValuesConverter<T> converter) {
+    private static <T> RowMapper<T> generic(final ColumnValuesConverter<T> converter) {
         return new GenericRowMapper<>(converter);
+    }
+
+    public static <T> RowMapper<T> create(final Simple<T> mapper) {
+        return (context, resultSet, rowNum) -> mapper.mapRow(resultSet, rowNum);
+    }
+
+    @FunctionalInterface
+    public interface Simple<T> {
+        /**
+         * Converts a single row from a {@link ResultSet} to a generic row type.
+         * 
+         * @param resultSet result set
+         * @param rowNum    the current row number (zero based)
+         * @return the converted row
+         * @throws SQLException if accessing the result set fails
+         */
+        T mapRow(ResultSet resultSet, int rowNum) throws SQLException;
     }
 
     /**

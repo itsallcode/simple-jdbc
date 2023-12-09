@@ -60,7 +60,6 @@ public class Context {
          * @param useModernTypes {@code true} to convert legacy types
          * @return {@code this} for fluent programming
          */
-        @Deprecated
         public ContextBuilder useModernTypes(final boolean useModernTypes) {
             this.useModernTypes = useModernTypes;
             return this;
