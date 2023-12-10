@@ -48,12 +48,28 @@ public interface RowMapper<T> {
         return new GenericRowMapper<>(converter);
     }
 
-    public static <T> RowMapper<T> create(final Simple<T> mapper) {
+    /**
+     * Creates a new new {@link RowMapper} from a {@link SimpleRowMapper}.
+     * <p>
+     * Use this if the mapper doesn't need the {@link Context}.
+     * 
+     * @param <T>    generic row type
+     * @param mapper the simple row mapper
+     * @return a new {@link RowMapper}
+     */
+    public static <T> RowMapper<T> create(final SimpleRowMapper<T> mapper) {
         return (context, resultSet, rowNum) -> mapper.mapRow(resultSet, rowNum);
     }
 
+    /**
+     * Converts a single row from a {@link ResultSet} to a generic row type.
+     * <p>
+     * Use this interface if you don't need the {@link Context}.
+     * 
+     * @param <T> generic row type
+     */
     @FunctionalInterface
-    public interface Simple<T> {
+    public interface SimpleRowMapper<T> {
         /**
          * Converts a single row from a {@link ResultSet} to a generic row type.
          * 
