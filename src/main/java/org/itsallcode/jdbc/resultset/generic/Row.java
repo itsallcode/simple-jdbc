@@ -1,8 +1,8 @@
-package org.itsallcode.jdbc.resultset;
+package org.itsallcode.jdbc.resultset.generic;
 
 import java.util.List;
 
-import org.itsallcode.jdbc.resultset.SimpleMetaData.ColumnMetaData;
+import org.itsallcode.jdbc.resultset.generic.SimpleMetaData.ColumnMetaData;
 
 /**
  * Represents a generic row from a result set.

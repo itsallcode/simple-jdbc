@@ -1,4 +1,4 @@
-package org.itsallcode.jdbc.resultset;
+package org.itsallcode.jdbc.resultset.generic;
 
 import java.sql.*;
 import java.util.Calendar;

@@ -9,8 +9,8 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.h2.api.Interval;
-import org.itsallcode.jdbc.resultset.Row;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

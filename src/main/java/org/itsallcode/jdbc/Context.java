@@ -1,6 +1,6 @@
 package org.itsallcode.jdbc;
 
-import org.itsallcode.jdbc.resultset.ValueExtractorFactory;
+import org.itsallcode.jdbc.resultset.generic.ValueExtractorFactory;
 
 /**
  * This represents a context with configuration for the Simple JDBC framework.

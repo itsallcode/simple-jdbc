@@ -1,4 +1,4 @@
-package org.itsallcode.jdbc.resultset;
+package org.itsallcode.jdbc.resultset.generic;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,19 +7,20 @@ import java.util.List;
 
 import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
-import org.itsallcode.jdbc.resultset.SimpleMetaData.ColumnMetaData;
+import org.itsallcode.jdbc.resultset.RowMapper;
+import org.itsallcode.jdbc.resultset.generic.SimpleMetaData.ColumnMetaData;
 
 /**
  * This {@link RowMapper} converts a row to the generic {@link Row} type.
  */
-class GenericRowMapper<T> implements RowMapper<T> {
+public class GenericRowMapper<T> implements RowMapper<T> {
     private ResultSetRowBuilder rowBuilder;
     private final ColumnValuesConverter<T> converter;
 
     /**
      * Create a new instance.
      */
-    GenericRowMapper(final ColumnValuesConverter<T> converter) {
+    public GenericRowMapper(final ColumnValuesConverter<T> converter) {
         this.converter = converter;
     }
 
@@ -58,5 +59,21 @@ class GenericRowMapper<T> implements RowMapper<T> {
                         e);
             }
         }
+    }
+
+    /**
+     * A simplified row mapper that gets a list of column values as input.
+     * 
+     * @param <T> generic row type
+     */
+    @FunctionalInterface
+    public interface ColumnValuesConverter<T> {
+        /**
+         * Convert a single row.
+         * 
+         * @param row column values
+         * @return converted object
+         */
+        T mapRow(Row row);
     }
 }

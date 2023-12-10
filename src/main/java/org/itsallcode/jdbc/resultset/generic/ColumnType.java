@@ -1,4 +1,4 @@
-package org.itsallcode.jdbc.resultset;
+package org.itsallcode.jdbc.resultset.generic;
 
 /**
  * Represents the type of a column.

@@ -8,8 +8,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.resultset.Row;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -12,7 +12,9 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.identifier.Identifier;
-import org.itsallcode.jdbc.resultset.*;
+import org.itsallcode.jdbc.resultset.RowMapper;
+import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
 
 class SimpleConnectionITest {

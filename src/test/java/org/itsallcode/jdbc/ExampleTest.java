@@ -8,8 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.resultset.Row;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
 
 class ExampleTest {

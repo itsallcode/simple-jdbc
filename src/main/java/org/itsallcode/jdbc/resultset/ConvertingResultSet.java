@@ -5,12 +5,10 @@ import java.sql.SQLException;
 
 class ConvertingResultSet extends DelegatingResultSet {
     private final ResultSet delegate;
-    private final ValueConverter converter;
 
-    ConvertingResultSet(final ResultSet delegate, final ValueConverter converter) {
+    ConvertingResultSet(final ResultSet delegate) {
         super(delegate);
         this.delegate = delegate;
-        this.converter = converter;
     }
 
     @Override

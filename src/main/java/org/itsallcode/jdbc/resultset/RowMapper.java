@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.itsallcode.jdbc.Context;
+import org.itsallcode.jdbc.resultset.generic.*;
+import org.itsallcode.jdbc.resultset.generic.GenericRowMapper.ColumnValuesConverter;
 
 /**
  * Converts a single row from a {@link ResultSet} to a generic row type.
@@ -82,19 +84,4 @@ public interface RowMapper<T> {
         T mapRow(ResultSet resultSet, int rowNum) throws SQLException;
     }
 
-    /**
-     * A simplified row mapper that gets a list of column values as input.
-     * 
-     * @param <T> generic row type
-     */
-    @FunctionalInterface
-    public interface ColumnValuesConverter<T> {
-        /**
-         * Convert a single row.
-         * 
-         * @param row column values
-         * @return converted object
-         */
-        T mapRow(Row row);
-    }
 }

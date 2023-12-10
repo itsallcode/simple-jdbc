@@ -1,4 +1,4 @@
-package org.itsallcode.jdbc.resultset;
+package org.itsallcode.jdbc.resultset.generic;
 
 class ValueConverterFactory {
     ValueConverter build(final ColumnType type) {

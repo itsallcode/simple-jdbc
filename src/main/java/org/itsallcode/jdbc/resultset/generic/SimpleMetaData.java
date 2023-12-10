@@ -1,4 +1,4 @@
-package org.itsallcode.jdbc.resultset;
+package org.itsallcode.jdbc.resultset.generic;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
+import org.itsallcode.jdbc.resultset.*;
 
 /**
  * A wrapper for {@link ResultSetMetaData} to simplify usage.

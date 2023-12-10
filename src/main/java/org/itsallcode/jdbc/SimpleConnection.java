@@ -11,7 +11,9 @@ import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.identifier.Identifier;
 import org.itsallcode.jdbc.identifier.SimpleIdentifier;
-import org.itsallcode.jdbc.resultset.*;
+import org.itsallcode.jdbc.resultset.RowMapper;
+import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.Row;
 
 /**
  * A simplified version of a JDBC {@link Connection}. Create new connections
