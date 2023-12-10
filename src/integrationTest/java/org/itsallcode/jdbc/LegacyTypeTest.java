@@ -19,7 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolService;
 
-class LegacyTypeITest {
+class LegacyTypeTest {
 
     private static final ExasolContainer<?> container = new ExasolContainer<>("8.23.1")
             .withRequiredServices(ExasolService.JDBC).withReuse(true);
@@ -35,8 +35,8 @@ class LegacyTypeITest {
     }
 
     SimpleConnection connect() {
-        return ConnectionFactory.create(Context.builder().build()).create(container.getJdbcUrl(),
-                container.getUsername(), container.getPassword());
+        return ConnectionFactory.create(Context.builder().useModernTypes(true).build()) //
+                .create(container.getJdbcUrl(), container.getUsername(), container.getPassword());
     }
 
     @ParameterizedTest

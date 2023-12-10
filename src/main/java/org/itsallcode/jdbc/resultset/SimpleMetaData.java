@@ -20,17 +20,24 @@ public class SimpleMetaData {
 
     static SimpleMetaData create(final ResultSetMetaData metaData, final Context context) {
         try {
-            final int columnCount = metaData.getColumnCount();
-            final List<ColumnMetaData> columns = new ArrayList<>(columnCount);
-            for (int column = 1; column <= columnCount; column++) {
-                final ColumnMetaData columnMetaData = ColumnMetaData.create(metaData,
-                        context.getValueExtractorFactory(), column);
-                columns.add(columnMetaData);
-            }
+            final List<ColumnMetaData> columns = createColumnMetaData(metaData, context);
             return new SimpleMetaData(columns);
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error extracting meta data", e);
         }
+    }
+
+    private static List<ColumnMetaData> createColumnMetaData(final ResultSetMetaData metaData, final Context context)
+            throws SQLException {
+        final ValueExtractorFactory valueExtractorFactory = context.getValueExtractorFactory();
+        final int columnCount = metaData.getColumnCount();
+        final List<ColumnMetaData> columns = new ArrayList<>(columnCount);
+        for (int column = 1; column <= columnCount; column++) {
+            final ColumnMetaData columnMetaData = ColumnMetaData.create(metaData,
+                    valueExtractorFactory, column);
+            columns.add(columnMetaData);
+        }
+        return columns;
     }
 
     /**
