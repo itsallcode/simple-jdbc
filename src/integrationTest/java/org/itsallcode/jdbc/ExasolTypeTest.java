@@ -19,7 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolService;
 
-class LegacyTypeTest {
+class ExasolTypeTest {
 
     private static final ExasolContainer<?> container = new ExasolContainer<>("8.23.1")
             .withRequiredServices(ExasolService.JDBC).withReuse(true);
@@ -41,7 +41,7 @@ class LegacyTypeTest {
 
     @ParameterizedTest
     @MethodSource("testTypes")
-    void type(final TypeTest test) {
+    void genericRowType(final TypeTest test) {
         try (SimpleResultSet<Row> result = connect()
                 .query("select cast('" + test.value() + "' as " + test.type() + ")")) {
             final Object value = result.toList().get(0).get(0).getValue();
@@ -53,7 +53,7 @@ class LegacyTypeTest {
 
     @ParameterizedTest
     @MethodSource("testTypes")
-    void nullValue(final TypeTest test) {
+    void genericRowNullValue(final TypeTest test) {
         try (SimpleResultSet<Row> result = connect()
                 .query("select cast(NULL as " + test.type() + ")")) {
             assertThat(result.toList().get(0).get(0).getValue())
