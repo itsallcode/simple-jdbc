@@ -1,7 +1,5 @@
 package org.itsallcode.jdbc.resultset;
 
-import java.sql.ResultSet;
-
 /**
  * This factory creates {@link ResultSetValueExtractor} based on
  * {@link ColumnType}.
@@ -15,16 +13,6 @@ public interface ValueExtractorFactory {
      * @return the new value extractor
      */
     ResultSetValueExtractor create(final ColumnType type);
-
-    /**
-     * Create a new factory that does not convert values but returns them as
-     * returned by {@link ResultSet#getObject(int)}.
-     * 
-     * @return a new factory
-     */
-    public static ValueExtractorFactory create() {
-        return new OriginalValueExtractorFactor();
-    }
 
     /**
      * Create a new factory that convert values as follows:
