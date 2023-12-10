@@ -12,6 +12,8 @@ import org.itsallcode.jdbc.resultset.generic.SimpleMetaData.ColumnMetaData;
 
 /**
  * This {@link RowMapper} converts a row to the generic {@link Row} type.
+ * 
+ * @param <T> generic row type
  */
 public class GenericRowMapper<T> implements RowMapper<T> {
     private ResultSetRowBuilder rowBuilder;
@@ -19,6 +21,9 @@ public class GenericRowMapper<T> implements RowMapper<T> {
 
     /**
      * Create a new instance.
+     * 
+     * @param converter optionally converts each generic {@link Row} to a different
+     *                  type.
      */
     public GenericRowMapper(final ColumnValuesConverter<T> converter) {
         this.converter = converter;
