@@ -300,6 +300,7 @@ class DelegatingResultSet implements ResultSet {
     }
 
     @Override
+    @SuppressWarnings("java:S2232") // Need to call isLast() for delegation
     public boolean isLast() throws SQLException {
         return delegate.isLast();
     }
