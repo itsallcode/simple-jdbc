@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.h2.api.Interval;
+import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 class H2TypeTest {
     @ParameterizedTest
     @MethodSource("testTypes")
-    void types(final TypeTest test) {
+    void genericRowValueTypes(final TypeTest test) {
         try (SimpleConnection connection = H2TestFixture.createMemConnection();
                 SimpleResultSet<Row> result = connection
                         .query("select cast('" + test.value() + "' as " + test.type() + ")")) {
@@ -31,11 +32,41 @@ class H2TypeTest {
 
     @ParameterizedTest
     @MethodSource("testTypes")
-    void nullValues(final TypeTest test) {
+    void genericRowNullTypes(final TypeTest test) {
         try (SimpleConnection connection = H2TestFixture.createMemConnection();
                 SimpleResultSet<Row> result = connection
                         .query("select cast(NULL as " + test.type() + ")")) {
             final Object value = result.toList().get(0).get(0).getValue();
+            assertThat(value).isNull();
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("testTypes")
+    void resultSetValueTypes(final TypeTest test) {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection();
+                SimpleResultSet<Object> result = connection
+                        .query("select cast('" + test.value() + "' as " + test.type() + ")",
+                                RowMapper.create(
+                                        (resultSet, rowNum) -> resultSet.getObject(1,
+                                                test.expectedValue().getClass())))) {
+            final Object value = result.toList().get(0);
+            assertAll(
+                    () -> assertThat(value.getClass()).isEqualTo(test.expectedValue().getClass()),
+                    () -> assertThat(value).isEqualTo(test.expectedValue()));
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("testTypes")
+    void resultSetValueTypesNull(final TypeTest test) {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection();
+                SimpleResultSet<Object> result = connection
+                        .query("select cast(NULL as " + test.type() + ")",
+                                RowMapper.create(
+                                        (resultSet, rowNum) -> resultSet.getObject(1,
+                                                test.expectedValue().getClass())))) {
+            final Object value = result.toList().get(0);
             assertThat(value).isNull();
         }
     }
