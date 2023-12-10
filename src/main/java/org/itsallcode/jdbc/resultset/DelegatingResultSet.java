@@ -83,6 +83,9 @@ class DelegatingResultSet implements ResultSet {
 
     /**
      * {@inheritDoc}
+     * 
+     * @deprecated Use {@code getBigDecimal(int columnIndex)} or
+     *             {@code getBigDecimal(String columnLabel)}
      */
     @Override
     @Deprecated
@@ -117,6 +120,9 @@ class DelegatingResultSet implements ResultSet {
 
     /**
      * {@inheritDoc}
+     * 
+     * @deprecated use {@code getCharacterStream} in place of
+     *             {@code getUnicodeStream}
      */
     @Override
     @Deprecated
@@ -171,6 +177,9 @@ class DelegatingResultSet implements ResultSet {
 
     /**
      * {@inheritDoc}
+     * 
+     * @deprecated Use {@code getBigDecimal(int columnIndex)} or
+     *             {@code getBigDecimal(String columnLabel)}
      */
     @Override
     @Deprecated
@@ -205,6 +214,8 @@ class DelegatingResultSet implements ResultSet {
 
     /**
      * {@inheritDoc}
+     * 
+     * @deprecated use {@code getCharacterStream} instead
      */
     @Override
     @Deprecated
