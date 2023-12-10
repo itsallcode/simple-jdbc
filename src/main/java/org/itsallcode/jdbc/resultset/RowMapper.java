@@ -64,7 +64,8 @@ public interface RowMapper<T> {
     /**
      * Converts a single row from a {@link ResultSet} to a generic row type.
      * <p>
-     * Use this interface if you don't need the {@link Context}.
+     * Use this interface with method {@link RowMapper#create(SimpleRowMapper)} if
+     * you don't need the {@link Context}.
      * 
      * @param <T> generic row type
      */
@@ -83,6 +84,8 @@ public interface RowMapper<T> {
 
     /**
      * A simplified row mapper that gets a list of column values as input.
+     * 
+     * @param <T> generic row type
      */
     @FunctionalInterface
     public interface ColumnValuesConverter<T> {

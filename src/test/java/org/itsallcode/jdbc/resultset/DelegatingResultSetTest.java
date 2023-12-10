@@ -8,8 +8,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
@@ -869,15 +868,15 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void getURLIndex() throws SQLException, MalformedURLException {
-        final URL url = new URL("https://example.com");
+    void getURLIndex() throws SQLException, MalformedURLException, URISyntaxException {
+        final URL url = new URI("https://example.com").toURL();
         when(resultSetMock.getURL(COL_INDEX)).thenReturn(url);
         assertSame(url, testee().getURL(COL_INDEX));
     }
 
     @Test
-    void getURLLabel() throws SQLException, MalformedURLException {
-        final URL url = new URL("https://example.com");
+    void getURLLabel() throws SQLException, MalformedURLException, URISyntaxException {
+        final URL url = new URI("https://example.com").toURL();
         when(resultSetMock.getURL(COL_LABEL)).thenReturn(url);
         assertSame(url, testee().getURL(COL_LABEL));
     }
