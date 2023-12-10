@@ -97,7 +97,7 @@ sonar {
   }
 }
 
-rootProject.tasks['sonarqube'].dependsOn(tasks['testCodeCoverageReport'], tasks['integrationTestCodeCoverageReport'])
+rootProject.tasks['sonar'].dependsOn(tasks['testCodeCoverageReport'], tasks['integrationTestCodeCoverageReport'])
 
 def getPropertyWithDefault(String name, String defaultValue) {
     if(project.hasProperty(name)) {
