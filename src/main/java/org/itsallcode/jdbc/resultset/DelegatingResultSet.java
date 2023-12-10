@@ -81,6 +81,9 @@ class DelegatingResultSet implements ResultSet {
         return delegate.getDouble(columnIndex);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
@@ -112,6 +115,9 @@ class DelegatingResultSet implements ResultSet {
         return delegate.getAsciiStream(columnIndex);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
@@ -163,6 +169,9 @@ class DelegatingResultSet implements ResultSet {
         return delegate.getDouble(columnLabel);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
@@ -194,6 +203,9 @@ class DelegatingResultSet implements ResultSet {
         return delegate.getAsciiStream(columnLabel);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
