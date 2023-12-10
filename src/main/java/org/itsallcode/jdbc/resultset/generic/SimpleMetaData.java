@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
-import org.itsallcode.jdbc.resultset.*;
 
 /**
  * A wrapper for {@link ResultSetMetaData} to simplify usage.
