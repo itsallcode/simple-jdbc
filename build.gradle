@@ -18,7 +18,7 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(getPropertyWithDefault('javaVersion', '21'))
+        languageVersion = JavaLanguageVersion.of(getPropertyWithDefault('javaVersion', '17'))
     }
     withJavadocJar()
     withSourcesJar()
@@ -61,6 +61,8 @@ testing {
             dependencies {
                 implementation libs.h2
                 implementation libs.mockitoJunit
+                implementation libs.tostringverifier
+                implementation libs.equalsverifier
             }
         }
         integrationTest(JvmTestSuite) {

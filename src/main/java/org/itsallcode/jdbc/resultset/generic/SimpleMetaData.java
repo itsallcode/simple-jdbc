@@ -74,7 +74,7 @@ public class SimpleMetaData {
             final int displaySize = metaData.getColumnDisplaySize(columnIndex);
             final String label = metaData.getColumnLabel(columnIndex);
             final String name = metaData.getColumnName(columnIndex);
-            final int jdbcType = metaData.getColumnType(columnIndex);
+            final JdbcType jdbcType = JdbcType.forType(metaData.getColumnType(columnIndex));
             final String typeName = metaData.getColumnTypeName(columnIndex);
             final int precision = metaData.getPrecision(columnIndex);
             final int scale = metaData.getScale(columnIndex);
