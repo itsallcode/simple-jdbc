@@ -125,10 +125,7 @@ public final class ColumnType {
         if (scale != other.scale) {
             return false;
         }
-        if (displaySize != other.displaySize) {
-            return false;
-        }
-        return true;
+        return displaySize == other.displaySize;
     }
 
     @Override
