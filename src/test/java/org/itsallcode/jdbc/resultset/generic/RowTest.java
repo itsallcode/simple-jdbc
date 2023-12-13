@@ -6,14 +6,14 @@ import com.jparams.verifier.tostring.ToStringVerifier;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-class ColumnTypeTest {
+class RowTest {
     @Test
     void testToString() {
-        ToStringVerifier.forClass(ColumnType.class).verify();
+        ToStringVerifier.forClass(Row.class).verify();
     }
 
     @Test
     void testEqualsContract() {
-        EqualsVerifier.forClass(ColumnType.class).verify();
+        EqualsVerifier.forClass(Row.class).verify();
     }
 }

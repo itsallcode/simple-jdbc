@@ -6,18 +6,14 @@ import org.itsallcode.jdbc.resultset.generic.SimpleMetaData.ColumnMetaData;
 
 /**
  * Represents a generic row from a result set.
+ * 
+ * @param rowIndex row index (zero based)
+ * @param fields   values for each column
  */
-public class Row {
-    private final int rowIndex;
-    private final List<ColumnValue> fields;
-
-    private Row(final int rowIndex, final List<ColumnValue> fields) {
-        this.rowIndex = rowIndex;
-        this.fields = fields;
-    }
+public record Row(int rowIndex, List<ColumnMetaData> columns, List<ColumnValue> fields) {
 
     static Row create(final int rowIndex, final List<ColumnMetaData> columns, final List<ColumnValue> fields) {
-        return new Row(rowIndex, fields);
+        return new Row(rowIndex, columns, fields);
     }
 
     /**
@@ -59,10 +55,5 @@ public class Row {
      */
     public <T> T get(final int columnIndex, final Class<T> type) {
         return get(columnIndex).getValue(type);
-    }
-
-    @Override
-    public String toString() {
-        return "ResultSetRow [rowIndex=" + rowIndex + ", fields=" + fields + "]";
     }
 }
