@@ -3,14 +3,7 @@ package org.itsallcode.jdbc.resultset.generic;
 /**
  * Represents a generic column value.
  */
-public class ColumnValue {
-    private final ColumnType type;
-    private final Object value;
-
-    ColumnValue(final ColumnType type, final Object value) {
-        this.type = type;
-        this.value = value;
-    }
+public record ColumnValue(ColumnType type, Object value) {
 
     /**
      * Get the column type.
@@ -52,10 +45,5 @@ public class ColumnValue {
 
     private <T> T cast(final Class<T> type) {
         return type.cast(value);
-    }
-
-    @Override
-    public String toString() {
-        return "ResultSetValue [type=" + type + ", value=" + value + "]";
     }
 }
