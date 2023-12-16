@@ -9,7 +9,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.h2.api.Interval;
-import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,11 +46,10 @@ class H2TypeTest {
                 try (SimpleConnection connection = H2TestFixture.createMemConnection();
                                 SimpleResultSet<Object> result = connection
                                                 .query("select cast('" + test.value() + "' as " + test.type() + ")",
-                                                                RowMapper.create(
-                                                                                (resultSet, rowNum) -> resultSet
-                                                                                                .getObject(1,
-                                                                                                                test.expectedValue()
-                                                                                                                                .getClass())))) {
+                                                                (resultSet, rowNum) -> resultSet
+                                                                                .getObject(1,
+                                                                                                test.expectedValue()
+                                                                                                                .getClass()))) {
                         final Object value = result.toList().get(0);
                         assertAll(
                                         () -> assertThat(value.getClass()).isEqualTo(test.expectedValue().getClass()),
@@ -65,11 +63,10 @@ class H2TypeTest {
                 try (SimpleConnection connection = H2TestFixture.createMemConnection();
                                 SimpleResultSet<Object> result = connection
                                                 .query("select cast(NULL as " + test.type() + ")",
-                                                                RowMapper.create(
-                                                                                (resultSet, rowNum) -> resultSet
-                                                                                                .getObject(1,
-                                                                                                                test.expectedValue()
-                                                                                                                                .getClass())))) {
+                                                                (resultSet, rowNum) -> resultSet
+                                                                                .getObject(1,
+                                                                                                test.expectedValue()
+                                                                                                                .getClass()))) {
                         final Object value = result.toList().get(0);
                         assertThat(value).isNull();
                 }

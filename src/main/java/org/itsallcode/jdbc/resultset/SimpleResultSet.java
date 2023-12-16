@@ -16,7 +16,7 @@ import org.itsallcode.jdbc.UncheckedSQLException;
  */
 public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
     private final ResultSet resultSet;
-    private final RowMapper<T> rowMapper;
+    private final ContextRowMapper<T> rowMapper;
     private final Context context;
     private Iterator<T> iterator;
 
@@ -27,7 +27,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
      * @param resultSet the underlying result set
      * @param rowMapper a row mapper for converting each row
      */
-    public SimpleResultSet(final Context context, final ResultSet resultSet, final RowMapper<T> rowMapper) {
+    public SimpleResultSet(final Context context, final ResultSet resultSet, final ContextRowMapper<T> rowMapper) {
         this.context = context;
         this.resultSet = resultSet;
         this.rowMapper = rowMapper;
@@ -92,12 +92,12 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
     private static class ResultSetIterator<T> implements Iterator<T> {
         private final Context context;
         private final SimpleResultSet<T> resultSet;
-        private final RowMapper<T> rowMapper;
+        private final ContextRowMapper<T> rowMapper;
         private boolean hasNext;
         private int currentRowIndex = 0;
 
         private ResultSetIterator(final Context context, final SimpleResultSet<T> simpleResultSet,
-                final RowMapper<T> rowMapper,
+                final ContextRowMapper<T> rowMapper,
                 final boolean hasNext) {
             this.context = context;
             this.resultSet = simpleResultSet;
@@ -106,7 +106,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
         }
 
         public static <T> Iterator<T> create(final Context context, final SimpleResultSet<T> simpleResultSet,
-                final RowMapper<T> rowMapper) {
+                final ContextRowMapper<T> rowMapper) {
             final boolean firstRowExists = simpleResultSet.next();
             return new ResultSetIterator<>(context, simpleResultSet, rowMapper, firstRowExists);
         }

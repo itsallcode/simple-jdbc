@@ -5,14 +5,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
 import org.itsallcode.jdbc.dialect.DbDialect;
-import org.itsallcode.jdbc.resultset.ConvertingResultSet;
-import org.itsallcode.jdbc.resultset.RowMapper;
+import org.itsallcode.jdbc.resultset.*;
 
 /**
- * This {@link RowMapper} converts a row to the generic {@link Row} type.
+ * This {@link ContextRowMapper} converts a row to the generic {@link Row} type.
  * 
  * @param <T> generic row type
  */
@@ -34,7 +32,7 @@ public class GenericRowMapper<T> implements RowMapper<T> {
     }
 
     @Override
-    public T mapRow(final Context context, final ResultSet resultSet, final int rowNum) throws SQLException {
+    public T mapRow(final ResultSet resultSet, final int rowNum) throws SQLException {
         if (rowBuilder == null) {
             rowBuilder = new ResultSetRowBuilder(SimpleMetaData.create(resultSet));
         }

@@ -11,8 +11,7 @@ import java.util.stream.Stream;
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.identifier.Identifier;
 import org.itsallcode.jdbc.identifier.SimpleIdentifier;
-import org.itsallcode.jdbc.resultset.RowMapper;
-import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
 
 /**
@@ -65,7 +64,7 @@ public class SimpleConnection implements AutoCloseable {
      * @return the result set
      */
     public SimpleResultSet<Row> query(final String sql) {
-        return query(sql, RowMapper.generic(dialect));
+        return query(sql, ContextRowMapper.generic(dialect));
     }
 
     /**
@@ -97,7 +96,7 @@ public class SimpleConnection implements AutoCloseable {
         LOG.finest(() -> "Executing query '" + sql + "'...");
         final SimplePreparedStatement statement = prepareStatement(sql);
         statement.setValues(preparedStatementSetter);
-        return statement.executeQuery(rowMapper);
+        return statement.executeQuery(ContextRowMapper.create(rowMapper));
     }
 
     private SimplePreparedStatement prepareStatement(final String sql) {

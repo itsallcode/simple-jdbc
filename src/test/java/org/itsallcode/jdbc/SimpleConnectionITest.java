@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.identifier.Identifier;
-import org.itsallcode.jdbc.resultset.RowMapper;
+import org.itsallcode.jdbc.resultset.ContextRowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.JdbcType;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -67,7 +67,7 @@ class SimpleConnectionITest {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
             try (SimpleResultSet<List<Object>> resultSet = connection.query("select * from test",
-                    RowMapper.columnValueList(connection.getDialect()))) {
+                    ContextRowMapper.columnValueList(connection.getDialect()))) {
                 final List<List<Object>> rows = resultSet.toList();
                 assertThat(rows).hasSize(1);
                 assertThat(rows.get(0)).containsExactly(1, "test");
