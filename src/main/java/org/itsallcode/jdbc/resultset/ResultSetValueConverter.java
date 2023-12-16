@@ -35,10 +35,20 @@ public class ResultSetValueConverter {
         return getConverter(columnIndex).getObject(delegate, columnIndex, type);
     }
 
+    public Object getObject(final ResultSet delegate, final int columnIndex) throws SQLException {
+        return getConverter(columnIndex).getObject(delegate, columnIndex);
+    }
+
     public <T> T getObject(final ResultSet delegate, final String columnLabel, final Class<T> type)
             throws SQLException {
         final int columnIndex = getIndexForLabel(columnLabel);
         return getConverter(columnIndex).getObject(delegate, columnIndex, type);
+    }
+
+    public Object getObject(final ResultSet delegate, final String columnLabel)
+            throws SQLException {
+        final int columnIndex = getIndexForLabel(columnLabel);
+        return getConverter(columnIndex).getObject(delegate, columnIndex);
     }
 
     private int getIndexForLabel(final String columnLabel) {

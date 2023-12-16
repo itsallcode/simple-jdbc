@@ -4,14 +4,23 @@ import java.sql.*;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-public class Extractors {
-    private static final Calendar UTC_CALENDAR = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+class Extractors {
 
     private Extractors() {
     }
 
     static Extractor timestampToUTCInstant() {
-        return nonNull((resultSet, columnIndex) -> resultSet.getTimestamp(columnIndex, UTC_CALENDAR).toInstant());
+        final Calendar utcCalendar = createUtcCalendar();
+        return nonNull((resultSet, columnIndex) -> resultSet.getTimestamp(columnIndex, utcCalendar).toInstant());
+    }
+
+    static Extractor dateToLocalDate() {
+        final Calendar utcCalendar = createUtcCalendar();
+        return nonNull((resultSet, columnIndex) -> resultSet.getDate(columnIndex, utcCalendar).toLocalDate());
+    }
+
+    private static Calendar createUtcCalendar() {
+        return Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     }
 
     private static Extractor nonNull(final Extractor extractor) {

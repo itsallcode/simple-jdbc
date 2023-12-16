@@ -22,4 +22,14 @@ public class ConvertingResultSet extends DelegatingResultSet {
     public <T> T getObject(final String columnLabel, final Class<T> type) throws SQLException {
         return converter.getObject(delegate, columnLabel, type);
     }
+
+    @Override
+    public Object getObject(final int columnIndex) throws SQLException {
+        return converter.getObject(delegate, columnIndex);
+    }
+
+    @Override
+    public Object getObject(final String columnLabel) throws SQLException {
+        return converter.getObject(delegate, columnLabel);
+    }
 }

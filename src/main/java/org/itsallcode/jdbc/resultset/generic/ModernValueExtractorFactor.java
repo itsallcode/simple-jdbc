@@ -4,11 +4,13 @@ import java.sql.*;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.itsallcode.jdbc.dialect.Extractor;
+
 class ModernValueExtractorFactor implements ValueExtractorFactory {
     private final Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
     @Override
-    public ResultSetValueExtractor create(final ColumnType type) {
+    public Extractor create(final ColumnType type) {
         return (resultSet, columnIndex) -> new ColumnValue(type, getValue(type, resultSet, columnIndex));
     }
 

@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.dialect.ExasolDialect;
+import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.AfterAll;
@@ -59,6 +60,22 @@ class ExasolTypeTest {
                 .query("select cast(NULL as " + test.type() + ")")) {
             assertThat(result.toList().get(0).get(0).getValue())
                     .isNull();
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("testTypes")
+    void resultSetValueTypes(final TypeTest test) {
+        try (SimpleConnection connection = connect();
+                SimpleResultSet<Object> result = connection
+                        .query("select cast('" + test.value() + "' as " + test.type() + ")",
+                                RowMapper.create(
+                                        (resultSet, rowNum) -> resultSet.getObject(1,
+                                                test.expectedValue().getClass())))) {
+            final Object value = result.toList().get(0);
+            assertAll(
+                    () -> assertThat(value.getClass()).isEqualTo(test.expectedValue().getClass()),
+                    () -> assertThat(value).isEqualTo(test.expectedValue()));
         }
     }
 

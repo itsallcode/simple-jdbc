@@ -1,5 +1,7 @@
 package org.itsallcode.jdbc.resultset.generic;
 
+import org.itsallcode.jdbc.dialect.Extractor;
+
 /**
  * This factory creates {@link ResultSetValueExtractor} based on
  * {@link ColumnType}.
@@ -12,7 +14,7 @@ public interface ValueExtractorFactory {
      * @param type the column type
      * @return the new value extractor
      */
-    ResultSetValueExtractor create(final ColumnType type);
+    Extractor create(final ColumnType type);
 
     /**
      * Create a new factory that convert values as follows:

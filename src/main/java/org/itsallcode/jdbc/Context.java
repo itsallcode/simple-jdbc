@@ -9,7 +9,6 @@ import java.util.Objects;
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.SimpleMetaData;
-import org.itsallcode.jdbc.resultset.generic.ValueExtractorFactory;
 
 /**
  * This represents a context with configuration for the Simple JDBC framework.
@@ -23,15 +22,6 @@ public class Context {
     }
 
     /**
-     * Get the configured {@link ValueExtractorFactory}.
-     * 
-     * @return value extractor factory
-     */
-    public ValueExtractorFactory getValueExtractorFactory() {
-        return ValueExtractorFactory.createModernType();
-    }
-
-    /**
      * Get the configured {@link ParameterMapper}.
      * 
      * @return parameter mapper
@@ -40,8 +30,8 @@ public class Context {
         return ParameterMapper.create();
     }
 
-    ResultSet convertingResultSet(final ResultSet resultSet) {
-        final SimpleMetaData metaData = SimpleMetaData.create(resultSet, this);
+    public ResultSet convertingResultSet(final ResultSet resultSet) {
+        final SimpleMetaData metaData = SimpleMetaData.create(resultSet);
         final List<ColumnValueConverter> converters = metaData.getColumns().stream()
                 .map(col -> ColumnValueConverter.simple(dialect.createConverter(col)))
                 .collect(toList());

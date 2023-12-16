@@ -4,7 +4,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
 
 /**
@@ -17,8 +16,8 @@ public class SimpleMetaData {
         this.columns = columns;
     }
 
-    public static SimpleMetaData create(final ResultSet resultSet, final Context context) {
-        return create(getMetaData(resultSet), context);
+    public static SimpleMetaData create(final ResultSet resultSet) {
+        return create(getMetaData(resultSet));
     }
 
     private static ResultSetMetaData getMetaData(final ResultSet resultSet) {
@@ -29,23 +28,22 @@ public class SimpleMetaData {
         }
     }
 
-    private static SimpleMetaData create(final ResultSetMetaData metaData, final Context context) {
+    private static SimpleMetaData create(final ResultSetMetaData metaData) {
         try {
-            final List<ColumnMetaData> columns = createColumnMetaData(metaData, context);
+            final List<ColumnMetaData> columns = createColumnMetaData(metaData);
             return new SimpleMetaData(columns);
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error extracting meta data", e);
         }
     }
 
-    private static List<ColumnMetaData> createColumnMetaData(final ResultSetMetaData metaData, final Context context)
+    private static List<ColumnMetaData> createColumnMetaData(final ResultSetMetaData metaData)
             throws SQLException {
-        final ValueExtractorFactory valueExtractorFactory = context.getValueExtractorFactory();
         final int columnCount = metaData.getColumnCount();
         final List<ColumnMetaData> columns = new ArrayList<>(columnCount);
         for (int column = 1; column <= columnCount; column++) {
             final ColumnMetaData columnMetaData = ColumnMetaData.create(metaData,
-                    valueExtractorFactory, column);
+                    column);
             columns.add(columnMetaData);
         }
         return columns;
@@ -78,19 +76,16 @@ public class SimpleMetaData {
         private final String name;
         private final String label;
         private final ColumnType type;
-        private final ValueExtractorFactory valueExtractorFactory;
 
-        private ColumnMetaData(final int columnIndex, final String name, final String label, final ColumnType type,
-                final ValueExtractorFactory valueExtractorFactory) {
+        private ColumnMetaData(final int columnIndex, final String name, final String label, final ColumnType type) {
             this.columnIndex = columnIndex;
             this.name = name;
             this.label = label;
             this.type = type;
-            this.valueExtractorFactory = valueExtractorFactory;
         }
 
-        private static ColumnMetaData create(final ResultSetMetaData metaData,
-                final ValueExtractorFactory valueExtractorFactory, final int columnIndex) throws SQLException {
+        private static ColumnMetaData create(final ResultSetMetaData metaData, final int columnIndex)
+                throws SQLException {
             final String className = metaData.getColumnClassName(columnIndex);
             final int displaySize = metaData.getColumnDisplaySize(columnIndex);
             final String label = metaData.getColumnLabel(columnIndex);
@@ -100,7 +95,7 @@ public class SimpleMetaData {
             final int precision = metaData.getPrecision(columnIndex);
             final int scale = metaData.getScale(columnIndex);
             final ColumnType columnType = new ColumnType(jdbcType, typeName, className, precision, scale, displaySize);
-            return new ColumnMetaData(columnIndex, name, label, columnType, valueExtractorFactory);
+            return new ColumnMetaData(columnIndex, name, label, columnType);
         }
 
         /**
@@ -137,10 +132,6 @@ public class SimpleMetaData {
          */
         public ColumnType getType() {
             return type;
-        }
-
-        ResultSetValueExtractor getValueExtractor() {
-            return valueExtractorFactory.create(this.type);
         }
 
         @Override

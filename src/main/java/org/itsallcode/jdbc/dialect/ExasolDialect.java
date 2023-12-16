@@ -1,8 +1,5 @@
 package org.itsallcode.jdbc.dialect;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 import org.itsallcode.jdbc.resultset.generic.SimpleMetaData.ColumnMetaData;
 
 public class ExasolDialect implements DbDialect {
@@ -12,8 +9,7 @@ public class ExasolDialect implements DbDialect {
         case TIMESTAMP -> Extractors.timestampToUTCInstant();
         case CLOB -> Extractors.clobToString();
         case BLOB -> Extractors.blobToBytes();
-        case TIME -> Extractors.forType(LocalTime.class);
-        case DATE -> Extractors.forType(LocalDate.class);
+        case DATE -> Extractors.dateToLocalDate();
         default -> Extractors.generic();
         };
     }

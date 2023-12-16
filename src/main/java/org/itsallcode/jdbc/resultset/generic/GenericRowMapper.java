@@ -32,9 +32,9 @@ public class GenericRowMapper<T> implements RowMapper<T> {
     @Override
     public T mapRow(final Context context, final ResultSet resultSet, final int rowNum) throws SQLException {
         if (rowBuilder == null) {
-            rowBuilder = new ResultSetRowBuilder(SimpleMetaData.create(resultSet, context));
+            rowBuilder = new ResultSetRowBuilder(SimpleMetaData.create(resultSet));
         }
-        final Row row = rowBuilder.buildRow(resultSet, rowNum);
+        final Row row = rowBuilder.buildRow(context.convertingResultSet(resultSet), rowNum);
         return converter.mapRow(row);
     }
 
@@ -56,8 +56,13 @@ public class GenericRowMapper<T> implements RowMapper<T> {
         }
 
         private ColumnValue getField(final ResultSet resultSet, final ColumnMetaData column, final int rowIndex) {
+            final Object value = getValue(resultSet, column, rowIndex);
+            return new ColumnValue(column.getType(), value);
+        }
+
+        private Object getValue(final ResultSet resultSet, final ColumnMetaData column, final int rowIndex) {
             try {
-                return column.getValueExtractor().extractValue(resultSet, column.getColumnIndex());
+                return resultSet.getObject(column.getColumnIndex());
             } catch (final SQLException e) {
                 throw new UncheckedSQLException(
                         "Error extracting value for row " + rowIndex + " / column " + column + ": " + e.getMessage(),
