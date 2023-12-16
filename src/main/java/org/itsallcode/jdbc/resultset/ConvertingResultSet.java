@@ -38,7 +38,7 @@ public class ConvertingResultSet extends DelegatingResultSet {
      */
     public static ConvertingResultSet create(final DbDialect dialect, final ResultSet delegate) {
         final SimpleMetaData metaData = SimpleMetaData.create(delegate);
-        final List<ColumnValueConverter> converters = metaData.getColumns().stream()
+        final List<ColumnValueConverter> converters = metaData.columns().stream()
                 .map(col -> ColumnValueConverter.simple(dialect.createExtractor(col)))
                 .collect(toList());
         return new ConvertingResultSet(delegate, ResultSetValueConverter.create(metaData, converters));

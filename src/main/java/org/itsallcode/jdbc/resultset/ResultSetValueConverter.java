@@ -7,8 +7,10 @@ import java.util.*;
 import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
 import org.itsallcode.jdbc.resultset.generic.SimpleMetaData;
 
+/**
+ * Helper class used by {@link ConvertingResultSet}.
+ */
 class ResultSetValueConverter {
-
     private final Map<Integer, ColumnValueConverter> convertersByIndex;
     private final Map<String, Integer> columnIndexByLabel;
 

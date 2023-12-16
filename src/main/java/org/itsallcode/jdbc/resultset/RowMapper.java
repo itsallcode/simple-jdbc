@@ -83,5 +83,4 @@ public interface RowMapper<T> {
          */
         T mapRow(ResultSet resultSet, int rowNum) throws SQLException;
     }
-
 }

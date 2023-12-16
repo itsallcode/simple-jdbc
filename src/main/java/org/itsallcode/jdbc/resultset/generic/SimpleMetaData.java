@@ -1,20 +1,16 @@
 package org.itsallcode.jdbc.resultset.generic;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.itsallcode.jdbc.UncheckedSQLException;
 
 /**
  * A wrapper for {@link ResultSetMetaData} to simplify usage.
+ * 
+ * @param columns all column metadata for the result set
  */
-public class SimpleMetaData {
-    private final List<ColumnMetaData> columns;
-
-    private SimpleMetaData(final List<ColumnMetaData> columns) {
-        this.columns = columns;
-    }
+public record SimpleMetaData(List<ColumnMetaData> columns) {
 
     /**
      * Create a new {@link SimpleMetaData} for a given {@link ResultSet}.
@@ -36,32 +32,10 @@ public class SimpleMetaData {
 
     private static SimpleMetaData create(final ResultSetMetaData metaData) {
         try {
-            final List<ColumnMetaData> columns = createColumnMetaData(metaData);
-            return new SimpleMetaData(columns);
+            return new SimpleMetaData(ColumnMetaData.create(metaData));
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error extracting meta data", e);
         }
-    }
-
-    private static List<ColumnMetaData> createColumnMetaData(final ResultSetMetaData metaData)
-            throws SQLException {
-        final int columnCount = metaData.getColumnCount();
-        final List<ColumnMetaData> columns = new ArrayList<>(columnCount);
-        for (int column = 1; column <= columnCount; column++) {
-            final ColumnMetaData columnMetaData = ColumnMetaData.create(metaData,
-                    column);
-            columns.add(columnMetaData);
-        }
-        return columns;
-    }
-
-    /**
-     * Get all column metadata for the result set.
-     * 
-     * @return column metadata
-     */
-    public List<ColumnMetaData> getColumns() {
-        return columns;
     }
 
     /**

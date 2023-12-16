@@ -45,13 +45,13 @@ public class GenericRowMapper<T> implements RowMapper<T> {
         }
 
         private Row buildRow(final ResultSet resultSet, final int rowIndex) {
-            final List<ColumnMetaData> columns = metadata.getColumns();
+            final List<ColumnMetaData> columns = metadata.columns();
             final List<ColumnValue> fields = new ArrayList<>(columns.size());
             for (final ColumnMetaData column : columns) {
                 final ColumnValue field = getField(resultSet, column, rowIndex);
                 fields.add(field);
             }
-            return Row.create(rowIndex, columns, fields);
+            return new Row(rowIndex, columns, fields);
         }
 
         private ColumnValue getField(final ResultSet resultSet, final ColumnMetaData column, final int rowIndex) {

@@ -11,10 +11,6 @@ import java.util.List;
  */
 public record Row(int rowIndex, List<ColumnMetaData> columns, List<ColumnValue> columnValues) {
 
-    static Row create(final int rowIndex, final List<ColumnMetaData> columns, final List<ColumnValue> fields) {
-        return new Row(rowIndex, columns, fields);
-    }
-
     /**
      * Get the value at a given column index (zero based).
      * 

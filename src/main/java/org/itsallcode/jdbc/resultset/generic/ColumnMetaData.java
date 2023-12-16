@@ -2,6 +2,8 @@ package org.itsallcode.jdbc.resultset.generic;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents the metadata of a single column.
@@ -13,7 +15,17 @@ import java.sql.SQLException;
  */
 public record ColumnMetaData(int columnIndex, String name, String label, ColumnType type) {
 
-    static ColumnMetaData create(final ResultSetMetaData metaData, final int columnIndex)
+    static List<ColumnMetaData> create(final ResultSetMetaData metaData)
+            throws SQLException {
+        final int columnCount = metaData.getColumnCount();
+        final List<ColumnMetaData> columns = new ArrayList<>(columnCount);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            columns.add(ColumnMetaData.create(metaData, columnIndex));
+        }
+        return columns;
+    }
+
+    private static ColumnMetaData create(final ResultSetMetaData metaData, final int columnIndex)
             throws SQLException {
         final String label = metaData.getColumnLabel(columnIndex);
         final String name = metaData.getColumnName(columnIndex);

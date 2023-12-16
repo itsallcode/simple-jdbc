@@ -236,7 +236,6 @@ class DelegatingResultSet implements ResultSet {
     @Override
     public void clearWarnings() throws SQLException {
         delegate.clearWarnings();
-        ;
     }
 
     @Override
@@ -308,7 +307,6 @@ class DelegatingResultSet implements ResultSet {
     @Override
     public void beforeFirst() throws SQLException {
         delegate.beforeFirst();
-        ;
     }
 
     @Override
