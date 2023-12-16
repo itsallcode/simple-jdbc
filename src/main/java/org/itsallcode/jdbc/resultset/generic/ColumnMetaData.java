@@ -1,7 +1,6 @@
 package org.itsallcode.jdbc.resultset.generic;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +13,10 @@ import java.util.List;
  * @param type        SQL type
  */
 public record ColumnMetaData(int columnIndex, String name, String label, ColumnType type) {
+
+    static List<ColumnMetaData> create(final ResultSet resultSet) throws SQLException {
+        return create(resultSet.getMetaData());
+    }
 
     static List<ColumnMetaData> create(final ResultSetMetaData metaData)
             throws SQLException {

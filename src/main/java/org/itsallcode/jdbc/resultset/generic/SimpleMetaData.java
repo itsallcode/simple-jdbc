@@ -19,20 +19,8 @@ public record SimpleMetaData(List<ColumnMetaData> columns) {
      * @return simple metadata
      */
     public static SimpleMetaData create(final ResultSet resultSet) {
-        return create(getMetaData(resultSet));
-    }
-
-    private static ResultSetMetaData getMetaData(final ResultSet resultSet) {
         try {
-            return resultSet.getMetaData();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error getting meta data", e);
-        }
-    }
-
-    private static SimpleMetaData create(final ResultSetMetaData metaData) {
-        try {
-            return new SimpleMetaData(ColumnMetaData.create(metaData));
+            return new SimpleMetaData(ColumnMetaData.create(resultSet));
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error extracting meta data", e);
         }
