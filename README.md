@@ -23,7 +23,7 @@ Add dependency to your gradle project:
 
 ```groovy
 dependencies {
-    implementation 'org.itsallcode:simple-jdbc:0.5.0'
+    implementation 'org.itsallcode:simple-jdbc:0.6.0'
 }
 ```
 
@@ -36,13 +36,13 @@ record Name(int id, String name) {
 
 ConnectionFactory connectionFactory = ConnectionFactory.create();
 try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
-    connection.executeScriptFromResource("/schema.sql");
+    connection.executeScript(readResource("/schema.sql"));
     connection.insert("NAMES", List.of("ID", "NAME"), Name::toRow,
             Stream.of(new Name(1, "a"), new Name(2, "b"), new Name(3, "c")));
     try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
         List<Row> result = rs.stream().toList();
         assertEquals(3, result.size());
-        assertEquals(1, result.get(0).getColumnValue(0).getValue());
+        assertEquals(1, result.get(0).get(0).value());
     }
 }
 ```
