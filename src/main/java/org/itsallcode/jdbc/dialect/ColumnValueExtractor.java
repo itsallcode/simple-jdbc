@@ -7,7 +7,7 @@ import java.sql.SQLException;
  * Extracts a column value from a {@link ResultSet}.
  */
 @FunctionalInterface
-public interface Extractor {
+public interface ColumnValueExtractor {
     /**
      * Extracts a column value from a {@link ResultSet}.
      * 

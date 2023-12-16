@@ -5,9 +5,10 @@ import java.time.LocalTime;
 
 import org.itsallcode.jdbc.resultset.generic.SimpleMetaData.ColumnMetaData;
 
-public class H2Dialect implements DbDialect {
+class H2Dialect implements DbDialect {
 
-    public Extractor createConverter(final ColumnMetaData column) {
+    @Override
+    public ColumnValueExtractor createExtractor(final ColumnMetaData column) {
         return switch (column.getType().getJdbcType()) {
         case TIMESTAMP -> Extractors.timestampToUTCInstant();
         case CLOB -> Extractors.clobToString();

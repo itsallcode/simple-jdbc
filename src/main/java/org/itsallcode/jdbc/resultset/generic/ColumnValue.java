@@ -2,6 +2,9 @@ package org.itsallcode.jdbc.resultset.generic;
 
 /**
  * Represents a generic column value.
+ * 
+ * @param type  column type
+ * @param value column value
  */
 public record ColumnValue(ColumnType type, Object value) {
 

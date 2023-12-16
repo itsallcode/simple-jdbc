@@ -16,6 +16,12 @@ public class SimpleMetaData {
         this.columns = columns;
     }
 
+    /**
+     * Create a new {@link SimpleMetaData} for a given {@link ResultSet}.
+     * 
+     * @param resultSet the result set
+     * @return simple metadata
+     */
     public static SimpleMetaData create(final ResultSet resultSet) {
         return create(getMetaData(resultSet));
     }

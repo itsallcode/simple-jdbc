@@ -8,6 +8,7 @@ import org.itsallcode.jdbc.resultset.generic.SimpleMetaData.ColumnMetaData;
  * Represents a generic row from a result set.
  * 
  * @param rowIndex row index (zero based)
+ * @param columns  column metadata
  * @param fields   values for each column
  */
 public record Row(int rowIndex, List<ColumnMetaData> columns, List<ColumnValue> fields) {

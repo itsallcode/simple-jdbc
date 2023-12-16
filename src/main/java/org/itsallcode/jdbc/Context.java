@@ -1,14 +1,10 @@
 package org.itsallcode.jdbc;
 
-import static java.util.stream.Collectors.toList;
-
 import java.sql.ResultSet;
-import java.util.List;
 import java.util.Objects;
 
 import org.itsallcode.jdbc.dialect.DbDialect;
-import org.itsallcode.jdbc.resultset.*;
-import org.itsallcode.jdbc.resultset.generic.SimpleMetaData;
+import org.itsallcode.jdbc.resultset.ConvertingResultSet;
 
 /**
  * This represents a context with configuration for the Simple JDBC framework.
@@ -30,12 +26,16 @@ public class Context {
         return ParameterMapper.create();
     }
 
+    /**
+     * Wraps the given result set in a result set that converts values for the
+     * current DB dialect.
+     * 
+     * @param resultSet the result set to wrap
+     * @return the wrapped result set
+     * @see ConvertingResultSet
+     */
     public ResultSet convertingResultSet(final ResultSet resultSet) {
-        final SimpleMetaData metaData = SimpleMetaData.create(resultSet);
-        final List<ColumnValueConverter> converters = metaData.getColumns().stream()
-                .map(col -> ColumnValueConverter.simple(dialect.createConverter(col)))
-                .collect(toList());
-        return new ConvertingResultSet(resultSet, ResultSetValueConverter.create(metaData, converters));
+        return ConvertingResultSet.create(dialect, resultSet);
     }
 
     /**
@@ -57,6 +57,12 @@ public class Context {
         private ContextBuilder() {
         }
 
+        /**
+         * Set the DB dialect for the new context.
+         * 
+         * @param dialect DB dialect
+         * @return {@code this} for fluent programming
+         */
         public ContextBuilder dialect(final DbDialect dialect) {
             this.dialect = dialect;
             return this;

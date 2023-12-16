@@ -2,6 +2,14 @@ package org.itsallcode.jdbc.resultset.generic;
 
 /**
  * Represents the type of a column.
+ * 
+ * @param jdbcType    JDBC type
+ * @param typeName    database specific column type name
+ * @param className   fully qualified class name of the objects returned by
+ *                    {@link ColumnValue#getValue()}
+ * @param precision   column precision
+ * @param scale       column scale
+ * @param displaySize display size
  */
 public record ColumnType(JdbcType jdbcType, String typeName, String className, int precision, int scale,
         int displaySize) {

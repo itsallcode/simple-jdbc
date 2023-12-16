@@ -7,7 +7,7 @@ import java.util.*;
 import org.itsallcode.jdbc.resultset.generic.SimpleMetaData;
 import org.itsallcode.jdbc.resultset.generic.SimpleMetaData.ColumnMetaData;
 
-public class ResultSetValueConverter {
+class ResultSetValueConverter {
 
     private final Map<Integer, ColumnValueConverter> convertersByIndex;
     private final Map<String, Integer> columnIndexByLabel;
@@ -18,7 +18,7 @@ public class ResultSetValueConverter {
         this.columnIndexByLabel = columnIndexByLabel;
     }
 
-    public static ResultSetValueConverter create(final SimpleMetaData resultSetMetadata,
+    static ResultSetValueConverter create(final SimpleMetaData resultSetMetadata,
             final List<ColumnValueConverter> converters) {
         final Map<Integer, ColumnValueConverter> convertersByIndex = new HashMap<>();
         final Map<String, Integer> columnIndexByLabel = new HashMap<>();
@@ -31,21 +31,21 @@ public class ResultSetValueConverter {
         return new ResultSetValueConverter(convertersByIndex, columnIndexByLabel);
     }
 
-    public <T> T getObject(final ResultSet delegate, final int columnIndex, final Class<T> type) throws SQLException {
+    <T> T getObject(final ResultSet delegate, final int columnIndex, final Class<T> type) throws SQLException {
         return getConverter(columnIndex).getObject(delegate, columnIndex, type);
     }
 
-    public Object getObject(final ResultSet delegate, final int columnIndex) throws SQLException {
+    Object getObject(final ResultSet delegate, final int columnIndex) throws SQLException {
         return getConverter(columnIndex).getObject(delegate, columnIndex);
     }
 
-    public <T> T getObject(final ResultSet delegate, final String columnLabel, final Class<T> type)
+    <T> T getObject(final ResultSet delegate, final String columnLabel, final Class<T> type)
             throws SQLException {
         final int columnIndex = getIndexForLabel(columnLabel);
         return getConverter(columnIndex).getObject(delegate, columnIndex, type);
     }
 
-    public Object getObject(final ResultSet delegate, final String columnLabel)
+    Object getObject(final ResultSet delegate, final String columnLabel)
             throws SQLException {
         final int columnIndex = getIndexForLabel(columnLabel);
         return getConverter(columnIndex).getObject(delegate, columnIndex);

@@ -9,12 +9,12 @@ class Extractors {
     private Extractors() {
     }
 
-    static Extractor timestampToUTCInstant() {
+    static ColumnValueExtractor timestampToUTCInstant() {
         final Calendar utcCalendar = createUtcCalendar();
         return nonNull((resultSet, columnIndex) -> resultSet.getTimestamp(columnIndex, utcCalendar).toInstant());
     }
 
-    static Extractor dateToLocalDate() {
+    static ColumnValueExtractor dateToLocalDate() {
         final Calendar utcCalendar = createUtcCalendar();
         return nonNull((resultSet, columnIndex) -> resultSet.getDate(columnIndex, utcCalendar).toLocalDate());
     }
@@ -23,7 +23,7 @@ class Extractors {
         return Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     }
 
-    private static Extractor nonNull(final Extractor extractor) {
+    private static ColumnValueExtractor nonNull(final ColumnValueExtractor extractor) {
         return (resultSet, columnIndex) -> {
             resultSet.getObject(columnIndex);
             if (resultSet.wasNull()) {
@@ -33,25 +33,25 @@ class Extractors {
         };
     }
 
-    static Extractor clobToString() {
+    static ColumnValueExtractor clobToString() {
         return nonNull((resultSet, columnIndex) -> {
             final Clob clob = resultSet.getClob(columnIndex);
             return clob.getSubString(1, (int) clob.length());
         });
     }
 
-    static Extractor blobToBytes() {
+    static ColumnValueExtractor blobToBytes() {
         return nonNull((resultSet, columnIndex) -> {
             final Blob blob = resultSet.getBlob(columnIndex);
             return blob.getBytes(1, (int) blob.length());
         });
     }
 
-    static Extractor forType(final Class<?> type) {
+    static ColumnValueExtractor forType(final Class<?> type) {
         return (resultSet, columnIndex) -> resultSet.getObject(columnIndex, type);
     }
 
-    static Extractor generic() {
+    static ColumnValueExtractor generic() {
         return ResultSet::getObject;
     }
 }

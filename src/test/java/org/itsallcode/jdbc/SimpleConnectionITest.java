@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.dialect.H2Dialect;
+import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.identifier.Identifier;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
@@ -63,7 +63,7 @@ class SimpleConnectionITest {
 
     @Test
     void executeQueryWithListRowMapper() {
-        final ConnectionFactory factory = ConnectionFactory.create(Context.builder().dialect(new H2Dialect()).build());
+        final ConnectionFactory factory = ConnectionFactory.create(Context.builder().dialect(DbDialect.h2()).build());
         try (SimpleConnection connection = factory.create("jdbc:h2:mem:")) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
