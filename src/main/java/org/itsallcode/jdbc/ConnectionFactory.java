@@ -14,15 +14,6 @@ public class ConnectionFactory {
     }
 
     /**
-     * Create a new connection factory with a default context.
-     * 
-     * @return a new instance
-     */
-    public static ConnectionFactory create() {
-        return create(Context.builder().build());
-    }
-
-    /**
      * Create a new connection factory with a custom context.
      * 
      * @param context a custom context

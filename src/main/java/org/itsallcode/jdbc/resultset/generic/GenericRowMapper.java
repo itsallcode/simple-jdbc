@@ -32,7 +32,7 @@ public class GenericRowMapper<T> implements RowMapper<T> {
     @Override
     public T mapRow(final Context context, final ResultSet resultSet, final int rowNum) throws SQLException {
         if (rowBuilder == null) {
-            rowBuilder = new ResultSetRowBuilder(SimpleMetaData.create(resultSet.getMetaData(), context));
+            rowBuilder = new ResultSetRowBuilder(SimpleMetaData.create(resultSet, context));
         }
         final Row row = rowBuilder.buildRow(resultSet, rowNum);
         return converter.mapRow(row);

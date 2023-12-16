@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.dialect.H2Dialect;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,8 @@ class ExampleTest {
                 return new Object[] { id, name };
             }
         }
-        final ConnectionFactory connectionFactory = ConnectionFactory.create();
+        final ConnectionFactory connectionFactory = ConnectionFactory
+                .create(Context.builder().dialect(new H2Dialect()).build());
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             connection.executeScript(readResource("/schema.sql"));
             connection.insert("NAMES", List.of("ID", "NAME"), Name::toRow,

@@ -1,7 +1,6 @@
 package org.itsallcode.jdbc.resultset.generic;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,19 @@ public class SimpleMetaData {
         this.columns = columns;
     }
 
-    static SimpleMetaData create(final ResultSetMetaData metaData, final Context context) {
+    public static SimpleMetaData create(final ResultSet resultSet, final Context context) {
+        return create(getMetaData(resultSet), context);
+    }
+
+    private static ResultSetMetaData getMetaData(final ResultSet resultSet) {
+        try {
+            return resultSet.getMetaData();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Error getting meta data", e);
+        }
+    }
+
+    private static SimpleMetaData create(final ResultSetMetaData metaData, final Context context) {
         try {
             final List<ColumnMetaData> columns = createColumnMetaData(metaData, context);
             return new SimpleMetaData(columns);
@@ -47,6 +58,16 @@ public class SimpleMetaData {
      */
     public List<ColumnMetaData> getColumns() {
         return columns;
+    }
+
+    /**
+     * Get column metadata for a given index (one based).
+     * 
+     * @param index column index (one based)
+     * @return column metadata
+     */
+    public ColumnMetaData getColumnByIndex(final int index) {
+        return columns.get(index - 1);
     }
 
     /**

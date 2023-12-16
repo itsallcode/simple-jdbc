@@ -18,7 +18,8 @@ class SimplePreparedStatement implements AutoCloseable {
 
     <T> SimpleResultSet<T> executeQuery(final RowMapper<T> rowMapper) {
         final ResultSet resultSet = doExecute();
-        return new SimpleResultSet<>(context, resultSet, rowMapper);
+        final ResultSet convertingResultSet = context.convertingResultSet(resultSet);
+        return new SimpleResultSet<>(context, convertingResultSet, rowMapper);
     }
 
     private ResultSet doExecute() {
