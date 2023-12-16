@@ -6,6 +6,15 @@ import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
  * A database specific dialect.
  */
 public interface DbDialect {
+
+    /**
+     * Check if this dialect supports the database type with the given JDBC URL.
+     * 
+     * @param jdbcUrl JDBC URL
+     * @return {@code true} if this dialect supports the database
+     */
+    boolean supportsUrl(String jdbcUrl);
+
     /**
      * Create an extractor for the given column.
      * 
@@ -13,22 +22,4 @@ public interface DbDialect {
      * @return extractor
      */
     ColumnValueExtractor createExtractor(final ColumnMetaData column);
-
-    /**
-     * Create a dialect for the Exasol database.
-     * 
-     * @return dialect for Exasol
-     */
-    public static DbDialect exasol() {
-        return new ExasolDialect();
-    }
-
-    /**
-     * Create a dialect for the H2 database.
-     * 
-     * @return dialect for H2
-     */
-    public static DbDialect h2() {
-        return new H2Dialect();
-    }
 }

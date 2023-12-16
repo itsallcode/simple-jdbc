@@ -2,23 +2,26 @@ package org.itsallcode.jdbc;
 
 import java.sql.*;
 
-import org.itsallcode.jdbc.resultset.RowMapper;
-import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.dialect.DbDialect;
+import org.itsallcode.jdbc.resultset.*;
 
 class SimplePreparedStatement implements AutoCloseable {
     private final Context context;
+    private final DbDialect dialect;
     private final PreparedStatement statement;
     private final String sql;
 
-    SimplePreparedStatement(final Context context, final PreparedStatement statement, final String sql) {
+    SimplePreparedStatement(final Context context, final DbDialect dialect, final PreparedStatement statement,
+            final String sql) {
         this.context = context;
+        this.dialect = dialect;
         this.statement = statement;
         this.sql = sql;
     }
 
     <T> SimpleResultSet<T> executeQuery(final RowMapper<T> rowMapper) {
         final ResultSet resultSet = doExecute();
-        final ResultSet convertingResultSet = context.convertingResultSet(resultSet);
+        final ResultSet convertingResultSet = ConvertingResultSet.create(dialect, resultSet);
         return new SimpleResultSet<>(context, convertingResultSet, rowMapper);
     }
 

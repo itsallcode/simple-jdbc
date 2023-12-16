@@ -2,8 +2,19 @@ package org.itsallcode.jdbc.dialect;
 
 import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
 
-class ExasolDialect implements DbDialect {
+/**
+ * Dialect for the Exasol database.
+ */
+public class ExasolDialect extends BaseDbDialect {
 
+    /**
+     * Create a new instance.
+     */
+    public ExasolDialect() {
+        super("jdbc:exa:");
+    }
+
+    @Override
     public ColumnValueExtractor createExtractor(final ColumnMetaData column) {
         return switch (column.type().jdbcType()) {
         case TIMESTAMP -> Extractors.timestampToUTCInstant();

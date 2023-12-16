@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.identifier.Identifier;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
@@ -63,12 +62,12 @@ class SimpleConnectionITest {
 
     @Test
     void executeQueryWithListRowMapper() {
-        final ConnectionFactory factory = ConnectionFactory.create(Context.builder().dialect(DbDialect.h2()).build());
+        final ConnectionFactory factory = ConnectionFactory.create(Context.builder().build());
         try (SimpleConnection connection = factory.create("jdbc:h2:mem:")) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
             try (SimpleResultSet<List<Object>> resultSet = connection.query("select * from test",
-                    RowMapper.columnValueList())) {
+                    RowMapper.columnValueList(connection.getDialect()))) {
                 final List<List<Object>> rows = resultSet.toList();
                 assertThat(rows).hasSize(1);
                 assertThat(rows.get(0)).containsExactly(1, "test");

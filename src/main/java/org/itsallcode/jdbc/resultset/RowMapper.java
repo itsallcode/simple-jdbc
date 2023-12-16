@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.itsallcode.jdbc.Context;
+import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.generic.*;
 import org.itsallcode.jdbc.resultset.generic.GenericRowMapper.ColumnValuesConverter;
 
@@ -30,24 +31,26 @@ public interface RowMapper<T> {
     /**
      * Create a {@link RowMapper} that creates generic {@link Row} objects.
      * 
+     * @param dialect DB dialect
      * @return a new row mapper
      */
-    public static RowMapper<Row> generic() {
-        return generic(row -> row);
+    public static RowMapper<Row> generic(final DbDialect dialect) {
+        return generic(dialect, row -> row);
     }
 
     /**
      * Create a {@link RowMapper} that creates {@link List}s of simple column
      * objects.
      * 
+     * @param dialect DB dialect
      * @return a new row mapper
      */
-    public static RowMapper<List<Object>> columnValueList() {
-        return generic(row -> row.columnValues().stream().map(ColumnValue::value).toList());
+    public static RowMapper<List<Object>> columnValueList(final DbDialect dialect) {
+        return generic(dialect, row -> row.columnValues().stream().map(ColumnValue::value).toList());
     }
 
-    private static <T> RowMapper<T> generic(final ColumnValuesConverter<T> converter) {
-        return new GenericRowMapper<>(converter);
+    private static <T> RowMapper<T> generic(final DbDialect dialect, final ColumnValuesConverter<T> converter) {
+        return new GenericRowMapper<>(dialect, converter);
     }
 
     /**

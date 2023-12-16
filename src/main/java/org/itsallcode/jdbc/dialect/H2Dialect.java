@@ -5,7 +5,17 @@ import java.time.LocalTime;
 
 import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
 
-class H2Dialect implements DbDialect {
+/**
+ * DB dialect for the H2 database.
+ */
+public class H2Dialect extends BaseDbDialect {
+
+    /**
+     * Create a new instance.
+     */
+    public H2Dialect() {
+        super("jdbc:h2:");
+    }
 
     @Override
     public ColumnValueExtractor createExtractor(final ColumnMetaData column) {

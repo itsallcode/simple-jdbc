@@ -2,7 +2,6 @@ package org.itsallcode.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.itsallcode.jdbc.dialect.DbDialect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +10,7 @@ class ConnectionFactoryITest {
 
     @BeforeEach
     void setUp() {
-        connectionFactory = ConnectionFactory.create(Context.builder().dialect(DbDialect.h2()).build());
+        connectionFactory = ConnectionFactory.create(Context.builder().build());
     }
 
     @Test

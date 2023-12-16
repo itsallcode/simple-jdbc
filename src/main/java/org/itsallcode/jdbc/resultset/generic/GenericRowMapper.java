@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
+import org.itsallcode.jdbc.dialect.DbDialect;
+import org.itsallcode.jdbc.resultset.ConvertingResultSet;
 import org.itsallcode.jdbc.resultset.RowMapper;
 
 /**
@@ -17,14 +19,17 @@ import org.itsallcode.jdbc.resultset.RowMapper;
 public class GenericRowMapper<T> implements RowMapper<T> {
     private ResultSetRowBuilder rowBuilder;
     private final ColumnValuesConverter<T> converter;
+    private final DbDialect dialect;
 
     /**
      * Create a new instance.
      * 
+     * @param dialect   database dialect
      * @param converter optionally converts each generic {@link Row} to a different
      *                  type.
      */
-    public GenericRowMapper(final ColumnValuesConverter<T> converter) {
+    public GenericRowMapper(final DbDialect dialect, final ColumnValuesConverter<T> converter) {
+        this.dialect = dialect;
         this.converter = converter;
     }
 
@@ -33,7 +38,7 @@ public class GenericRowMapper<T> implements RowMapper<T> {
         if (rowBuilder == null) {
             rowBuilder = new ResultSetRowBuilder(SimpleMetaData.create(resultSet));
         }
-        final Row row = rowBuilder.buildRow(context.convertingResultSet(resultSet), rowNum);
+        final Row row = rowBuilder.buildRow(ConvertingResultSet.create(dialect, resultSet), rowNum);
         return converter.mapRow(row);
     }
 

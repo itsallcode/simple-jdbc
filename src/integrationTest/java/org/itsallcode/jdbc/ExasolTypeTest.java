@@ -8,7 +8,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -37,7 +36,7 @@ class ExasolTypeTest {
     }
 
     SimpleConnection connect() {
-        return ConnectionFactory.create(Context.builder().dialect(DbDialect.exasol()).build()) //
+        return ConnectionFactory.create(Context.builder().build()) //
                 .create(container.getJdbcUrl(), container.getUsername(), container.getPassword());
     }
 

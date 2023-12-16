@@ -8,9 +8,11 @@ import java.util.Properties;
  */
 public class ConnectionFactory {
     private final Context context;
+    private final DbDialectFactory dialectFactory;
 
-    private ConnectionFactory(final Context context) {
+    private ConnectionFactory(final Context context, final DbDialectFactory dialectFactory) {
         this.context = context;
+        this.dialectFactory = dialectFactory;
     }
 
     /**
@@ -20,7 +22,7 @@ public class ConnectionFactory {
      * @return a new instance
      */
     public static ConnectionFactory create(final Context context) {
-        return new ConnectionFactory(context);
+        return new ConnectionFactory(context, new DbDialectFactory());
     }
 
     /**
@@ -56,7 +58,7 @@ public class ConnectionFactory {
      * @return a new connection
      */
     public SimpleConnection create(final String url, final Properties info) {
-        return new SimpleConnection(createConnection(url, info), context);
+        return new SimpleConnection(createConnection(url, info), context, dialectFactory.createDialect(url));
     }
 
     private Connection createConnection(final String url, final Properties info) {
