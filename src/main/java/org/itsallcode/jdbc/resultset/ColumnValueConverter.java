@@ -11,10 +11,6 @@ public interface ColumnValueConverter {
 
     Object getObject(ResultSet resultSet, int columnIndex) throws SQLException;
 
-    static ColumnValueConverter generic() {
-        return simple(ResultSet::getObject);
-    }
-
     static ColumnValueConverter simple(final Extractor extractor) {
         return new ColumnValueConverter() {
             @Override
