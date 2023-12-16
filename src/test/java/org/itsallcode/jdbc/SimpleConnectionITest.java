@@ -54,9 +54,9 @@ class SimpleConnectionITest {
             try (SimpleResultSet<Row> resultSet = connection.query("select count(*) from test")) {
                 final List<Row> rows = resultSet.stream().collect(toList());
                 assertThat(rows).hasSize(1);
-                assertThat(rows.get(0).getRowIndex()).isZero();
-                assertThat(rows.get(0).getColumnValues()).hasSize(1);
-                assertThat(rows.get(0).get(0).getValue()).isEqualTo(1L);
+                assertThat(rows.get(0).rowIndex()).isZero();
+                assertThat(rows.get(0).columnValues()).hasSize(1);
+                assertThat(rows.get(0).get(0).value()).isEqualTo(1L);
             }
         }
     }
@@ -98,29 +98,29 @@ class SimpleConnectionITest {
                 assertThat(iterator.hasNext()).isTrue();
                 final Row firstRow = iterator.next();
 
-                assertAll(() -> assertThat(firstRow.getRowIndex()).isZero(),
-                        () -> assertThat(firstRow.getColumnValues()).hasSize(2),
-                        () -> assertThat(firstRow.getColumnValues().get(0).getValue()).isEqualTo(1),
-                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getJdbcType())
+                assertAll(() -> assertThat(firstRow.rowIndex()).isZero(),
+                        () -> assertThat(firstRow.columnValues()).hasSize(2),
+                        () -> assertThat(firstRow.columnValues().get(0).value()).isEqualTo(1),
+                        () -> assertThat(firstRow.columnValues().get(0).type().jdbcType())
                                 .isEqualTo(JdbcType.INTEGER),
-                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getTypeName())
+                        () -> assertThat(firstRow.columnValues().get(0).type().typeName())
                                 .isEqualTo("INTEGER"),
-                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getClassName())
+                        () -> assertThat(firstRow.columnValues().get(0).type().className())
                                 .isEqualTo(Integer.class.getName()),
-                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getDisplaySize()).isEqualTo(11),
-                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getPrecision()).isEqualTo(32),
-                        () -> assertThat(firstRow.getColumnValues().get(0).getType().getScale()).isZero(),
+                        () -> assertThat(firstRow.columnValues().get(0).type().displaySize()).isEqualTo(11),
+                        () -> assertThat(firstRow.columnValues().get(0).type().precision()).isEqualTo(32),
+                        () -> assertThat(firstRow.columnValues().get(0).type().scale()).isZero(),
 
-                        () -> assertThat(firstRow.getColumnValues().get(1).getValue()).isEqualTo("test"),
-                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getJdbcType())
+                        () -> assertThat(firstRow.columnValues().get(1).value()).isEqualTo("test"),
+                        () -> assertThat(firstRow.columnValues().get(1).type().jdbcType())
                                 .isEqualTo(JdbcType.VARCHAR),
-                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getTypeName())
+                        () -> assertThat(firstRow.columnValues().get(1).type().typeName())
                                 .isEqualTo("CHARACTER VARYING"),
-                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getClassName())
+                        () -> assertThat(firstRow.columnValues().get(1).type().className())
                                 .isEqualTo(String.class.getName()),
-                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getDisplaySize()).isEqualTo(255),
-                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getPrecision()).isEqualTo(255),
-                        () -> assertThat(firstRow.getColumnValues().get(1).getType().getScale()).isZero(),
+                        () -> assertThat(firstRow.columnValues().get(1).type().displaySize()).isEqualTo(255),
+                        () -> assertThat(firstRow.columnValues().get(1).type().precision()).isEqualTo(255),
+                        () -> assertThat(firstRow.columnValues().get(1).type().scale()).isZero(),
 
                         () -> assertThat(iterator.hasNext()).isFalse(),
                         () -> assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class));
@@ -161,8 +161,8 @@ class SimpleConnectionITest {
 
             final List<Row> result = connection.query("select count(*) from test").stream().toList();
             assertThat(result).hasSize(1);
-            assertThat(result.get(0).getColumnValues()).hasSize(1);
-            assertThat(result.get(0).get(0).getValue()).isEqualTo(3L);
+            assertThat(result.get(0).columnValues()).hasSize(1);
+            assertThat(result.get(0).get(0).value()).isEqualTo(3L);
         }
     }
 
@@ -175,7 +175,7 @@ class SimpleConnectionITest {
                     Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }));
 
             final List<List<Object>> result = connection.query("select * from test").stream()
-                    .map(row -> row.getColumnValues().stream().map(value -> value.getValue()).toList()).toList();
+                    .map(row -> row.columnValues().stream().map(value -> value.value()).toList()).toList();
             assertThat(result).hasSize(3);
             assertThat(result).isEqualTo(List.of(List.of(1, "a"), List.of(2, "b"), List.of(3, "c")));
         }

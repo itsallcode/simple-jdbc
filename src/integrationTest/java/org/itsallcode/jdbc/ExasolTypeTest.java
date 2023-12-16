@@ -46,7 +46,7 @@ class ExasolTypeTest {
     void genericRowType(final TypeTest test) {
         try (SimpleResultSet<Row> result = connect()
                 .query("select cast('" + test.value() + "' as " + test.type() + ")")) {
-            final Object value = result.toList().get(0).get(0).getValue();
+            final Object value = result.toList().get(0).get(0).value();
             assertAll(
                     () -> assertThat(value.getClass()).isEqualTo(test.expectedValue().getClass()),
                     () -> assertThat(value).isEqualTo(test.expectedValue()));
@@ -58,7 +58,7 @@ class ExasolTypeTest {
     void genericRowNullValue(final TypeTest test) {
         try (SimpleResultSet<Row> result = connect()
                 .query("select cast(NULL as " + test.type() + ")")) {
-            assertThat(result.toList().get(0).get(0).getValue())
+            assertThat(result.toList().get(0).get(0).value())
                     .isNull();
         }
     }

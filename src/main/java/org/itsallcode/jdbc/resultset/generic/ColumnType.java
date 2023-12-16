@@ -1,12 +1,15 @@
 package org.itsallcode.jdbc.resultset.generic;
 
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
 /**
  * Represents the type of a column.
  * 
  * @param jdbcType    JDBC type
  * @param typeName    database specific column type name
  * @param className   fully qualified class name of the objects returned by
- *                    {@link ColumnValue#getValue()}
+ *                    {@link ColumnValue#value()}
  * @param precision   column precision
  * @param scale       column scale
  * @param displaySize display size
@@ -14,58 +17,13 @@ package org.itsallcode.jdbc.resultset.generic;
 public record ColumnType(JdbcType jdbcType, String typeName, String className, int precision, int scale,
         int displaySize) {
 
-    /**
-     * Get the JDBC type.
-     * 
-     * @return JDBC type
-     */
-    public JdbcType getJdbcType() {
-        return jdbcType;
-    }
-
-    /**
-     * Get the database specific column type name.
-     * 
-     * @return type name
-     */
-    public String getTypeName() {
-        return typeName;
-    }
-
-    /**
-     * The fully qualified class name of the objects returned by
-     * {@link ColumnValue#getValue()}.
-     * 
-     * @return class name
-     */
-    public String getClassName() {
-        return className;
-    }
-
-    /**
-     * Get the column precision.
-     * 
-     * @return precision
-     */
-    public int getPrecision() {
-        return precision;
-    }
-
-    /**
-     * Get the column scale.
-     * 
-     * @return scale
-     */
-    public int getScale() {
-        return scale;
-    }
-
-    /**
-     * Get the display size.
-     * 
-     * @return display size
-     */
-    public int getDisplaySize() {
-        return displaySize;
+    static ColumnType create(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        final String className = metaData.getColumnClassName(columnIndex);
+        final int displaySize = metaData.getColumnDisplaySize(columnIndex);
+        final JdbcType jdbcType = JdbcType.forType(metaData.getColumnType(columnIndex));
+        final String typeName = metaData.getColumnTypeName(columnIndex);
+        final int precision = metaData.getPrecision(columnIndex);
+        final int scale = metaData.getScale(columnIndex);
+        return new ColumnType(jdbcType, typeName, className, precision, scale, displaySize);
     }
 }

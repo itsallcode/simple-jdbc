@@ -9,24 +9,6 @@ package org.itsallcode.jdbc.resultset.generic;
 public record ColumnValue(ColumnType type, Object value) {
 
     /**
-     * Get the column type.
-     * 
-     * @return column type
-     */
-    public ColumnType getType() {
-        return type;
-    }
-
-    /**
-     * Get the column value.
-     * 
-     * @return column value
-     */
-    public Object getValue() {
-        return value;
-    }
-
-    /**
      * Get the column value cast to the given type.
      * 
      * @param type expected type
@@ -34,7 +16,7 @@ public record ColumnValue(ColumnType type, Object value) {
      * @return value of the given type
      */
     public <T> T getValue(final Class<T> type) {
-        return type.cast(value);
+        return cast(type);
     }
 
     /**
@@ -47,6 +29,6 @@ public record ColumnValue(ColumnType type, Object value) {
     }
 
     private <T> T cast(final Class<T> type) {
-        return type.cast(value);
+        return type.cast(this.value);
     }
 }

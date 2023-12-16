@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
 import org.itsallcode.jdbc.resultset.generic.SimpleMetaData;
-import org.itsallcode.jdbc.resultset.generic.SimpleMetaData.ColumnMetaData;
 
 class ResultSetValueConverter {
 
@@ -25,8 +25,8 @@ class ResultSetValueConverter {
         for (int i = 1; i <= converters.size(); i++) {
             final ColumnValueConverter converter = converters.get(i - 1);
             final ColumnMetaData metaData = resultSetMetadata.getColumnByIndex(i);
-            convertersByIndex.put(metaData.getColumnIndex(), converter);
-            columnIndexByLabel.put(metaData.getLabel(), i);
+            convertersByIndex.put(metaData.columnIndex(), converter);
+            columnIndexByLabel.put(metaData.label(), i);
         }
         return new ResultSetValueConverter(convertersByIndex, columnIndexByLabel);
     }

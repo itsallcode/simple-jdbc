@@ -30,7 +30,7 @@ class ExampleTest {
             try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
                 final List<Row> result = rs.stream().toList();
                 assertEquals(3, result.size());
-                assertEquals(1, result.get(0).get(0).getValue());
+                assertEquals(1, result.get(0).get(0).value());
             }
         }
     }

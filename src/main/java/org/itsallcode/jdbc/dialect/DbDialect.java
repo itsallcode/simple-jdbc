@@ -1,6 +1,6 @@
 package org.itsallcode.jdbc.dialect;
 
-import org.itsallcode.jdbc.resultset.generic.SimpleMetaData.ColumnMetaData;
+import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
 
 /**
  * A database specific dialect.

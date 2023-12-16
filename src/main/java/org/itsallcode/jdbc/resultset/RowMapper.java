@@ -43,7 +43,7 @@ public interface RowMapper<T> {
      * @return a new row mapper
      */
     public static RowMapper<List<Object>> columnValueList() {
-        return generic(row -> row.getColumnValues().stream().map(ColumnValue::getValue).toList());
+        return generic(row -> row.columnValues().stream().map(ColumnValue::value).toList());
     }
 
     private static <T> RowMapper<T> generic(final ColumnValuesConverter<T> converter) {
