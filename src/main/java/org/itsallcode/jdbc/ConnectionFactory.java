@@ -1,24 +1,22 @@
 package org.itsallcode.jdbc;
 
 import java.sql.*;
-import java.util.List;
 import java.util.Properties;
-
-import org.itsallcode.jdbc.resultset.Row;
-import org.itsallcode.jdbc.resultset.RowMapper;
 
 /**
  * This class connects to a database and returns new {@link SimpleConnection}s.
  */
 public class ConnectionFactory {
     private final Context context;
+    private final DbDialectFactory dialectFactory;
 
-    private ConnectionFactory(final Context context) {
+    private ConnectionFactory(final Context context, final DbDialectFactory dialectFactory) {
         this.context = context;
+        this.dialectFactory = dialectFactory;
     }
 
     /**
-     * Create a new connection factory with a default context.
+     * Create a new connection factory.
      * 
      * @return a new instance
      */
@@ -33,7 +31,7 @@ public class ConnectionFactory {
      * @return a new instance
      */
     public static ConnectionFactory create(final Context context) {
-        return new ConnectionFactory(context);
+        return new ConnectionFactory(context, new DbDialectFactory());
     }
 
     /**
@@ -69,7 +67,7 @@ public class ConnectionFactory {
      * @return a new connection
      */
     public SimpleConnection create(final String url, final Properties info) {
-        return new SimpleConnection(createConnection(url, info), context);
+        return new SimpleConnection(createConnection(url, info), context, dialectFactory.createDialect(url));
     }
 
     private Connection createConnection(final String url, final Properties info) {
@@ -78,24 +76,5 @@ public class ConnectionFactory {
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error connecting to '" + url + "'", e);
         }
-    }
-
-    /**
-     * Create a {@link RowMapper} that creates generic {@link Row} objects.
-     * 
-     * @return a new row mapper
-     */
-    public RowMapper<Row> createGenericRowMapper() {
-        return RowMapper.createGenericRowMapper(context);
-    }
-
-    /**
-     * Create a {@link RowMapper} that creates {@link List}s of simple column
-     * objects.
-     * 
-     * @return a new row mapper
-     */
-    public RowMapper<List<Object>> createListRowMapper() {
-        return RowMapper.createListRowMapper(context);
     }
 }

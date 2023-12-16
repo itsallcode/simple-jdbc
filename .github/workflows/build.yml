@@ -40,8 +40,11 @@ jobs:
         java-version: ${{ matrix.java }}
         cache: 'gradle'
 
+    - name: Enable testcontainer reuse
+      run: echo 'testcontainers.reuse.enable=true' > "$HOME/.testcontainers.properties"
+
     - name: Build with Java ${{ matrix.java }}
-      run: ./gradlew clean build --info -PjavaVersion=${{matrix.java}}
+      run: ./gradlew clean build --info -PjavaVersion=${{matrix.java}} -Dsonar.gradle.skipCompile=true
 
     - name: Publish Test Report
       uses: scacap/action-surefire-report@v1
@@ -52,7 +55,7 @@ jobs:
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
-      run: ./gradlew sonarqube -Dsonar.token=$SONAR_TOKEN
+      run: ./gradlew sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.gradle.skipCompile=true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

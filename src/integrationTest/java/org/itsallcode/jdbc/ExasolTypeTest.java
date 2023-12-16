@@ -8,8 +8,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.resultset.Row;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolService;
 
-class LegacyTypeITest {
+class ExasolTypeTest {
 
     private static final ExasolContainer<?> container = new ExasolContainer<>("8.23.1")
             .withRequiredServices(ExasolService.JDBC).withReuse(true);
@@ -35,16 +35,16 @@ class LegacyTypeITest {
     }
 
     SimpleConnection connect() {
-        return ConnectionFactory.create(Context.builder().useModernTypes(true).build()).create(container.getJdbcUrl(),
-                container.getUsername(), container.getPassword());
+        return ConnectionFactory.create(Context.builder().build()) //
+                .create(container.getJdbcUrl(), container.getUsername(), container.getPassword());
     }
 
     @ParameterizedTest
     @MethodSource("testTypes")
-    void type(final TypeTest test) {
+    void genericRowType(final TypeTest test) {
         try (SimpleResultSet<Row> result = connect()
                 .query("select cast('" + test.value() + "' as " + test.type() + ")")) {
-            final Object value = result.toList().get(0).getColumnValue(0).getValue();
+            final Object value = result.toList().get(0).get(0).value();
             assertAll(
                     () -> assertThat(value.getClass()).isEqualTo(test.expectedValue().getClass()),
                     () -> assertThat(value).isEqualTo(test.expectedValue()));
@@ -53,11 +53,26 @@ class LegacyTypeITest {
 
     @ParameterizedTest
     @MethodSource("testTypes")
-    void nullValue(final TypeTest test) {
+    void genericRowNullValue(final TypeTest test) {
         try (SimpleResultSet<Row> result = connect()
                 .query("select cast(NULL as " + test.type() + ")")) {
-            assertThat(result.toList().get(0).getColumnValue(0).getValue())
+            assertThat(result.toList().get(0).get(0).value())
                     .isNull();
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("testTypes")
+    void resultSetValueTypes(final TypeTest test) {
+        try (SimpleConnection connection = connect();
+                SimpleResultSet<Object> result = connection
+                        .query("select cast('" + test.value() + "' as " + test.type() + ")",
+                                (resultSet, rowNum) -> resultSet.getObject(1,
+                                        test.expectedValue().getClass()))) {
+            final Object value = result.toList().get(0);
+            assertAll(
+                    () -> assertThat(value.getClass()).isEqualTo(test.expectedValue().getClass()),
+                    () -> assertThat(value).isEqualTo(test.expectedValue()));
         }
     }
 

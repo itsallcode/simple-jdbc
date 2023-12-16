@@ -8,8 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.resultset.Row;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
 
 class ExampleTest {
@@ -20,7 +20,8 @@ class ExampleTest {
                 return new Object[] { id, name };
             }
         }
-        final ConnectionFactory connectionFactory = ConnectionFactory.create();
+        final ConnectionFactory connectionFactory = ConnectionFactory
+                .create(Context.builder().build());
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             connection.executeScript(readResource("/schema.sql"));
             connection.insert("NAMES", List.of("ID", "NAME"), Name::toRow,
@@ -28,7 +29,7 @@ class ExampleTest {
             try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
                 final List<Row> result = rs.stream().toList();
                 assertEquals(3, result.size());
-                assertEquals(1, result.get(0).getColumnValue(0).getValue());
+                assertEquals(1, result.get(0).get(0).value());
             }
         }
     }

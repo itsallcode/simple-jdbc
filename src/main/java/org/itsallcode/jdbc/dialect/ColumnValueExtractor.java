@@ -1,4 +1,4 @@
-package org.itsallcode.jdbc.resultset;
+package org.itsallcode.jdbc.dialect;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,7 +7,7 @@ import java.sql.SQLException;
  * Extracts a column value from a {@link ResultSet}.
  */
 @FunctionalInterface
-public interface ResultSetValueExtractor {
+public interface ColumnValueExtractor {
     /**
      * Extracts a column value from a {@link ResultSet}.
      * 
@@ -16,5 +16,5 @@ public interface ResultSetValueExtractor {
      * @return the column value
      * @throws SQLException if reading the result set fails
      */
-    ColumnValue extractValue(ResultSet resultSet, int columnIndex) throws SQLException;
+    Object getObject(ResultSet resultSet, int columnIndex) throws SQLException;
 }

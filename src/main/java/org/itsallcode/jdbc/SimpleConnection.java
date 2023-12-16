@@ -4,14 +4,15 @@ import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.identifier.Identifier;
 import org.itsallcode.jdbc.identifier.SimpleIdentifier;
 import org.itsallcode.jdbc.resultset.*;
+import org.itsallcode.jdbc.resultset.generic.Row;
 
 /**
  * A simplified version of a JDBC {@link Connection}. Create new connections
@@ -22,10 +23,12 @@ public class SimpleConnection implements AutoCloseable {
 
     private final Connection connection;
     private final Context context;
+    private final DbDialect dialect;
 
-    SimpleConnection(final Connection connection, final Context context) {
-        this.connection = connection;
-        this.context = context;
+    SimpleConnection(final Connection connection, final Context context, final DbDialect dialect) {
+        this.connection = Objects.requireNonNull(connection, "connection");
+        this.context = Objects.requireNonNull(context, "context");
+        this.dialect = Objects.requireNonNull(dialect, "dialect");
     }
 
     /**
@@ -61,7 +64,7 @@ public class SimpleConnection implements AutoCloseable {
      * @return the result set
      */
     public SimpleResultSet<Row> query(final String sql) {
-        return query(sql, RowMapper.createGenericRowMapper(context));
+        return query(sql, ContextRowMapper.generic(dialect));
     }
 
     /**
@@ -93,11 +96,11 @@ public class SimpleConnection implements AutoCloseable {
         LOG.finest(() -> "Executing query '" + sql + "'...");
         final SimplePreparedStatement statement = prepareStatement(sql);
         statement.setValues(preparedStatementSetter);
-        return statement.executeQuery(rowMapper);
+        return statement.executeQuery(ContextRowMapper.create(rowMapper));
     }
 
     private SimplePreparedStatement prepareStatement(final String sql) {
-        return new SimplePreparedStatement(prepare(sql), sql);
+        return new SimplePreparedStatement(context, dialect, prepare(sql), sql);
     }
 
     /**
@@ -149,6 +152,15 @@ public class SimpleConnection implements AutoCloseable {
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error preparing statement '" + sql + "': " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Database dialect of this connection.
+     * 
+     * @return dialect
+     */
+    public DbDialect getDialect() {
+        return dialect;
     }
 
     @Override

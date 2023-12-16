@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.*;
 
+import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
 
 /**
@@ -15,16 +16,19 @@ import org.itsallcode.jdbc.UncheckedSQLException;
  */
 public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
     private final ResultSet resultSet;
-    private final RowMapper<T> rowMapper;
+    private final ContextRowMapper<T> rowMapper;
+    private final Context context;
     private Iterator<T> iterator;
 
     /**
      * Create a new instance.
      * 
+     * @param context   database context
      * @param resultSet the underlying result set
      * @param rowMapper a row mapper for converting each row
      */
-    public SimpleResultSet(final ResultSet resultSet, final RowMapper<T> rowMapper) {
+    public SimpleResultSet(final Context context, final ResultSet resultSet, final ContextRowMapper<T> rowMapper) {
+        this.context = context;
         this.resultSet = resultSet;
         this.rowMapper = rowMapper;
     }
@@ -39,7 +43,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
         if (iterator != null) {
             throw new IllegalStateException("Only one iterator allowed per ResultSet");
         }
-        iterator = ResultSetIterator.create(this, rowMapper);
+        iterator = ResultSetIterator.create(context, this, rowMapper);
         return iterator;
     }
 
@@ -86,21 +90,25 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
     }
 
     private static class ResultSetIterator<T> implements Iterator<T> {
+        private final Context context;
+        private final SimpleResultSet<T> resultSet;
+        private final ContextRowMapper<T> rowMapper;
         private boolean hasNext;
         private int currentRowIndex = 0;
-        private final SimpleResultSet<T> resultSet;
-        private final RowMapper<T> rowMapper;
 
-        private ResultSetIterator(final SimpleResultSet<T> simpleResultSet, final RowMapper<T> rowMapper,
+        private ResultSetIterator(final Context context, final SimpleResultSet<T> simpleResultSet,
+                final ContextRowMapper<T> rowMapper,
                 final boolean hasNext) {
+            this.context = context;
             this.resultSet = simpleResultSet;
             this.rowMapper = rowMapper;
             this.hasNext = hasNext;
         }
 
-        public static <T> Iterator<T> create(final SimpleResultSet<T> simpleResultSet, final RowMapper<T> rowMapper) {
+        public static <T> Iterator<T> create(final Context context, final SimpleResultSet<T> simpleResultSet,
+                final ContextRowMapper<T> rowMapper) {
             final boolean firstRowExists = simpleResultSet.next();
-            return new ResultSetIterator<>(simpleResultSet, rowMapper, firstRowExists);
+            return new ResultSetIterator<>(context, simpleResultSet, rowMapper, firstRowExists);
         }
 
         @Override
@@ -121,7 +129,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
 
         private T mapRow() {
             try {
-                return rowMapper.mapRow(resultSet.resultSet, currentRowIndex);
+                return rowMapper.mapRow(context, resultSet.resultSet, currentRowIndex);
             } catch (final SQLException e) {
                 throw new UncheckedSQLException("Error mapping row " + currentRowIndex, e);
             }

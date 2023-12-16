@@ -1,0 +1,2 @@
+org.itsallcode.jdbc.dialect.ExasolDialect
+org.itsallcode.jdbc.dialect.H2Dialect
