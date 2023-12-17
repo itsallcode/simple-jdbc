@@ -50,7 +50,7 @@ jobs:
                   -PjavaVersion=${{matrix.java}} \
                   -Dsonar.gradle.skipCompile=true
 
-    - name: Publish Test Report
+    - name: Publish Test Report for Java ${{ matrix.java }}
       uses: scacap/action-surefire-report@v1
       if: ${{ always() && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
       with:
