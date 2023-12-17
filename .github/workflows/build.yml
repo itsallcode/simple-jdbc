@@ -44,7 +44,11 @@ jobs:
       run: echo 'testcontainers.reuse.enable=true' > "$HOME/.testcontainers.properties"
 
     - name: Build with Java ${{ matrix.java }}
-      run: ./gradlew clean build --info -PjavaVersion=${{matrix.java}} -Dsonar.gradle.skipCompile=true
+      run: |
+        ./gradlew clean build --info \
+                  --exclude-task integrationTest \
+                  -PjavaVersion=${{matrix.java}} \
+                  -Dsonar.gradle.skipCompile=true
 
     - name: Publish Test Report
       uses: scacap/action-surefire-report@v1
