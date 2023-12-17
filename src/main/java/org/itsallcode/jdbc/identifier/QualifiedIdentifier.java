@@ -1,18 +1,14 @@
 package org.itsallcode.jdbc.identifier;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * A qualified identifier, e.g. table name and schema name.
  */
-public class QualifiedIdentifier implements Identifier {
-    private final Identifier[] id;
-
-    private QualifiedIdentifier(final Identifier... ids) {
-        this.id = ids;
-    }
+record QualifiedIdentifier(List<Identifier> id) implements Identifier {
 
     /**
      * Create a new qualified identifier.
@@ -21,7 +17,7 @@ public class QualifiedIdentifier implements Identifier {
      * @return a new instance
      */
     public static Identifier of(final Identifier... ids) {
-        return new QualifiedIdentifier(ids);
+        return new QualifiedIdentifier(asList(ids));
     }
 
     @Override
@@ -31,6 +27,6 @@ public class QualifiedIdentifier implements Identifier {
 
     @Override
     public String quote() {
-        return Arrays.stream(id).map(Identifier::quote).collect(joining("."));
+        return id.stream().map(Identifier::quote).collect(joining("."));
     }
 }
