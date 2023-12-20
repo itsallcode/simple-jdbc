@@ -1,7 +1,6 @@
 package org.itsallcode.jdbc.resultset.generic;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * Represents the type of a column.
@@ -14,13 +13,13 @@ import java.sql.SQLException;
  * @param scale       column scale
  * @param displaySize display size
  */
-public record ColumnType(JdbcType jdbcType, String typeName, String className, int precision, int scale,
+public record ColumnType(JDBCType jdbcType, String typeName, String className, int precision, int scale,
         int displaySize) {
 
     static ColumnType create(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         final String className = metaData.getColumnClassName(columnIndex);
         final int displaySize = metaData.getColumnDisplaySize(columnIndex);
-        final JdbcType jdbcType = JdbcType.forType(metaData.getColumnType(columnIndex));
+        final JDBCType jdbcType = JDBCType.valueOf(metaData.getColumnType(columnIndex));
         final String typeName = metaData.getColumnTypeName(columnIndex);
         final int precision = metaData.getPrecision(columnIndex);
         final int scale = metaData.getScale(columnIndex);

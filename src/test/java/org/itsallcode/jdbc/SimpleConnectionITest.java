@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import java.sql.JDBCType;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Stream;
@@ -13,7 +14,6 @@ import java.util.stream.Stream;
 import org.itsallcode.jdbc.identifier.Identifier;
 import org.itsallcode.jdbc.resultset.ContextRowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
-import org.itsallcode.jdbc.resultset.generic.JdbcType;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
 
@@ -101,7 +101,7 @@ class SimpleConnectionITest {
                         () -> assertThat(firstRow.columnValues()).hasSize(2),
                         () -> assertThat(firstRow.columnValues().get(0).value()).isEqualTo(1),
                         () -> assertThat(firstRow.columnValues().get(0).type().jdbcType())
-                                .isEqualTo(JdbcType.INTEGER),
+                                .isEqualTo(JDBCType.INTEGER),
                         () -> assertThat(firstRow.columnValues().get(0).type().typeName())
                                 .isEqualTo("INTEGER"),
                         () -> assertThat(firstRow.columnValues().get(0).type().className())
@@ -112,7 +112,7 @@ class SimpleConnectionITest {
 
                         () -> assertThat(firstRow.columnValues().get(1).value()).isEqualTo("test"),
                         () -> assertThat(firstRow.columnValues().get(1).type().jdbcType())
-                                .isEqualTo(JdbcType.VARCHAR),
+                                .isEqualTo(JDBCType.VARCHAR),
                         () -> assertThat(firstRow.columnValues().get(1).type().typeName())
                                 .isEqualTo("CHARACTER VARYING"),
                         () -> assertThat(firstRow.columnValues().get(1).type().className())
