@@ -167,7 +167,7 @@ public class SimpleConnection implements AutoCloseable {
         try {
             connection.close();
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error closing connection", e);
+            throw new UncheckedSQLException("Error closing connection: " + e.getMessage(), e);
         }
     }
 }
