@@ -21,7 +21,7 @@ public class H2Dialect extends BaseDbDialect {
     public ColumnValueExtractor createExtractor(final ColumnMetaData column) {
         return switch (column.type().jdbcType()) {
         case TIMESTAMP -> Extractors.timestampToUTCInstant();
-        case TIMESTAMP_WITH_TIMEZONE -> Extractors.offsetDateTime();
+        case TIMESTAMP_WITH_TIMEZONE -> Extractors.timestampToInstant();
         case CLOB -> Extractors.clobToString();
         case BLOB -> Extractors.blobToBytes();
         case TIME -> Extractors.forType(LocalTime.class);

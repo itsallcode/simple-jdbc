@@ -14,7 +14,7 @@ class Extractors {
         return nonNull((resultSet, columnIndex) -> resultSet.getTimestamp(columnIndex, utcCalendar).toInstant());
     }
 
-    public static ColumnValueExtractor offsetDateTime() {
+    public static ColumnValueExtractor timestampToInstant() {
         return nonNull((resultSet, columnIndex) -> resultSet.getTimestamp(columnIndex).toInstant());
     }
 
