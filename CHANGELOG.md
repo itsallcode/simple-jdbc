@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.0] - unreleased
 
+- [PR #16](https://github.com/itsallcode/simple-jdbc/pull/16): Improve test coverage
+
 ## [0.6.0] - 2023-12-16
 
 - [PR #15](https://github.com/itsallcode/simple-jdbc/pull/15): Refactor row mapper, add DB dialect detection
