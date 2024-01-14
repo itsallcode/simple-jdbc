@@ -3,12 +3,7 @@ package org.itsallcode.jdbc.identifier;
 /**
  * An identifier consisting only of an ID.
  */
-public class SimpleIdentifier implements Identifier {
-    private final String id;
-
-    private SimpleIdentifier(final String id) {
-        this.id = id;
-    }
+record SimpleIdentifier(String id) implements Identifier {
 
     /**
      * Create a new simple identifier.

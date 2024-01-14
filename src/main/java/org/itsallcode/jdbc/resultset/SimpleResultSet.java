@@ -77,7 +77,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
         try {
             resultSet.close();
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error closing resultset", e);
+            throw new UncheckedSQLException("Error closing resultset: " + e.getMessage(), e);
         }
     }
 
@@ -85,7 +85,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
         try {
             return resultSet.next();
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error getting next row", e);
+            throw new UncheckedSQLException("Error getting next row: " + e.getMessage(), e);
         }
     }
 
@@ -131,7 +131,9 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
             try {
                 return rowMapper.mapRow(context, resultSet.resultSet, currentRowIndex);
             } catch (final SQLException e) {
-                throw new UncheckedSQLException("Error mapping row " + currentRowIndex, e);
+                throw new UncheckedSQLException("Error mapping row " + currentRowIndex + ": " + e.getMessage(), e);
+            } catch (final RuntimeException e) {
+                throw new IllegalStateException("Error mapping row " + currentRowIndex + ": " + e.getMessage(), e);
             }
         }
     }

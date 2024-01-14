@@ -23,7 +23,7 @@ Add dependency to your gradle project:
 
 ```groovy
 dependencies {
-    implementation 'org.itsallcode:simple-jdbc:0.6.0'
+    implementation 'org.itsallcode:simple-jdbc:0.6.1'
 }
 ```
 
@@ -60,6 +60,15 @@ Install to local maven repository:
 
 ```sh
 ./gradlew clean publishToMavenLocal
+```
+
+### Test Coverage
+
+To calculate and view test coverage:
+
+```sh
+./gradlew check jacocoTestReport
+open build/reports/jacoco/test/html/index.html
 ```
 
 ### Publish to Maven Central

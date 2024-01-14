@@ -12,10 +12,12 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.identifier.Identifier;
-import org.itsallcode.jdbc.resultset.ContextRowMapper;
-import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class SimpleConnectionITest {
     @Test
@@ -50,7 +52,7 @@ class SimpleConnectionITest {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
-            try (SimpleResultSet<Row> resultSet = connection.query("select count(*) from test")) {
+            try (SimpleResultSet<Row> resultSet = connection.query("select count(*) as result from test")) {
                 final List<Row> rows = resultSet.stream().collect(toList());
                 assertThat(rows).hasSize(1);
                 assertThat(rows.get(0).rowIndex()).isZero();
@@ -71,6 +73,39 @@ class SimpleConnectionITest {
                 final List<List<Object>> rows = resultSet.toList();
                 assertThat(rows).hasSize(1);
                 assertThat(rows.get(0)).containsExactly(1, "test");
+            }
+        }
+    }
+
+    static Stream<Arguments> rowMappers() {
+        return Stream.of(
+                mapper("type+label-lowercase", (rs, rowNum) -> rs.getInt("id") + ":" + rs.getString("name")),
+                mapper("type+label-uppercase", (rs, rowNum) -> rs.getInt("ID") + ":" + rs.getString("NAME")),
+                mapper("type+index", (rs, rowNum) -> rs.getInt(1) + ":" + rs.getString(2)),
+                mapper("generic+label-lowercase", (rs, rowNum) -> rs.getObject("id") + ":" + rs.getObject("name")),
+                mapper("generic+label-uppercase", (rs, rowNum) -> rs.getObject("ID") + ":" + rs.getObject("NAME")),
+                mapper("genric+index", (rs, rowNum) -> rs.getObject(1) + ":" + rs.getObject(2)),
+                mapper("specifictype+label-lowercase",
+                        (rs, rowNum) -> rs.getObject("id", Integer.class) + ":" + rs.getObject("name", String.class)),
+                mapper("specifictype+label-uppercase",
+                        (rs, rowNum) -> rs.getObject("ID", Integer.class) + ":" + rs.getObject("NAME", String.class)),
+                mapper("specifictype+index",
+                        (rs, rowNum) -> rs.getObject(1, Integer.class) + ":" + rs.getObject(2, String.class)));
+    }
+
+    static Arguments mapper(final String testName, final RowMapper<String> mapper) {
+        return Arguments.of(testName, mapper);
+    }
+
+    @ParameterizedTest
+    @MethodSource("rowMappers")
+    void executeQueryWithCustomRowMapper(final String testName, final RowMapper<String> mapper) {
+        final ConnectionFactory factory = ConnectionFactory.create(Context.builder().build());
+        try (SimpleConnection connection = factory.create("jdbc:h2:mem:")) {
+            try (SimpleResultSet<String> resultSet = connection.query(
+                    "select t.* from (values (1, 'a'), (2, 'b'), (3, 'c')) as t(id, name)", mapper)) {
+                final List<String> rows = resultSet.toList();
+                assertThat(rows).containsExactly("1:a", "2:b", "3:c");
             }
         }
     }

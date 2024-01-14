@@ -14,6 +14,10 @@ class Extractors {
         return nonNull((resultSet, columnIndex) -> resultSet.getTimestamp(columnIndex, utcCalendar).toInstant());
     }
 
+    public static ColumnValueExtractor timestampToInstant() {
+        return nonNull((resultSet, columnIndex) -> resultSet.getTimestamp(columnIndex).toInstant());
+    }
+
     static ColumnValueExtractor dateToLocalDate() {
         final Calendar utcCalendar = createUtcCalendar();
         return nonNull((resultSet, columnIndex) -> resultSet.getDate(columnIndex, utcCalendar).toLocalDate());

@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.identifier.Identifier;
-import org.itsallcode.jdbc.identifier.SimpleIdentifier;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
 
@@ -114,7 +113,7 @@ public class SimpleConnection implements AutoCloseable {
      */
     public <T> void insert(final String table, final List<String> columnNames, final ParamConverter<T> rowMapper,
             final Stream<T> rows) {
-        insert(SimpleIdentifier.of(table), columnNames.stream().map(SimpleIdentifier::of).toList(), rowMapper, rows);
+        insert(Identifier.simple(table), columnNames.stream().map(Identifier::simple).toList(), rowMapper, rows);
     }
 
     /**
@@ -168,7 +167,7 @@ public class SimpleConnection implements AutoCloseable {
         try {
             connection.close();
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error closing connection", e);
+            throw new UncheckedSQLException("Error closing connection: " + e.getMessage(), e);
         }
     }
 }

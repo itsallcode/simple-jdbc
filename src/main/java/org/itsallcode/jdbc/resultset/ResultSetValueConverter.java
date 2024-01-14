@@ -33,30 +33,31 @@ class ResultSetValueConverter {
         return new ResultSetValueConverter(convertersByIndex, columnIndexByLabel);
     }
 
-    <T> T getObject(final ResultSet delegate, final int columnIndex, final Class<T> type) throws SQLException {
-        return getConverter(columnIndex).getObject(delegate, columnIndex, type);
+    <T> T getObject(final ResultSet resultSet, final int columnIndex, final Class<T> type) throws SQLException {
+        return getConverter(columnIndex).getObject(resultSet, columnIndex, type);
     }
 
-    Object getObject(final ResultSet delegate, final int columnIndex) throws SQLException {
-        return getConverter(columnIndex).getObject(delegate, columnIndex);
+    Object getObject(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        return getConverter(columnIndex).getObject(resultSet, columnIndex);
     }
 
-    <T> T getObject(final ResultSet delegate, final String columnLabel, final Class<T> type)
+    <T> T getObject(final ResultSet resultSet, final String columnLabel, final Class<T> type)
             throws SQLException {
         final int columnIndex = getIndexForLabel(columnLabel);
-        return getConverter(columnIndex).getObject(delegate, columnIndex, type);
+        return getConverter(columnIndex).getObject(resultSet, columnIndex, type);
     }
 
-    Object getObject(final ResultSet delegate, final String columnLabel)
+    Object getObject(final ResultSet resultSet, final String columnLabel)
             throws SQLException {
         final int columnIndex = getIndexForLabel(columnLabel);
-        return getConverter(columnIndex).getObject(delegate, columnIndex);
+        return getConverter(columnIndex).getObject(resultSet, columnIndex);
     }
 
     private int getIndexForLabel(final String columnLabel) {
-        final Integer index = columnIndexByLabel.get(columnLabel);
+        final Integer index = columnIndexByLabel.get(columnLabel.toUpperCase());
         if (index == null) {
-            throw new IllegalStateException("No index found for column label '" + columnLabel + "'");
+            throw new IllegalStateException("No index found for column label '" + columnLabel
+                    + "'. Available column labels: " + columnIndexByLabel.keySet());
         }
         return index.intValue();
     }
