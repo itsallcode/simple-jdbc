@@ -59,7 +59,7 @@ jobs:
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
-      run: ./gradlew sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.gradle.skipCompile=true
+      run: ./gradlew sonar --info -Dsonar.token=$SONAR_TOKEN -Dsonar.gradle.skipCompile=true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
