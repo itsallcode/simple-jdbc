@@ -21,11 +21,19 @@ class ResultSetValueConverterTest {
     ResultSet resultSetMock;
 
     @Test
-    void emptyInputNoConverterFound() throws SQLException {
+    void emptyInputNoConverterFoundForIndex() throws SQLException {
         final ResultSetValueConverter converter = testee(emptyList(), emptyList());
         assertThatThrownBy(() -> converter.getObject(resultSetMock, 1))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("No converter found for column index 1");
+    }
+
+    @Test
+    void emptyInputNoConverterFoundForLabel() throws SQLException {
+        final ResultSetValueConverter converter = testee(emptyList(), emptyList());
+        assertThatThrownBy(() -> converter.getObject(resultSetMock, "label"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("No index found for column label 'label'. Available column labels: []");
     }
 
     ResultSetValueConverter testee(final List<ColumnMetaData> columns, final List<ColumnValueConverter> converters) {

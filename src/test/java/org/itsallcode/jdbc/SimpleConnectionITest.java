@@ -84,7 +84,13 @@ class SimpleConnectionITest {
                 mapper("type+index", (rs, rowNum) -> rs.getInt(1) + ":" + rs.getString(2)),
                 mapper("generic+label-lowercase", (rs, rowNum) -> rs.getObject("id") + ":" + rs.getObject("name")),
                 mapper("generic+label-uppercase", (rs, rowNum) -> rs.getObject("ID") + ":" + rs.getObject("NAME")),
-                mapper("genric+index", (rs, rowNum) -> rs.getObject(1) + ":" + rs.getObject(2)));
+                mapper("genric+index", (rs, rowNum) -> rs.getObject(1) + ":" + rs.getObject(2)),
+                mapper("specifictype+label-lowercase",
+                        (rs, rowNum) -> rs.getObject("id", Integer.class) + ":" + rs.getObject("name", String.class)),
+                mapper("specifictype+label-uppercase",
+                        (rs, rowNum) -> rs.getObject("ID", Integer.class) + ":" + rs.getObject("NAME", String.class)),
+                mapper("specifictype+index",
+                        (rs, rowNum) -> rs.getObject(1, Integer.class) + ":" + rs.getObject(2, String.class)));
     }
 
     static Arguments mapper(final String testName, final RowMapper<String> mapper) {
