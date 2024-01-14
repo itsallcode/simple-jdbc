@@ -72,6 +72,20 @@ class H2TypeTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("testTypes")
+    void preparedStatementSetParameter(final TypeTest test) {
+        final Object value = test.expectedValue();
+        try (final SimpleConnection connection = H2TestFixture.createMemConnection();
+                final SimpleResultSet<Object> result = connection
+                        .query("select ?",
+                                (preparedStatement) -> preparedStatement.setObject(1, value),
+                                (resultSet, rowNum) -> resultSet
+                                        .getObject(1, value.getClass()))) {
+            assertThat(result.toList()).containsExactly(value);
+        }
+    }
+
     static Stream<Arguments> testTypes() {
         return Stream.of(
                 typeTest("text", "CHARACTER(5)", "text "),
