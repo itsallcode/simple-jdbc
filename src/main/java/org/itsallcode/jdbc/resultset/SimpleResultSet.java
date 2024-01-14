@@ -131,7 +131,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
             try {
                 return rowMapper.mapRow(context, resultSet.resultSet, currentRowIndex);
             } catch (final SQLException e) {
-                throw new UncheckedSQLException("Error mapping row " + currentRowIndex, e);
+                throw new UncheckedSQLException("Error mapping row " + currentRowIndex + ": " + e.getMessage(), e);
             }
         }
     }

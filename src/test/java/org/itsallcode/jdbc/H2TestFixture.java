@@ -5,7 +5,7 @@ public class H2TestFixture {
         return createMemConnection(Context.builder().build());
     }
 
-    public static SimpleConnection createMemConnection(final Context context) {
+    private static SimpleConnection createMemConnection(final Context context) {
         return ConnectionFactory.create(context).create("jdbc:h2:mem:");
     }
 }
