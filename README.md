@@ -62,6 +62,15 @@ Install to local maven repository:
 ./gradlew clean publishToMavenLocal
 ```
 
+### Test Coverage
+
+To calculate and view test coverage:
+
+```sh
+./gradlew check jacocoTestReport
+open build/reports/jacoco/test/html/index.html
+```
+
 ### Publish to Maven Central
 
 1. Add the following to your `~/.gradle/gradle.properties`:
