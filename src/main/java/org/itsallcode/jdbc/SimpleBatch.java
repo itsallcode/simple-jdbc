@@ -2,8 +2,7 @@ package org.itsallcode.jdbc;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import org.itsallcode.jdbc.SimpleParameterMetaData.Parameter;
@@ -20,9 +19,9 @@ class SimpleBatch implements AutoCloseable {
     private int currentBatchSize = 0;
 
     SimpleBatch(final SimplePreparedStatement statement, final Context context) {
-        this.statement = statement;
-        this.context = context;
-        this.parameterMetadata = statement.getParameterMetadata().getParameters();
+        this.statement = Objects.requireNonNull(statement, "statement");
+        this.context = Objects.requireNonNull(context, "context");
+        this.parameterMetadata = statement.getParameterMetadata().parameters();
     }
 
     SimpleBatch add(final Object... args) {

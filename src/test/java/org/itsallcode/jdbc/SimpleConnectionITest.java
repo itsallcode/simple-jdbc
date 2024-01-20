@@ -33,7 +33,9 @@ class SimpleConnectionITest {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             assertThatThrownBy(() -> connection.executeStatement("select count(*) from missingtable"))
                     .isInstanceOf(UncheckedSQLException.class)
-                    .hasMessage("Error executing 'select count(*) from missingtable'")
+                    .hasMessage(
+                            "Error executing 'select count(*) from missingtable': Table \"MISSINGTABLE\" not found (this database is empty); SQL statement:\n"
+                                    + "select count(*) from missingtable [42104-224]")
                     .hasCauseInstanceOf(SQLException.class);
         }
     }
@@ -48,16 +50,29 @@ class SimpleConnectionITest {
     }
 
     @Test
+    void executeQueryFails() {
+        try (final SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            assertThatThrownBy(
+                    () -> connection.query("select count(*) from missingtable"))
+                    .isInstanceOf(UncheckedSQLException.class).hasMessage(
+                            "Error preparing statement 'select count(*) from missingtable': Table \"MISSINGTABLE\" not found (this database is empty); SQL statement:\n"
+                                    + "select count(*) from missingtable [42104-224]");
+        }
+    }
+
+    @Test
     void executeQueryWithGenericRowMapper() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
             try (SimpleResultSet<Row> resultSet = connection.query("select count(*) as result from test")) {
                 final List<Row> rows = resultSet.stream().collect(toList());
-                assertThat(rows).hasSize(1);
-                assertThat(rows.get(0).rowIndex()).isZero();
-                assertThat(rows.get(0).columnValues()).hasSize(1);
-                assertThat(rows.get(0).get(0).value()).isEqualTo(1L);
+                assertAll(
+                        () -> assertThat(rows).hasSize(1),
+                        () -> assertThat(rows.get(0).rowIndex()).isZero(),
+                        () -> assertThat(rows.get(0).columnValues()).hasSize(1),
+                        () -> assertThat(rows.get(0).get(0).value()).isEqualTo(1L),
+                        () -> assertThat(rows.get(0).get(0, Long.class)).isEqualTo(1L));
             }
         }
     }
@@ -71,8 +86,9 @@ class SimpleConnectionITest {
             try (SimpleResultSet<List<Object>> resultSet = connection.query("select * from test",
                     ContextRowMapper.columnValueList(connection.getDialect()))) {
                 final List<List<Object>> rows = resultSet.toList();
-                assertThat(rows).hasSize(1);
-                assertThat(rows.get(0)).containsExactly(1, "test");
+                assertAll(
+                        () -> assertThat(rows).hasSize(1),
+                        () -> assertThat(rows.get(0)).containsExactly(1, "test"));
             }
         }
     }
@@ -116,8 +132,9 @@ class SimpleConnectionITest {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             try (SimpleResultSet<Row> resultSet = connection.query("select * from test")) {
                 final Iterator<Row> iterator = resultSet.iterator();
-                assertThat(iterator.hasNext()).isFalse();
-                assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class);
+                assertAll(
+                        () -> assertThat(iterator.hasNext()).isFalse(),
+                        () -> assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class));
             }
         }
     }
@@ -168,9 +185,10 @@ class SimpleConnectionITest {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             try (SimpleResultSet<Row> resultSet = connection.query("select * from test")) {
                 final Iterator<Row> iterator = resultSet.iterator();
-                assertThat(iterator).isNotNull();
-                assertThatThrownBy(() -> resultSet.iterator()).isInstanceOf(IllegalStateException.class)
-                        .hasMessage("Only one iterator allowed per ResultSet");
+                assertAll(
+                        () -> assertThat(iterator).isNotNull(),
+                        () -> assertThatThrownBy(() -> resultSet.iterator()).isInstanceOf(IllegalStateException.class)
+                                .hasMessage("Only one iterator allowed per ResultSet"));
             }
         }
     }
@@ -194,9 +212,10 @@ class SimpleConnectionITest {
                     Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }));
 
             final List<Row> result = connection.query("select count(*) from test").stream().toList();
-            assertThat(result).hasSize(1);
-            assertThat(result.get(0).columnValues()).hasSize(1);
-            assertThat(result.get(0).get(0).value()).isEqualTo(3L);
+            assertAll(
+                    () -> assertThat(result).hasSize(1),
+                    () -> assertThat(result.get(0).columnValues()).hasSize(1),
+                    () -> assertThat(result.get(0).get(0).value()).isEqualTo(3L));
         }
     }
 
@@ -210,8 +229,9 @@ class SimpleConnectionITest {
 
             final List<List<Object>> result = connection.query("select * from test").stream()
                     .map(row -> row.columnValues().stream().map(value -> value.value()).toList()).toList();
-            assertThat(result).hasSize(3);
-            assertThat(result).isEqualTo(List.of(List.of(1, "a"), List.of(2, "b"), List.of(3, "c")));
+            assertAll(
+                    () -> assertThat(result).hasSize(3),
+                    () -> assertThat(result).isEqualTo(List.of(List.of(1, "a"), List.of(2, "b"), List.of(3, "c"))));
         }
     }
 }

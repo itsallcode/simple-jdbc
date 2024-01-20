@@ -2,8 +2,7 @@ package org.itsallcode.jdbc.resultset.generic;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.itsallcode.jdbc.UncheckedSQLException;
 import org.itsallcode.jdbc.dialect.DbDialect;
@@ -27,8 +26,8 @@ public class GenericRowMapper<T> implements RowMapper<T> {
      *                  type.
      */
     public GenericRowMapper(final DbDialect dialect, final ColumnValuesConverter<T> converter) {
-        this.dialect = dialect;
-        this.converter = converter;
+        this.dialect = Objects.requireNonNull(dialect, "dialect");
+        this.converter = Objects.requireNonNull(converter, "converter");
     }
 
     @Override
@@ -66,8 +65,7 @@ public class GenericRowMapper<T> implements RowMapper<T> {
             try {
                 return resultSet.getObject(column.columnIndex());
             } catch (final SQLException e) {
-                throw new UncheckedSQLException(
-                        "Error extracting value for row " + rowIndex + " / column " + column + ": " + e.getMessage(),
+                throw new UncheckedSQLException("Error extracting value for row " + rowIndex + " / column " + column,
                         e);
             }
         }

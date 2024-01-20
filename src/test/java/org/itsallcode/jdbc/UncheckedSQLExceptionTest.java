@@ -16,6 +16,6 @@ class UncheckedSQLExceptionTest {
     @Test
     void createWithMessage() {
         assertThat(new UncheckedSQLException("msg", new SQLException("mock")))
-                .hasToString("org.itsallcode.jdbc.UncheckedSQLException: msg");
+                .hasToString("org.itsallcode.jdbc.UncheckedSQLException: msg: mock");
     }
 }
