@@ -33,7 +33,9 @@ class SimpleConnectionITest {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             assertThatThrownBy(() -> connection.executeStatement("select count(*) from missingtable"))
                     .isInstanceOf(UncheckedSQLException.class)
-                    .hasMessage("Error executing 'select count(*) from missingtable'")
+                    .hasMessage(
+                            "Error executing 'select count(*) from missingtable': Table \"MISSINGTABLE\" not found (this database is empty); SQL statement:\n"
+                                    + "select count(*) from missingtable [42104-224]")
                     .hasCauseInstanceOf(SQLException.class);
         }
     }
@@ -44,6 +46,17 @@ class SimpleConnectionITest {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
             assertDoesNotThrow(() -> connection.executeStatement("select count(*) from test"));
+        }
+    }
+
+    @Test
+    void executeQueryFails() {
+        try (final SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            assertThatThrownBy(
+                    () -> connection.query("select count(*) from missingtable"))
+                    .isInstanceOf(UncheckedSQLException.class).hasMessage(
+                            "Error preparing statement 'select count(*) from missingtable': Table \"MISSINGTABLE\" not found (this database is empty); SQL statement:\n"
+                                    + "select count(*) from missingtable [42104-224]");
         }
     }
 

@@ -66,8 +66,7 @@ public class GenericRowMapper<T> implements RowMapper<T> {
             try {
                 return resultSet.getObject(column.columnIndex());
             } catch (final SQLException e) {
-                throw new UncheckedSQLException(
-                        "Error extracting value for row " + rowIndex + " / column " + column + ": " + e.getMessage(),
+                throw new UncheckedSQLException("Error extracting value for row " + rowIndex + " / column " + column,
                         e);
             }
         }
