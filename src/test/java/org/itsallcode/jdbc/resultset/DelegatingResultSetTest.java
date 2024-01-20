@@ -896,17 +896,31 @@ class DelegatingResultSetTest {
     }
 
     @Test
-    void updateBlobIndex() throws SQLException {
+    void updateBlobIndexStream() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBlob(COL_INDEX, stream);
         verify(resultSetMock).updateBlob(eq(COL_INDEX), same(stream));
     }
 
     @Test
-    void updateBlobLabel() throws SQLException {
+    void updateBlobIndexBlob() throws SQLException {
+        final Blob blobMock = mock(Blob.class);
+        testee().updateBlob(COL_INDEX, blobMock);
+        verify(resultSetMock).updateBlob(eq(COL_INDEX), same(blobMock));
+    }
+
+    @Test
+    void updateBlobLabelStream() throws SQLException {
         final InputStream stream = new ByteArrayInputStream(new byte[] { 2 });
         testee().updateBlob(COL_LABEL, stream);
         verify(resultSetMock).updateBlob(eq(COL_LABEL), same(stream));
+    }
+
+    @Test
+    void updateBlobLabelBlob() throws SQLException {
+        final Blob blobMock = mock(Blob.class);
+        testee().updateBlob(COL_LABEL, blobMock);
+        verify(resultSetMock).updateBlob(eq(COL_LABEL), same(blobMock));
     }
 
     @Test
