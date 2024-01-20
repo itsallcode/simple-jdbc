@@ -69,7 +69,7 @@ class SimplePreparedStatement implements AutoCloseable {
 
     SimpleParameterMetaData getParameterMetadata() {
         try {
-            return new SimpleParameterMetaData(statement.getParameterMetaData());
+            return SimpleParameterMetaData.create(statement.getParameterMetaData());
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error getting parameter metadata", e);
         }

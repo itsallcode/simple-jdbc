@@ -27,6 +27,8 @@ class SimplePreparedStatementTest {
     ResultSetMetaData metaDataMock;
     @Mock
     PreparedStatementSetter preparedStatementSetterMock;
+    @Mock
+    ParameterMetaData parameterMetadataMock;
 
     @Test
     void executeQuery() throws SQLException {
@@ -102,7 +104,8 @@ class SimplePreparedStatementTest {
     }
 
     @Test
-    void getParameterMetadata() {
+    void getParameterMetadata() throws SQLException {
+        when(statementMock.getParameterMetaData()).thenReturn(parameterMetadataMock);
         assertThat(testee().getParameterMetadata()).isNotNull();
     }
 
