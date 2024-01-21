@@ -1,33 +1,28 @@
 package org.itsallcode.jdbc;
 
-import java.sql.ParameterMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 /**
  * Wrapper for {@link ParameterMetaData} that simplifies usage.
+ * 
+ * @param parameters all parameters
  */
-public class SimpleParameterMetaData {
+public record SimpleParameterMetaData(List<Parameter> parameters) {
 
-    private final ParameterMetaData metaData;
-
-    SimpleParameterMetaData(final ParameterMetaData parameterMetaData) {
-        this.metaData = parameterMetaData;
+    static SimpleParameterMetaData create(final ParameterMetaData parameterMetaData) {
+        return new SimpleParameterMetaData(getParameters(parameterMetaData));
     }
 
-    /**
-     * Get all parameters.
-     * 
-     * @return all parameters
-     */
-    public List<Parameter> getParameters() {
+    private static List<Parameter> getParameters(final ParameterMetaData metaData) {
         try {
             final List<Parameter> parameters = new ArrayList<>(metaData.getParameterCount());
             for (int i = 1; i <= metaData.getParameterCount(); i++) {
-                parameters.add(new Parameter(metaData.getParameterClassName(i), metaData.getParameterType(i),
-                        metaData.getParameterTypeName(i), ParameterMode.of(metaData.getParameterMode(i)),
-                        metaData.getPrecision(i), metaData.getScale(i), metaData.isSigned(i),
-                        ParameterNullable.of(metaData.isNullable(i))));
+                parameters.add(
+                        new Parameter(metaData.getParameterClassName(i), JDBCType.valueOf(metaData.getParameterType(i)),
+                                metaData.getParameterTypeName(i), ParameterMode.of(metaData.getParameterMode(i)),
+                                metaData.getPrecision(i), metaData.getScale(i), metaData.isSigned(i),
+                                ParameterNullable.of(metaData.isNullable(i))));
             }
             return parameters;
         } catch (final SQLException e) {
@@ -82,7 +77,7 @@ public class SimpleParameterMetaData {
 
         private static ParameterNullable of(final int mode) {
             return Arrays.stream(values()).filter(m -> m.mode == mode).findAny().orElseThrow(
-                    () -> new IllegalArgumentException("No parameter mode found for value " + mode));
+                    () -> new IllegalArgumentException("No parameter nullable mode found for value " + mode));
         }
     }
 
@@ -98,7 +93,7 @@ public class SimpleParameterMetaData {
      * @param signed    {@code true} if the parameter is signed
      * @param nullable  nullability of the parameter
      */
-    public static record Parameter(String className, int type, String typeName, ParameterMode mode, int precision,
+    public static record Parameter(String className, JDBCType type, String typeName, ParameterMode mode, int precision,
             int scale, boolean signed, ParameterNullable nullable) {
     }
 }

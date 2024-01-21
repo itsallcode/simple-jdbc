@@ -25,6 +25,6 @@ public class UncheckedSQLException extends RuntimeException {
      * @param cause   cause
      */
     public UncheckedSQLException(final String message, final SQLException cause) {
-        super(message, cause);
+        super(message + ": " + cause.getMessage(), cause);
     }
 }

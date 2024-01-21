@@ -1,9 +1,8 @@
 package org.itsallcode.jdbc.resultset.generic;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.List;
-
-import org.itsallcode.jdbc.UncheckedSQLException;
 
 /**
  * A wrapper for {@link ResultSetMetaData} to simplify usage.
@@ -19,11 +18,7 @@ public record SimpleMetaData(List<ColumnMetaData> columns) {
      * @return simple metadata
      */
     public static SimpleMetaData create(final ResultSet resultSet) {
-        try {
-            return new SimpleMetaData(ColumnMetaData.create(resultSet));
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error extracting meta data", e);
-        }
+        return new SimpleMetaData(ColumnMetaData.create(resultSet));
     }
 
     /**

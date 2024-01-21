@@ -29,7 +29,7 @@ class SimplePreparedStatement implements AutoCloseable {
         try {
             return statement.executeQuery();
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error executing query '" + sql + "': " + e.getMessage(), e);
+            throw new UncheckedSQLException("Error executing query '" + sql + "'", e);
         }
     }
 
@@ -38,7 +38,7 @@ class SimplePreparedStatement implements AutoCloseable {
         try {
             statement.close();
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error closing statement: " + e.getMessage(), e);
+            throw new UncheckedSQLException("Error closing statement", e);
         }
     }
 
@@ -46,7 +46,7 @@ class SimplePreparedStatement implements AutoCloseable {
         try {
             preparedStatementSetter.setValues(statement);
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error setting values for prepared statement: " + e.getMessage(), e);
+            throw new UncheckedSQLException("Error setting values for prepared statement", e);
         }
 
     }
@@ -55,7 +55,7 @@ class SimplePreparedStatement implements AutoCloseable {
         try {
             statement.executeBatch();
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error executing batch sql '" + sql + "': " + e.getMessage(), e);
+            throw new UncheckedSQLException("Error executing batch sql '" + sql + "'", e);
         }
     }
 
@@ -63,15 +63,15 @@ class SimplePreparedStatement implements AutoCloseable {
         try {
             this.statement.addBatch();
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error adding batch: " + e.getMessage(), e);
+            throw new UncheckedSQLException("Error adding batch", e);
         }
     }
 
     SimpleParameterMetaData getParameterMetadata() {
         try {
-            return new SimpleParameterMetaData(statement.getParameterMetaData());
+            return SimpleParameterMetaData.create(statement.getParameterMetaData());
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error getting parameter metadata: " + e.getMessage(), e);
+            throw new UncheckedSQLException("Error getting parameter metadata", e);
         }
     }
 }
