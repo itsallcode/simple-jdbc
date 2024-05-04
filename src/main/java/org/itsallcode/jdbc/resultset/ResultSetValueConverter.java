@@ -54,7 +54,7 @@ class ResultSetValueConverter {
     }
 
     private int getIndexForLabel(final String columnLabel) {
-        final Integer index = columnIndexByLabel.get(columnLabel.toUpperCase());
+        final Integer index = columnIndexByLabel.get(columnLabel.toUpperCase(Locale.ROOT));
         if (index == null) {
             throw new IllegalStateException("No index found for column label '" + columnLabel
                     + "'. Available column labels: " + columnIndexByLabel.keySet());
