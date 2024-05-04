@@ -9,6 +9,8 @@ on:
 jobs:
   matrix-build:
     name: Build and test with Java ${{ matrix.java }}
+    permissions:
+      contents: read
     strategy:
       matrix:
         java: ['17', '21']
@@ -31,7 +33,7 @@ jobs:
         key: ${{ runner.os }}-sonar-${{ hashFiles('**/*.gradle') }}
         restore-keys: ${{ runner.os }}-sonar-
 
-    - uses: gradle/wrapper-validation-action@v2
+    - uses: gradle/actions/wrapper-validation@v3
 
     - name: Set up JDK ${{ matrix.java }}
       uses: actions/setup-java@v4
@@ -47,23 +49,14 @@ jobs:
       run: |
         ./gradlew clean build --info \
                   --exclude-task integrationTest \
-                  -PjavaVersion=${{matrix.java}} \
-                  -Dsonar.gradle.skipCompile=true
-
-    - name: Publish Test Report for Java ${{ matrix.java }}
-      uses: scacap/action-surefire-report@v1
-      if: ${{ always() && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
-      with:
-        report_paths: '**/build/test-results/*/TEST-*.xml'
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+                  -PjavaVersion=${{matrix.java}}
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
       run: |
         ./gradlew sonar --info \
                   --exclude-task integrationTest \
-                  -Dsonar.token=$SONAR_TOKEN \
-                  -Dsonar.gradle.skipCompile=true
+                  -Dsonar.token=$SONAR_TOKEN
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

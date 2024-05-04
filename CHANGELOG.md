@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.0] - unreleased
 
+- [PR #22](https://github.com/itsallcode/simple-jdbc/pull/22): Added `module-info.java`
+
 ## [0.6.1] - 2024-01-14
 
 - [PR #16](https://github.com/itsallcode/simple-jdbc/pull/16): Improve test coverage
