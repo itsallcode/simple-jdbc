@@ -18,7 +18,8 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(getPropertyWithDefault('javaVersion', '17'))
+        def javaVersion = project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 17
+        languageVersion = JavaLanguageVersion.of(javaVersion)
     }
     withJavadocJar()
     withSourcesJar()
@@ -93,6 +94,10 @@ jacocoTestReport {
     }
 }
 
+test {
+    finalizedBy jacocoTestReport
+}
+
 sonar {
   properties {
     property("sonar.organization", "itsallcode")
@@ -101,24 +106,6 @@ sonar {
 }
 
 rootProject.tasks['sonar'].dependsOn(tasks['testCodeCoverageReport'], tasks['integrationTestCodeCoverageReport'])
-
-def getPropertyWithDefault(String name, String defaultValue) {
-    if(project.hasProperty(name)) {
-        def value = project.property(name)
-        logger.info("Found value '${value}' for project property '${name}'")
-        return value
-    }
-    logger.info("Project property '${name}' not defined, using default '${defaultValue}'")
-    return defaultValue
-}
-
-def getOptionalProperty(String name) {
-    if(project.hasProperty(name)) {
-        return project.property(name)
-    }
-    logger.info("Project property '${name}' not available. Please it to ~/.gradle/gradle.properties")
-    return null
-}
 
 publishing {
     publications {
@@ -150,22 +137,12 @@ publishing {
             }
         }
     }
-
-    repositories {
-        maven {
-            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            allowInsecureProtocol = false
-            credentials(PasswordCredentials) {
-                username = getOptionalProperty("ossrhUsername")
-                password = getOptionalProperty("ossrhPassword")
-            }
-        }
-    }
 }
 
 signing {
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKey, signingPassword)
     sign publishing.publications.mavenJava
 }
 
@@ -174,8 +151,6 @@ nexusPublishing {
     repositories {
         sonatype {
             stagingProfileId = "546ea6ce74787e"
-            username = getOptionalProperty("ossrhUsername")
-            password = getOptionalProperty("ossrhPassword")
         }
     }
 }
