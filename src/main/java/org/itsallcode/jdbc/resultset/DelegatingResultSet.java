@@ -89,7 +89,7 @@ class DelegatingResultSet implements ResultSet {
      *             {@code getBigDecimal(String columnLabel)}
      */
     @Override
-    @Deprecated(since = "0.8.0")
+    @Deprecated(since = "0.7.1")
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
         return delegate.getBigDecimal(columnIndex, scale);
     }
@@ -126,7 +126,7 @@ class DelegatingResultSet implements ResultSet {
      *             {@code getUnicodeStream}
      */
     @Override
-    @Deprecated(since = "0.8.0")
+    @Deprecated(since = "0.7.1")
     public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
         return delegate.getUnicodeStream(columnIndex);
     }
@@ -183,7 +183,7 @@ class DelegatingResultSet implements ResultSet {
      *             {@code getBigDecimal(String columnLabel)}
      */
     @Override
-    @Deprecated(since = "0.8.0")
+    @Deprecated(since = "0.7.1")
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
         return delegate.getBigDecimal(columnLabel, scale);
     }
@@ -219,7 +219,7 @@ class DelegatingResultSet implements ResultSet {
      * @deprecated use {@code getCharacterStream} instead
      */
     @Override
-    @Deprecated(since = "0.8.0")
+    @Deprecated(since = "0.7.1")
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
         return delegate.getUnicodeStream(columnLabel);
     }
