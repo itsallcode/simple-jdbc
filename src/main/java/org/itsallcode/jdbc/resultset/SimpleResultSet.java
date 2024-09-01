@@ -3,7 +3,8 @@ package org.itsallcode.jdbc.resultset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
@@ -36,7 +37,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
     /**
      * Get in {@link Iterator} of all rows.
      * 
-     * @return an interator with all rows.
+     * @return an iterator with all rows.
      */
     @Override
     public Iterator<T> iterator() {
@@ -53,7 +54,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
      * @return a list with all rows.
      */
     public List<T> toList() {
-        return stream().collect(Collectors.toList());
+        return stream().toList();
     }
 
     /**
@@ -89,12 +90,12 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
         }
     }
 
-    private static class ResultSetIterator<T> implements Iterator<T> {
+    private static final class ResultSetIterator<T> implements Iterator<T> {
         private final Context context;
         private final SimpleResultSet<T> resultSet;
         private final ContextRowMapper<T> rowMapper;
         private boolean hasNext;
-        private int currentRowIndex = 0;
+        private int currentRowIndex;
 
         private ResultSetIterator(final Context context, final SimpleResultSet<T> simpleResultSet,
                 final ContextRowMapper<T> rowMapper,

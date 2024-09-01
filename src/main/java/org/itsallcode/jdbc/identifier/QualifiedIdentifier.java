@@ -16,6 +16,7 @@ record QualifiedIdentifier(List<Identifier> id) implements Identifier {
      * @param ids the IDs
      * @return a new instance
      */
+    @SuppressWarnings("java:S923") // Varargs required
     public static Identifier of(final Identifier... ids) {
         return new QualifiedIdentifier(asList(ids));
     }

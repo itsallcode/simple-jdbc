@@ -6,7 +6,7 @@ import java.util.Properties;
 /**
  * This class connects to a database and returns new {@link SimpleConnection}s.
  */
-public class ConnectionFactory {
+public final class ConnectionFactory {
     private final Context context;
     private final DbDialectFactory dialectFactory;
 
@@ -70,7 +70,7 @@ public class ConnectionFactory {
         return new SimpleConnection(createConnection(url, info), context, dialectFactory.createDialect(url));
     }
 
-    private Connection createConnection(final String url, final Properties info) {
+    private static Connection createConnection(final String url, final Properties info) {
         try {
             return DriverManager.getConnection(url, info);
         } catch (final SQLException e) {

@@ -1,7 +1,5 @@
 package org.itsallcode.jdbc.resultset;
 
-import static java.util.stream.Collectors.toList;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -19,7 +17,7 @@ import org.itsallcode.jdbc.resultset.generic.SimpleMetaData;
  * <li>{@link ResultSet#getObject(int, Class)}</li>
  * </ul>
  */
-public class ConvertingResultSet extends DelegatingResultSet {
+public final class ConvertingResultSet extends DelegatingResultSet {
     private final ResultSet delegate;
     private final ResultSetValueConverter converter;
 
@@ -40,7 +38,7 @@ public class ConvertingResultSet extends DelegatingResultSet {
         final SimpleMetaData metaData = SimpleMetaData.create(delegate);
         final List<ColumnValueConverter> converters = metaData.columns().stream()
                 .map(col -> ColumnValueConverter.simple(dialect.createExtractor(col)))
-                .collect(toList());
+                .toList();
         return new ConvertingResultSet(delegate, ResultSetValueConverter.create(metaData, converters));
     }
 

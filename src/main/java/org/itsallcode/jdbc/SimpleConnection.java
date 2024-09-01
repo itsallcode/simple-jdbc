@@ -130,7 +130,7 @@ public class SimpleConnection implements AutoCloseable {
         insert(createInsertStatement(table, columnNames), rowMapper, rows);
     }
 
-    private String createInsertStatement(final Identifier table, final List<Identifier> columnNames) {
+    private static String createInsertStatement(final Identifier table, final List<Identifier> columnNames) {
         final String columns = columnNames.stream().map(Identifier::quote).collect(joining(","));
         final String placeholders = columnNames.stream().map(n -> "?").collect(joining(","));
         return "insert into " + table.quote() + " (" + columns + ") values (" + placeholders + ")";

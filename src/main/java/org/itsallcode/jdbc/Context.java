@@ -3,7 +3,7 @@ package org.itsallcode.jdbc;
 /**
  * This represents a context with configuration for the Simple JDBC framework.
  */
-public class Context {
+public final class Context {
 
     private Context() {
     }
@@ -13,6 +13,7 @@ public class Context {
      * 
      * @return parameter mapper
      */
+    @SuppressWarnings("java:S2325") // Not-static by intention
     public ParameterMapper getParameterMapper() {
         return ParameterMapper.create();
     }
@@ -29,7 +30,7 @@ public class Context {
     /**
      * A builder for {@link Context} objects.
      */
-    public static class ContextBuilder {
+    public static final class ContextBuilder {
 
         private ContextBuilder() {
         }
@@ -39,6 +40,7 @@ public class Context {
          * 
          * @return a new context
          */
+        @SuppressWarnings("java:S2325") // Not-static by intention
         public Context build() {
             return new Context();
         }

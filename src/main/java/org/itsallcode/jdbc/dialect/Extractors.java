@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-class Extractors {
+final class Extractors {
 
     private Extractors() {
     }
@@ -23,6 +23,7 @@ class Extractors {
         return nonNull((resultSet, columnIndex) -> resultSet.getDate(columnIndex, utcCalendar).toLocalDate());
     }
 
+    @SuppressWarnings("java:S2143") // Need to use calendar api
     private static Calendar createUtcCalendar() {
         return Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     }

@@ -41,11 +41,11 @@ public record SimpleParameterMetaData(List<Parameter> parameters) {
         /** Parameter mode OUT */
         OUT(ParameterMetaData.parameterModeOut),
         /** Parameter mode is unknown */
-        UNKNWON(ParameterMetaData.parameterModeUnknown);
+        UNKNOWN(ParameterMetaData.parameterModeUnknown);
 
         private final int mode;
 
-        private ParameterMode(final int mode) {
+        ParameterMode(final int mode) {
             this.mode = mode;
         }
 
@@ -71,7 +71,7 @@ public record SimpleParameterMetaData(List<Parameter> parameters) {
 
         private final int mode;
 
-        private ParameterNullable(final int mode) {
+        ParameterNullable(final int mode) {
             this.mode = mode;
         }
 

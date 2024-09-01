@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.Calendar;
 import java.util.Map;
 
+@SuppressWarnings("java:S1448") // Long file required for implementing ResultSet
 class DelegatingResultSet implements ResultSet {
 
     private final ResultSet delegate;
@@ -88,7 +89,7 @@ class DelegatingResultSet implements ResultSet {
      *             {@code getBigDecimal(String columnLabel)}
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "0.7.1")
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
         return delegate.getBigDecimal(columnIndex, scale);
     }
@@ -125,7 +126,7 @@ class DelegatingResultSet implements ResultSet {
      *             {@code getUnicodeStream}
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "0.7.1")
     public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
         return delegate.getUnicodeStream(columnIndex);
     }
@@ -182,7 +183,7 @@ class DelegatingResultSet implements ResultSet {
      *             {@code getBigDecimal(String columnLabel)}
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "0.7.1")
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
         return delegate.getBigDecimal(columnLabel, scale);
     }
@@ -218,7 +219,7 @@ class DelegatingResultSet implements ResultSet {
      * @deprecated use {@code getCharacterStream} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "0.7.1")
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
         return delegate.getUnicodeStream(columnLabel);
     }
