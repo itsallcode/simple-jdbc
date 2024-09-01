@@ -9,14 +9,14 @@ import org.itsallcode.jdbc.SimpleParameterMetaData.Parameter;
 
 class SimpleBatch implements AutoCloseable {
     private static final Logger LOG = Logger.getLogger(SimpleBatch.class.getName());
-    private static final int BATCH_SIZE = 200000;
+    private static final int BATCH_SIZE = 200_000;
 
     private final SimplePreparedStatement statement;
     private final Context context;
     private final List<Parameter> parameterMetadata;
 
-    private int rows = 0;
-    private int currentBatchSize = 0;
+    private int rows;
+    private int currentBatchSize;
 
     SimpleBatch(final SimplePreparedStatement statement, final Context context) {
         this.statement = Objects.requireNonNull(statement, "statement");
@@ -24,11 +24,13 @@ class SimpleBatch implements AutoCloseable {
         this.parameterMetadata = statement.getParameterMetadata().parameters();
     }
 
+    @SuppressWarnings("java:S923") // Varargs required
     SimpleBatch add(final Object... args) {
         validateParameters(args);
         return add(new ArgumentPreparedStatementSetter(context.getParameterMapper(), args));
     }
 
+    @SuppressWarnings("java:S923") // Varargs required
     private void validateParameters(final Object... args) {
         if (args.length != this.parameterMetadata.size()) {
             throw new IllegalStateException(
@@ -41,7 +43,8 @@ class SimpleBatch implements AutoCloseable {
         statement.setValues(preparedStatementSetter);
         statement.addBatch();
         currentBatchSize++;
-        if (++rows % BATCH_SIZE == 0) {
+        rows++;
+        if (rows % BATCH_SIZE == 0) {
             executeBatch();
         }
         return this;

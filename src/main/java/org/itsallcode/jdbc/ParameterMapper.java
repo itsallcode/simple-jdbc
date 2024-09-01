@@ -11,17 +11,17 @@ import java.util.function.Function;
  * This class converts parameters before setting them for a prepared statement,
  * e.g. in {@link PreparedStatementSetter}.
  */
-public class ParameterMapper {
-    private final Map<Class<?>, Mapper<?>> mappers;
+public final class ParameterMapper {
+    private final Map<String, Mapper<?>> mappers;
 
-    private ParameterMapper(final Map<Class<?>, Mapper<?>> mappers) {
-        this.mappers = mappers;
+    private ParameterMapper(final Map<String, Mapper<?>> mappers) {
+        this.mappers = new HashMap<>(mappers);
     }
 
     /**
      * Create a new mapper with predefined converters for date time types.
      * 
-     * @return a preconfigured mapper
+     * @return a pre-configured mapper
      */
     public static ParameterMapper create() {
         final List<Mapper<?>> mappers = new ArrayList<>();
@@ -32,11 +32,15 @@ public class ParameterMapper {
         mappers.add(createMapper(Instant.class,
                 o -> instantFormatter.format(LocalDateTime.ofInstant(o, utc))));
         mappers.add(createMapper(LocalDateTime.class, instantFormatter::format));
-        return new ParameterMapper(mappers.stream().collect(toMap(Mapper::getType, Function.identity())));
+        return new ParameterMapper(mappers.stream().collect(toMap(Mapper::getTypeName, Function.identity())));
     }
 
     private static <T> Mapper<T> createMapper(final Class<T> type, final Function<T, Object> mapper) {
         return new Mapper<>(type, mapper);
+    }
+
+    private Optional<Mapper<?>> getMapper(final Class<?> type) {
+        return Optional.ofNullable(mappers.get(type.getName()));
     }
 
     /**
@@ -49,10 +53,9 @@ public class ParameterMapper {
         if (value == null) {
             return null;
         }
-        if (mappers.containsKey(value.getClass())) {
-            return mappers.get(value.getClass()).map(value);
-        }
-        return value;
+        return getMapper(value.getClass())
+                .map(m -> m.map(value))
+                .orElse(value);
     }
 
     private static class Mapper<T> {
@@ -68,8 +71,8 @@ public class ParameterMapper {
             return mapperFunction.apply(type.cast(value));
         }
 
-        Class<T> getType() {
-            return type;
+        String getTypeName() {
+            return type.getName();
         }
     }
 }

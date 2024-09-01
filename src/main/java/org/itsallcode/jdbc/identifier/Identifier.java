@@ -32,6 +32,7 @@ public interface Identifier {
      * @param id parts of the ID
      * @return a new {@link QualifiedIdentifier}
      */
+    @SuppressWarnings("java:S923") // Varargs required
     static Identifier qualified(final String... id) {
         return QualifiedIdentifier.of(Arrays.stream(id).map(SimpleIdentifier::of).toArray(SimpleIdentifier[]::new));
     }

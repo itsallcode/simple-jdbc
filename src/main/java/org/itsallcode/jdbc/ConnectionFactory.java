@@ -6,7 +6,7 @@ import java.util.Properties;
 /**
  * This class connects to a database and returns new {@link SimpleConnection}s.
  */
-public class ConnectionFactory {
+public final class ConnectionFactory {
     private final Context context;
     private final DbDialectFactory dialectFactory;
 
