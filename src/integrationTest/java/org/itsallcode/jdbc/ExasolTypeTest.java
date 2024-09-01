@@ -22,7 +22,7 @@ import com.exasol.containers.ExasolService;
 
 class ExasolTypeTest {
 
-    private static final ExasolContainer<?> container = new ExasolContainer<>("8.27.0")
+    private static final ExasolContainer<?> container = new ExasolContainer<>("8.29.1")
             .withRequiredServices(ExasolService.JDBC).withReuse(true);
 
     @BeforeAll
@@ -67,8 +67,10 @@ class ExasolTypeTest {
             final ColumnValue value = result.toList().get(0).get(0);
             assertAll(
                     () -> assertThat(value.value()).isNull(),
-                    () -> assertThat(value.type().jdbcType()).as("jdbc type").isEqualTo(test.expectedType()),
-                    () -> assertThat(value.type().typeName()).as("type name").isEqualTo(test.expectedTypeName()),
+                    () -> assertThat(value.type().jdbcType()).as("jdbc type")
+                            .isEqualTo(test.expectedType()),
+                    () -> assertThat(value.type().typeName()).as("type name")
+                            .isEqualTo(test.expectedTypeName()),
                     () -> assertThat(value.type().className()).as("type class name")
                             .isEqualTo(test.expectedClassName()));
         }
@@ -115,7 +117,8 @@ class ExasolTypeTest {
                 typeTest("123", "SHORTINT", 123, JDBCType.INTEGER, "INTEGER", Integer.class),
                 typeTest("123", "SMALLINT", 123, JDBCType.INTEGER, "INTEGER", Integer.class),
                 typeTest("123", "TINYINT", (short) 123, JDBCType.SMALLINT, "SMALLINT", Short.class),
-                typeTest("123", "DECIMAL(4,0)", (short) 123, JDBCType.SMALLINT, "SMALLINT", Short.class),
+                typeTest("123", "DECIMAL(4,0)", (short) 123, JDBCType.SMALLINT, "SMALLINT",
+                        Short.class),
                 typeTest("123", "DECIMAL(5,0)", 123, JDBCType.INTEGER, "INTEGER", Integer.class),
                 typeTest("123", "DECIMAL(9,0)", 123, JDBCType.INTEGER, "INTEGER", Integer.class),
                 typeTest("123", "DECIMAL(10,0)", 123L, JDBCType.BIGINT, "BIGINT", Long.class),
@@ -127,7 +130,8 @@ class ExasolTypeTest {
                         BigDecimal.class),
                 typeTest("123", "DEC", 123L, JDBCType.BIGINT, "BIGINT", Long.class),
                 typeTest("123", "NUMERIC", 123L, JDBCType.BIGINT, "BIGINT", Long.class),
-                typeTest("123.457", "DECIMAL(6,3)", BigDecimal.valueOf(123.457d), JDBCType.DECIMAL, "DECIMAL",
+                typeTest("123.457", "DECIMAL(6,3)", BigDecimal.valueOf(123.457d), JDBCType.DECIMAL,
+                        "DECIMAL",
                         BigDecimal.class),
                 typeTest("123.458", "DOUBLE", 123.458d, JDBCType.DOUBLE, "DOUBLE PRECISION",
                         Double.class),
