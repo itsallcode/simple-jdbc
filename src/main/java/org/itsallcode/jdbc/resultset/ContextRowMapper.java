@@ -34,7 +34,7 @@ public interface ContextRowMapper<T> {
      * @param dialect DB dialect
      * @return a new row mapper
      */
-    public static RowMapper<Row> generic(final DbDialect dialect) {
+    static RowMapper<Row> generic(final DbDialect dialect) {
         return generic(dialect, row -> row);
     }
 
@@ -45,7 +45,7 @@ public interface ContextRowMapper<T> {
      * @param dialect DB dialect
      * @return a new row mapper
      */
-    public static RowMapper<List<Object>> columnValueList(final DbDialect dialect) {
+    static RowMapper<List<Object>> columnValueList(final DbDialect dialect) {
         return generic(dialect, row -> row.columnValues().stream().map(ColumnValue::value).toList());
     }
 
@@ -62,7 +62,7 @@ public interface ContextRowMapper<T> {
      * @param mapper the simple row mapper
      * @return a new {@link ContextRowMapper}
      */
-    public static <T> ContextRowMapper<T> create(final RowMapper<T> mapper) {
+    static <T> ContextRowMapper<T> create(final RowMapper<T> mapper) {
         return (context, resultSet, rowNum) -> mapper.mapRow(resultSet, rowNum);
     }
 }

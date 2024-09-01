@@ -1,7 +1,6 @@
 package org.itsallcode.jdbc.resultset;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
@@ -36,13 +35,13 @@ class DelegatingResultSetTest {
     @Test
     void isWrapperFor() throws SQLException {
         when(resultSetMock.isWrapperFor(String.class)).thenReturn(true);
-        assertEquals(true, testee().isWrapperFor(String.class));
+        assertTrue(testee().isWrapperFor(String.class));
     }
 
     @Test
     void next() throws SQLException {
         when(resultSetMock.next()).thenReturn(true);
-        assertEquals(true, testee().next());
+        assertTrue(testee().next());
     }
 
     @Test
@@ -54,7 +53,7 @@ class DelegatingResultSetTest {
     @Test
     void wasNull() throws SQLException {
         when(resultSetMock.wasNull()).thenReturn(true);
-        assertEquals(true, testee().wasNull());
+        assertTrue(testee().wasNull());
     }
 
     @Test
@@ -66,7 +65,7 @@ class DelegatingResultSetTest {
     @Test
     void getBooleanIndex() throws SQLException {
         when(resultSetMock.getBoolean(1)).thenReturn(true);
-        assertEquals(true, testee().getBoolean(1));
+        assertTrue(testee().getBoolean(1));
     }
 
     @Test
@@ -169,7 +168,7 @@ class DelegatingResultSetTest {
     @Test
     void getBoolean() throws SQLException {
         when(resultSetMock.getBoolean("a")).thenReturn(true);
-        assertEquals(true, testee().getBoolean("a"));
+        assertTrue(testee().getBoolean("a"));
     }
 
     @Test
@@ -338,25 +337,25 @@ class DelegatingResultSetTest {
     @Test
     void isBeforeFirst() throws SQLException {
         when(resultSetMock.isBeforeFirst()).thenReturn(true);
-        assertEquals(true, testee().isBeforeFirst());
+        assertTrue(testee().isBeforeFirst());
     }
 
     @Test
     void isAfterLast() throws SQLException {
         when(resultSetMock.isAfterLast()).thenReturn(true);
-        assertEquals(true, testee().isAfterLast());
+        assertTrue(testee().isAfterLast());
     }
 
     @Test
     void isFirst() throws SQLException {
         when(resultSetMock.isFirst()).thenReturn(true);
-        assertEquals(true, testee().isFirst());
+        assertTrue(testee().isFirst());
     }
 
     @Test
     void isLast() throws SQLException {
         when(resultSetMock.isLast()).thenReturn(true);
-        assertEquals(true, testee().isLast());
+        assertTrue(testee().isLast());
     }
 
     @Test
@@ -374,13 +373,13 @@ class DelegatingResultSetTest {
     @Test
     void first() throws SQLException {
         when(resultSetMock.first()).thenReturn(true);
-        assertEquals(true, testee().first());
+        assertTrue(testee().first());
     }
 
     @Test
     void last() throws SQLException {
         when(resultSetMock.last()).thenReturn(true);
-        assertEquals(true, testee().last());
+        assertTrue(testee().last());
     }
 
     @Test
@@ -392,19 +391,19 @@ class DelegatingResultSetTest {
     @Test
     void absolute() throws SQLException {
         when(resultSetMock.absolute(1)).thenReturn(true);
-        assertEquals(true, testee().absolute(1));
+        assertTrue(testee().absolute(1));
     }
 
     @Test
     void relative() throws SQLException {
         when(resultSetMock.relative(1)).thenReturn(true);
-        assertEquals(true, testee().relative(1));
+        assertTrue(testee().relative(1));
     }
 
     @Test
     void previous() throws SQLException {
         when(resultSetMock.previous()).thenReturn(true);
-        assertEquals(true, testee().previous());
+        assertTrue(testee().previous());
     }
 
     @Test
@@ -446,19 +445,19 @@ class DelegatingResultSetTest {
     @Test
     void rowUpdated() throws SQLException {
         when(resultSetMock.rowUpdated()).thenReturn(true);
-        assertEquals(true, testee().rowUpdated());
+        assertTrue(testee().rowUpdated());
     }
 
     @Test
     void rowInserted() throws SQLException {
         when(resultSetMock.rowInserted()).thenReturn(true);
-        assertEquals(true, testee().rowInserted());
+        assertTrue(testee().rowInserted());
     }
 
     @Test
     void rowDeleted() throws SQLException {
         when(resultSetMock.rowDeleted()).thenReturn(true);
-        assertEquals(true, testee().rowDeleted());
+        assertTrue(testee().rowDeleted());
     }
 
     @Test
@@ -988,7 +987,7 @@ class DelegatingResultSetTest {
     @Test
     void isClosed() throws SQLException {
         when(resultSetMock.isClosed()).thenReturn(true);
-        assertEquals(true, testee().isClosed());
+        assertTrue(testee().isClosed());
     }
 
     @Test

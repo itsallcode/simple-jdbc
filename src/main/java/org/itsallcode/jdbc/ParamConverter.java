@@ -21,7 +21,7 @@ public interface ParamConverter<T> {
      * 
      * @return a new identity parameter converter
      */
-    public static ParamConverter<Object[]> identity() {
+    static ParamConverter<Object[]> identity() {
         return row -> row;
     }
 }

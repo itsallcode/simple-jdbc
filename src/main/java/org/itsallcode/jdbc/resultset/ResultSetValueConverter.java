@@ -10,14 +10,14 @@ import org.itsallcode.jdbc.resultset.generic.SimpleMetaData;
 /**
  * Helper class used by {@link ConvertingResultSet}.
  */
-class ResultSetValueConverter {
+final class ResultSetValueConverter {
     private final Map<Integer, ColumnValueConverter> convertersByIndex;
     private final Map<String, Integer> columnIndexByLabel;
 
     private ResultSetValueConverter(final Map<Integer, ColumnValueConverter> convertersByIndex,
             final Map<String, Integer> columnIndexByLabel) {
-        this.convertersByIndex = convertersByIndex;
-        this.columnIndexByLabel = columnIndexByLabel;
+        this.convertersByIndex = new HashMap<>(convertersByIndex);
+        this.columnIndexByLabel = new HashMap<>(columnIndexByLabel);
     }
 
     static ResultSetValueConverter create(final SimpleMetaData resultSetMetadata,

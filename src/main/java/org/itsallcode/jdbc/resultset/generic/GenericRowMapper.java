@@ -39,7 +39,7 @@ public class GenericRowMapper<T> implements RowMapper<T> {
         return converter.mapRow(row);
     }
 
-    private class ResultSetRowBuilder {
+    private static final class ResultSetRowBuilder {
         private final SimpleMetaData metadata;
 
         private ResultSetRowBuilder(final SimpleMetaData metaData) {

@@ -70,7 +70,7 @@ public final class ConnectionFactory {
         return new SimpleConnection(createConnection(url, info), context, dialectFactory.createDialect(url));
     }
 
-    private Connection createConnection(final String url, final Properties info) {
+    private static Connection createConnection(final String url, final Properties info) {
         try {
             return DriverManager.getConnection(url, info);
         } catch (final SQLException e) {

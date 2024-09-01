@@ -3,7 +3,7 @@ package org.itsallcode.jdbc;
 /**
  * This represents a context with configuration for the Simple JDBC framework.
  */
-public class Context {
+public final class Context {
 
     private Context() {
     }
@@ -29,7 +29,7 @@ public class Context {
     /**
      * A builder for {@link Context} objects.
      */
-    public static class ContextBuilder {
+    public static final class ContextBuilder {
 
         private ContextBuilder() {
         }
