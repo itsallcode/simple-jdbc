@@ -1,6 +1,5 @@
 package org.itsallcode.jdbc;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -66,7 +65,7 @@ class SimpleConnectionITest {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
             try (SimpleResultSet<Row> resultSet = connection.query("select count(*) as result from test")) {
-                final List<Row> rows = resultSet.stream().collect(toList());
+                final List<Row> rows = resultSet.stream().toList();
                 assertAll(
                         () -> assertThat(rows).hasSize(1),
                         () -> assertThat(rows.get(0).rowIndex()).isZero(),

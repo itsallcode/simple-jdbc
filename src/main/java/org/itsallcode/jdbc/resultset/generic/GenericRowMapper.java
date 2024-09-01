@@ -56,12 +56,13 @@ public class GenericRowMapper<T> implements RowMapper<T> {
             return new Row(rowIndex, columns, fields);
         }
 
-        private ColumnValue getField(final ResultSet resultSet, final ColumnMetaData column, final int rowIndex) {
+        private static ColumnValue getField(final ResultSet resultSet, final ColumnMetaData column,
+                final int rowIndex) {
             final Object value = getValue(resultSet, column, rowIndex);
             return new ColumnValue(column.type(), value);
         }
 
-        private Object getValue(final ResultSet resultSet, final ColumnMetaData column, final int rowIndex) {
+        private static Object getValue(final ResultSet resultSet, final ColumnMetaData column, final int rowIndex) {
             try {
                 return resultSet.getObject(column.columnIndex());
             } catch (final SQLException e) {

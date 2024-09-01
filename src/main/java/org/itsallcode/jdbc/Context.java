@@ -13,6 +13,7 @@ public final class Context {
      * 
      * @return parameter mapper
      */
+    @SuppressWarnings("java:S2325") // Not-static by intention
     public ParameterMapper getParameterMapper() {
         return ParameterMapper.create();
     }
@@ -39,6 +40,7 @@ public final class Context {
          * 
          * @return a new context
          */
+        @SuppressWarnings("java:S2325") // Not-static by intention
         public Context build() {
             return new Context();
         }
