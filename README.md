@@ -23,7 +23,7 @@ Add dependency to your gradle project:
 
 ```groovy
 dependencies {
-    implementation 'org.itsallcode:simple-jdbc:0.7.0'
+    implementation 'org.itsallcode:simple-jdbc:0.7.1'
 }
 ```
 

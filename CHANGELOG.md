@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0] - unreleased
 
+## [0.7.1] - 2024-09-01
+
+- [PR #26](https://github.com/itsallcode/simple-jdbc/pull/26): Update dependencies
+
 ## [0.7.0] - 2024-05-04
 
 - [PR #22](https://github.com/itsallcode/simple-jdbc/pull/22): Added `module-info.java`
