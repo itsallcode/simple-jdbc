@@ -40,7 +40,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build
-        run: ./gradlew build --warning-mode all
+        run: ./gradlew build --info --warning-mode all
 
       - name: Publish to Maven Central
         if: ${{ !inputs.skip-deploy-maven-central }}
