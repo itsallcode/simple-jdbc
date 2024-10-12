@@ -5,7 +5,7 @@ import java.util.Locale;
 /**
  * Base class for implementing a {@link DbDialect}.
  */
-public abstract class BaseDbDialect implements DbDialect {
+public abstract class AbstractDbDialect implements DbDialect {
     private final String jdbcUrlPrefix;
 
     /**
@@ -13,7 +13,7 @@ public abstract class BaseDbDialect implements DbDialect {
      * 
      * @param jdbcUrlPrefix the JDBC URL prefix supported by this dialect
      */
-    protected BaseDbDialect(final String jdbcUrlPrefix) {
+    protected AbstractDbDialect(final String jdbcUrlPrefix) {
         this.jdbcUrlPrefix = jdbcUrlPrefix.toLowerCase(Locale.ROOT);
     }
 

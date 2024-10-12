@@ -8,7 +8,7 @@ import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
 /**
  * DB dialect for the H2 database.
  */
-public class H2Dialect extends BaseDbDialect {
+public class H2Dialect extends AbstractDbDialect {
 
     /**
      * Create a new instance.
