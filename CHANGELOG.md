@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0] - unreleased
 
+- [PR #27](https://github.com/itsallcode/simple-jdbc/pull/27): Update dependencies
+
 ## [0.7.1] - 2024-09-01
 
 - [PR #26](https://github.com/itsallcode/simple-jdbc/pull/26): Update dependencies

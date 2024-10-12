@@ -22,7 +22,7 @@ import com.exasol.containers.ExasolService;
 
 class ExasolTypeTest {
 
-    private static final ExasolContainer<?> container = new ExasolContainer<>("8.29.1")
+    private static final ExasolContainer<?> container = new ExasolContainer<>("8.31.0")
             .withRequiredServices(ExasolService.JDBC).withReuse(true);
 
     @BeforeAll
