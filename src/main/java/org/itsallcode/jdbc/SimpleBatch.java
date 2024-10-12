@@ -25,7 +25,7 @@ class SimpleBatch implements AutoCloseable {
     }
 
     @SuppressWarnings("java:S923") // Varargs required
-    SimpleBatch add(final Object... args) {
+    SimpleBatch addRows(final Object... args) {
         validateParameters(args);
         return add(new ArgumentPreparedStatementSetter(context.getParameterMapper(), args));
     }
@@ -58,7 +58,7 @@ class SimpleBatch implements AutoCloseable {
 
     private void executeBatch() {
         if (currentBatchSize == 0) {
-            LOG.fine("No rows added to batch, skip");
+            LOG.finest("No rows added to batch, skip");
             return;
         }
         final Instant start = Instant.now();
