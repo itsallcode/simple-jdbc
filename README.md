@@ -28,7 +28,6 @@ dependencies {
 ```
 
 ```java
-
 // Define a model record or class
 record Name(int id, String name) {
     Object[] toRow() {
@@ -67,7 +66,7 @@ try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "use
 Install to local maven repository:
 
 ```sh
-./gradlew clean publishToMavenLocal
+./gradlew publishToMavenLocal
 ```
 
 ### Test Coverage
