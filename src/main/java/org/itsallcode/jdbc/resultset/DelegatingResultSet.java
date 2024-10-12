@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.Calendar;
 import java.util.Map;
 
-@SuppressWarnings("java:S1448") // Long file required for implementing ResultSet
+@SuppressWarnings({ "java:S1448", "java:S104" }) // Long file with many methods required for implementing ResultSet
 class DelegatingResultSet implements ResultSet {
 
     private final ResultSet delegate;
