@@ -137,7 +137,7 @@ public class SimpleConnection implements AutoCloseable {
     }
 
     <T> void insert(final String sql, final ParamConverter<T> paramConverter, final Stream<T> rows) {
-        LOG.fine(() -> "Running insert statement '" + sql + "'...");
+        LOG.finest(() -> "Running insert statement '" + sql + "'...");
         try (SimpleBatch batch = new SimpleBatch(prepareStatement(sql), context)) {
             rows.map(paramConverter::map).forEach(batch::add);
         } finally {

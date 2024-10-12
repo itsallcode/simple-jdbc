@@ -64,7 +64,7 @@ class SimpleBatch implements AutoCloseable {
         final Instant start = Instant.now();
         statement.executeBatch();
         final Duration duration = Duration.between(start, Instant.now());
-        LOG.fine(() -> "Execute batch of " + currentBatchSize + " after " + rows + " took " + duration.toMillis()
+        LOG.finest(() -> "Execute batch of " + currentBatchSize + " after " + rows + " took " + duration.toMillis()
                 + " ms");
         currentBatchSize = 0;
     }
