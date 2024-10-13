@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.identifier.Identifier;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
@@ -196,7 +195,7 @@ class SimpleConnectionITest {
     void batchInsertEmptyInput() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.insert("insert into test (id, name) values (?, ?)", ParamConverter.identity(), Stream.empty());
+            connection.insert("TEST", List.of("ID", "NAME"), ParamConverter.identity(), Stream.empty());
 
             final List<Row> result = connection.query("select * from test").stream().toList();
             assertThat(result).isEmpty();
@@ -207,7 +206,7 @@ class SimpleConnectionITest {
     void batchInsert() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.insert("insert into test (id, name) values (?, ?)", ParamConverter.identity(),
+            connection.insert("TEST", List.of("ID", "NAME"), ParamConverter.identity(),
                     Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }));
 
             final List<Row> result = connection.query("select count(*) from test").stream().toList();
@@ -222,8 +221,7 @@ class SimpleConnectionITest {
     void insert() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.insert(Identifier.simple("TEST"), List.of(Identifier.simple("ID"), Identifier.simple("NAME")),
-                    ParamConverter.identity(),
+            connection.insert("TEST", List.of("ID", "NAME"), ParamConverter.identity(),
                     Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }));
 
             final List<List<Object>> result = connection.query("select * from test").stream()

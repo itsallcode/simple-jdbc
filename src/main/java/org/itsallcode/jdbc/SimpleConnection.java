@@ -113,7 +113,16 @@ public class SimpleConnection implements AutoCloseable {
      */
     public <T> void insert(final String table, final List<String> columnNames, final ParamConverter<T> rowMapper,
             final Stream<T> rows) {
-        insert(Identifier.simple(table), columnNames.stream().map(Identifier::simple).toList(), rowMapper, rows);
+        final Stream<Object[]> objectArrayRows = rows.map(row -> rowMapper.map(row));
+        insert(table, columnNames, new ArgumentPreparedStatementSetter(context.getParameterMapper()),
+                objectArrayRows);
+    }
+
+    public <T> void insert(final String table, final List<String> columnNames,
+            final RowPreparedStatementSetter<T> preparedStatementSetter,
+            final Stream<T> rows) {
+        insert(Identifier.simple(table), columnNames.stream().map(Identifier::simple).toList(), preparedStatementSetter,
+                rows);
     }
 
     /**
@@ -126,8 +135,8 @@ public class SimpleConnection implements AutoCloseable {
      * @param rows        a stream of rows to insert
      */
     public <T> void insert(final Identifier table, final List<Identifier> columnNames,
-            final ParamConverter<T> rowMapper, final Stream<T> rows) {
-        insert(createInsertStatement(table, columnNames), rowMapper, rows);
+            final RowPreparedStatementSetter<T> preparedStatementSetter, final Stream<T> rows) {
+        insert(createInsertStatement(table, columnNames), preparedStatementSetter, rows);
     }
 
     private static String createInsertStatement(final Identifier table, final List<Identifier> columnNames) {
@@ -136,10 +145,11 @@ public class SimpleConnection implements AutoCloseable {
         return "insert into " + table.quote() + " (" + columns + ") values (" + placeholders + ")";
     }
 
-    <T> void insert(final String sql, final ParamConverter<T> paramConverter, final Stream<T> rows) {
+    <T> void insert(final String sql, final RowPreparedStatementSetter<T> preparedStatementSetter,
+            final Stream<T> rows) {
         LOG.finest(() -> "Running insert statement '" + sql + "'...");
-        try (SimpleBatch batch = new SimpleBatch(prepareStatement(sql), context)) {
-            rows.map(paramConverter::map).forEach(batch::addRows);
+        try (SimpleBatch<T> batch = new SimpleBatch<>(prepareStatement(sql), preparedStatementSetter)) {
+            rows.forEach(batch::add);
         } finally {
             rows.close();
         }

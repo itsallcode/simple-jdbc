@@ -3,18 +3,16 @@ package org.itsallcode.jdbc;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-class ArgumentPreparedStatementSetter implements PreparedStatementSetter {
-    private final Object[] args;
+class ArgumentPreparedStatementSetter implements RowPreparedStatementSetter<Object[]> {
     private final ParameterMapper mapper;
 
-    ArgumentPreparedStatementSetter(final ParameterMapper mapper, final Object[] args) {
+    ArgumentPreparedStatementSetter(final ParameterMapper mapper) {
         this.mapper = mapper;
-        this.args = args;
     }
 
-    public void setValues(final PreparedStatement preparedStatement) throws SQLException {
+    public void setValues(final Object[] row, final PreparedStatement preparedStatement) throws SQLException {
         int parameterIndex = 1;
-        for (final Object arg : args) {
+        for (final Object arg : row) {
             preparedStatement.setObject(parameterIndex, mapper.map(arg));
             parameterIndex++;
         }
