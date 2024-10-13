@@ -5,8 +5,8 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-class SimpleBatch<T> implements AutoCloseable {
-    private static final Logger LOG = Logger.getLogger(SimpleBatch.class.getName());
+class BatchInsert<T> implements AutoCloseable {
+    private static final Logger LOG = Logger.getLogger(BatchInsert.class.getName());
     private static final int BATCH_SIZE = 200_000;
 
     private final SimplePreparedStatement statement;
@@ -15,7 +15,7 @@ class SimpleBatch<T> implements AutoCloseable {
     private int rows;
     private int currentBatchSize;
 
-    SimpleBatch(final SimplePreparedStatement statement, final RowPreparedStatementSetter<T> preparedStatementSetter) {
+    BatchInsert(final SimplePreparedStatement statement, final RowPreparedStatementSetter<T> preparedStatementSetter) {
         this.preparedStatementSetter = preparedStatementSetter;
         this.statement = Objects.requireNonNull(statement, "statement");
     }
