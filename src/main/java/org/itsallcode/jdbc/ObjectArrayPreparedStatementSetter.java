@@ -3,10 +3,10 @@ package org.itsallcode.jdbc;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-class ArgumentPreparedStatementSetter implements RowPreparedStatementSetter<Object[]> {
+class ObjectArrayPreparedStatementSetter implements RowPreparedStatementSetter<Object[]> {
     private final ParameterMapper mapper;
 
-    ArgumentPreparedStatementSetter(final ParameterMapper mapper) {
+    ObjectArrayPreparedStatementSetter(final ParameterMapper mapper) {
         this.mapper = mapper;
     }
 
