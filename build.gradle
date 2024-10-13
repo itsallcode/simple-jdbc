@@ -44,6 +44,8 @@ testing {
             dependencies {
                 implementation project()
                 implementation libs.assertj
+                implementation libs.mockitoJunit
+                runtimeOnly libs.slf4jApi
                 runtimeOnly libs.slf4jLogger
             }
             targets {
@@ -61,7 +63,6 @@ testing {
         test {
             dependencies {
                 implementation libs.h2
-                implementation libs.mockitoJunit
                 implementation libs.tostringverifier
                 implementation libs.equalsverifier
             }

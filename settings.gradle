@@ -19,6 +19,7 @@ dependencyResolutionManagement {
             library('hamcrestResultSetMatcher', 'com.exasol:hamcrest-resultset-matcher:1.6.3')
             library('mockito', 'org.mockito:mockito-core:5.11.0')
             library('mockitoJunit', 'org.mockito:mockito-junit-jupiter:5.14.1')
+            library('slf4jApi', 'org.slf4j:slf4j-api:2.0.16')
             library('slf4jLogger', 'org.slf4j:slf4j-jdk14:2.0.16')
             library('exasolJdbc', 'com.exasol:exasol-jdbc:24.1.2')
             library('exasolTestcontainers', 'com.exasol:exasol-testcontainers:7.1.1')
