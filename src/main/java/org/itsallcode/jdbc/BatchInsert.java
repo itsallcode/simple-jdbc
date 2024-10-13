@@ -34,24 +34,24 @@ class BatchInsert<T> implements AutoCloseable {
         }
     }
 
-    @Override
-    public void close() {
-        executeBatch();
-        LOG.fine(() -> "Batch insert of %d rows with batch size %d completed in %s".formatted(rows, maxBatchSize,
-                Duration.between(start, Instant.now())));
-        statement.close();
-    }
-
     private void executeBatch() {
         if (currentBatchSize == 0) {
             LOG.finest("No rows added to batch, skip");
             return;
         }
         final Instant batchStart = Instant.now();
-        statement.executeBatch();
+        final int[] result = statement.executeBatch();
         final Duration duration = Duration.between(batchStart, Instant.now());
-        LOG.finest(() -> "Execute batch of " + currentBatchSize + " after " + rows + " took " + duration.toMillis()
-                + " ms");
+        LOG.finest(() -> "Execute batch of %d after %d took %d ms, result length: %s".formatted(currentBatchSize, rows,
+                duration.toMillis(), result.length));
         currentBatchSize = 0;
+    }
+
+    @Override
+    public void close() {
+        executeBatch();
+        LOG.fine(() -> "Batch insert of %d rows with batch size %d completed in %s".formatted(rows, maxBatchSize,
+                Duration.between(start, Instant.now())));
+        statement.close();
     }
 }
