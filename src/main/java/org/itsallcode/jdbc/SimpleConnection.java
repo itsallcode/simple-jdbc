@@ -108,7 +108,7 @@ public class SimpleConnection implements AutoCloseable {
      * @return batch insert builder
      */
     public <T> BatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
-        return new BatchInsertBuilder<>(this, context);
+        return new BatchInsertBuilder<>(this::prepareStatement, context);
     }
 
     private PreparedStatement prepare(final String sql) {

@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.joining;
 
 import java.sql.PreparedStatement;
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -17,15 +18,15 @@ import org.itsallcode.jdbc.identifier.Identifier;
 public class BatchInsertBuilder<T> {
     private static final Logger LOG = Logger.getLogger(BatchInsertBuilder.class.getName());
     private static final int DEFAULT_MAX_BATCH_SIZE = 200_000;
-    private final SimpleConnection connection;
+    private final Function<String, SimplePreparedStatement> statementFactory;
     private final Context context;
     private String sql;
     private RowPreparedStatementSetter<T> mapper;
     private Iterator<T> rows;
     private int maxBatchSize = DEFAULT_MAX_BATCH_SIZE;
 
-    BatchInsertBuilder(final SimpleConnection connection, final Context context) {
-        this.connection = connection;
+    BatchInsertBuilder(final Function<String, SimplePreparedStatement> statementFactory, final Context context) {
+        this.statementFactory = statementFactory;
         this.context = context;
     }
 
@@ -129,7 +130,7 @@ public class BatchInsertBuilder<T> {
         Objects.requireNonNull(this.mapper, "mapper");
         Objects.requireNonNull(this.rows, "rows");
         LOG.finest(() -> "Running insert statement '" + sql + "'...");
-        final SimplePreparedStatement statement = connection.prepareStatement(sql);
+        final SimplePreparedStatement statement = statementFactory.apply(sql);
         try (BatchInsert<T> batch = new BatchInsert<>(statement, this.mapper, this.maxBatchSize)) {
             while (rows.hasNext()) {
                 batch.add(rows.next());
