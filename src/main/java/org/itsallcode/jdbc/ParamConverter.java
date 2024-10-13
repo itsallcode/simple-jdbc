@@ -1,8 +1,8 @@
 package org.itsallcode.jdbc;
 
 /**
- * This converts a domain object to types supported by the database when
- * inserting rows.
+ * This converts a domain object to an array of types supported by the database
+ * when inserting rows.
  * 
  * @param <T> row type
  */

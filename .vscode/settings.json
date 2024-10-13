@@ -12,7 +12,7 @@
     "java.sources.organizeImports.staticStarThreshold": 3,
     "java.test.config": {
         "vmArgs": [
-            "-Djava.util.logging.config.file=src/main/resources/logging.properties"
+            "-Djava.util.logging.config.file=src/test/resources/logging.properties"
         ]
     },
     "sonarlint.connectedMode.project": {

@@ -78,6 +78,7 @@ public class GenericRowMapper<T> implements RowMapper<T> {
      * @param <T> generic row type
      */
     @FunctionalInterface
+    @SuppressWarnings("java:S1711") // Explicit interface instead of generic Function<>
     public interface ColumnValuesConverter<T> {
         /**
          * Convert a single row.

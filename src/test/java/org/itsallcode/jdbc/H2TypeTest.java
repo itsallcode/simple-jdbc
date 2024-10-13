@@ -79,7 +79,8 @@ class H2TypeTest {
         try (final SimpleConnection connection = H2TestFixture.createMemConnection();
                 final SimpleResultSet<Object> result = connection
                         .query("select ?",
-                                (preparedStatement) -> preparedStatement.setObject(1, value),
+                                preparedStatement -> preparedStatement.setObject(1,
+                                        value),
                                 (resultSet, rowNum) -> resultSet
                                         .getObject(1, value.getClass()))) {
             assertThat(result.toList()).containsExactly(value);

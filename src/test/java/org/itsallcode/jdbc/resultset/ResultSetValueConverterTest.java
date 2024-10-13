@@ -4,7 +4,6 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
@@ -21,7 +20,7 @@ class ResultSetValueConverterTest {
     ResultSet resultSetMock;
 
     @Test
-    void emptyInputNoConverterFoundForIndex() throws SQLException {
+    void emptyInputNoConverterFoundForIndex() {
         final ResultSetValueConverter converter = testee(emptyList(), emptyList());
         assertThatThrownBy(() -> converter.getObject(resultSetMock, 1))
                 .isInstanceOf(IllegalStateException.class)
@@ -29,7 +28,7 @@ class ResultSetValueConverterTest {
     }
 
     @Test
-    void emptyInputNoConverterFoundForLabel() throws SQLException {
+    void emptyInputNoConverterFoundForLabel() {
         final ResultSetValueConverter converter = testee(emptyList(), emptyList());
         assertThatThrownBy(() -> converter.getObject(resultSetMock, "label"))
                 .isInstanceOf(IllegalStateException.class)

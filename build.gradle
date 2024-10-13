@@ -11,7 +11,7 @@ plugins {
 }
 
 group 'org.itsallcode'
-version = '0.7.1'
+version = '0.8.0'
 
 dependencies {
 }
@@ -44,6 +44,8 @@ testing {
             dependencies {
                 implementation project()
                 implementation libs.assertj
+                implementation libs.mockitoJunit
+                runtimeOnly libs.slf4jApi
                 runtimeOnly libs.slf4jLogger
             }
             targets {
@@ -61,7 +63,6 @@ testing {
         test {
             dependencies {
                 implementation libs.h2
-                implementation libs.mockitoJunit
                 implementation libs.tostringverifier
                 implementation libs.equalsverifier
             }

@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.identifier.Identifier;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
@@ -196,7 +195,9 @@ class SimpleConnectionITest {
     void batchInsertEmptyInput() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.insert("insert into test (id, name) values (?, ?)", ParamConverter.identity(), Stream.empty());
+            connection.batchInsert(Object[].class).into("TEST", List.of("ID", "NAME"))
+                    .mapping(ParamConverter.identity())
+                    .rows(Stream.empty()).start();
 
             final List<Row> result = connection.query("select * from test").stream().toList();
             assertThat(result).isEmpty();
@@ -207,8 +208,10 @@ class SimpleConnectionITest {
     void batchInsert() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.insert("insert into test (id, name) values (?, ?)", ParamConverter.identity(),
-                    Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }));
+            connection.batchInsert(Object[].class).into("TEST", List.of("ID", "NAME"))
+                    .mapping(ParamConverter.identity()).rows(
+                            Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }))
+                    .start();
 
             final List<Row> result = connection.query("select count(*) from test").stream().toList();
             assertAll(
@@ -222,9 +225,11 @@ class SimpleConnectionITest {
     void insert() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.insert(Identifier.simple("TEST"), List.of(Identifier.simple("ID"), Identifier.simple("NAME")),
-                    ParamConverter.identity(),
-                    Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }));
+            connection.batchInsert(Object[].class).into("TEST", List.of("ID", "NAME"))
+                    .mapping(ParamConverter.identity())
+                    .rows(
+                            Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }))
+                    .start();
 
             final List<List<Object>> result = connection.query("select * from test").stream()
                     .map(row -> row.columnValues().stream().map(value -> value.value()).toList()).toList();
