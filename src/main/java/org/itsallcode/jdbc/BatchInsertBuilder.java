@@ -38,10 +38,22 @@ public class BatchInsertBuilder<T> {
      * @return {@code this} for fluent programming
      */
     @SuppressWarnings("java:S3242") // Using List instead of Collection to preserve column order
-    public BatchInsertBuilder<T> into(final String tableName, final List<String> columnNames) {
-        this.sql = createInsertStatement(Identifier.simple(tableName),
-                columnNames.stream().map(Identifier::simple).toList());
+    public BatchInsertBuilder<T> into(final Identifier tableName, final List<Identifier> columnNames) {
+        this.sql = createInsertStatement(tableName, columnNames);
         return this;
+    }
+
+    /**
+     * Define table and column names used for generating the {@code INSERT}
+     * statement.
+     * 
+     * @param tableName   table name
+     * @param columnNames column names
+     * @return {@code this} for fluent programming
+     */
+    @SuppressWarnings("java:S3242") // Using List instead of Collection to preserve column order
+    public BatchInsertBuilder<T> into(final String tableName, final List<String> columnNames) {
+        return into(Identifier.simple(tableName), columnNames.stream().map(Identifier::simple).toList());
     }
 
     /**
