@@ -7,6 +7,8 @@ import java.util.List;
 
 /**
  * A qualified identifier, e.g. table name and schema name.
+ * 
+ * @param id list of identifiers
  */
 public record QualifiedIdentifier(List<Identifier> id) implements Identifier {
 
