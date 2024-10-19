@@ -13,9 +13,6 @@ plugins {
 group 'org.itsallcode'
 version = '0.8.0'
 
-dependencies {
-}
-
 java {
     toolchain {
         def javaVersion = project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 17
@@ -37,6 +34,15 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+def getMockitoAgentPath() {
+    def mockitoAgentConfig = configurations.create("mockitoAgent")
+    dependencies {
+        mockitoAgent(libs.mockitoCore.get()) { transitive = false }
+    }
+    return mockitoAgentConfig.asPath
+}
+def mockitoAgentPath = getMockitoAgentPath()
+
 testing {
     suites {
         configureEach {
@@ -55,6 +61,7 @@ testing {
                             testLogging.showStandardStreams = true
                         }
                         jvmArgs '-enableassertions'
+                        jvmArgs "-javaagent:${mockitoAgentPath}"
                         systemProperty 'java.util.logging.config.file', file('src/test/resources/logging.properties')
                     }
                 }
