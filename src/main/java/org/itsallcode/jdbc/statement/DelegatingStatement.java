@@ -22,254 +22,211 @@ class DelegatingStatement implements Statement {
 
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'executeQuery'");
+        return delegate.executeQuery(sql);
     }
 
     @Override
     public int executeUpdate(final String sql) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'executeUpdate'");
+        return delegate.executeUpdate(sql);
     }
 
     @Override
     public void close() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'close'");
+        delegate.close();
     }
 
     @Override
     public int getMaxFieldSize() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMaxFieldSize'");
+        return delegate.getMaxFieldSize();
     }
 
     @Override
     public void setMaxFieldSize(final int max) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setMaxFieldSize'");
+        delegate.setMaxFieldSize(max);
     }
 
     @Override
     public int getMaxRows() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMaxRows'");
+        return delegate.getMaxRows();
     }
 
     @Override
     public void setMaxRows(final int max) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setMaxRows'");
+        delegate.setMaxRows(max);
     }
 
     @Override
     public void setEscapeProcessing(final boolean enable) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setEscapeProcessing'");
+        delegate.setEscapeProcessing(enable);
     }
 
     @Override
     public int getQueryTimeout() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getQueryTimeout'");
+        return delegate.getQueryTimeout();
     }
 
     @Override
     public void setQueryTimeout(final int seconds) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setQueryTimeout'");
+        delegate.setQueryTimeout(seconds);
     }
 
     @Override
     public void cancel() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'cancel'");
+        delegate.cancel();
     }
 
     @Override
     public SQLWarning getWarnings() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getWarnings'");
+        return delegate.getWarnings();
     }
 
     @Override
     public void clearWarnings() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'clearWarnings'");
+        delegate.clearWarnings();
     }
 
     @Override
     public void setCursorName(final String name) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setCursorName'");
+        delegate.setCursorName(name);
     }
 
     @Override
     public boolean execute(final String sql) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        return delegate.execute(sql);
     }
 
     @Override
     public ResultSet getResultSet() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getResultSet'");
+        return delegate.getResultSet();
     }
 
     @Override
     public int getUpdateCount() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUpdateCount'");
+        return delegate.getUpdateCount();
     }
 
     @Override
     public boolean getMoreResults() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMoreResults'");
+        return delegate.getMoreResults();
     }
 
     @Override
     public void setFetchDirection(final int direction) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setFetchDirection'");
+        delegate.setFetchDirection(direction);
     }
 
     @Override
     public int getFetchDirection() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getFetchDirection'");
+        return delegate.getFetchDirection();
     }
 
     @Override
     public void setFetchSize(final int rows) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setFetchSize'");
+        delegate.setFetchSize(rows);
     }
 
     @Override
     public int getFetchSize() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getFetchSize'");
+        return delegate.getFetchSize();
     }
 
     @Override
     public int getResultSetConcurrency() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getResultSetConcurrency'");
+        return delegate.getResultSetConcurrency();
     }
 
     @Override
     public int getResultSetType() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getResultSetType'");
+        return delegate.getResultSetType();
     }
 
     @Override
     public void addBatch(final String sql) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addBatch'");
+        delegate.addBatch(sql);
     }
 
     @Override
     public void clearBatch() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'clearBatch'");
+        delegate.clearBatch();
     }
 
     @Override
     public int[] executeBatch() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'executeBatch'");
+        return delegate.executeBatch();
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getConnection'");
+        return delegate.getConnection();
     }
 
     @Override
     public boolean getMoreResults(final int current) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMoreResults'");
+        return delegate.getMoreResults(current);
     }
 
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getGeneratedKeys'");
+        return delegate.getGeneratedKeys();
     }
 
     @Override
     public int executeUpdate(final String sql, final int autoGeneratedKeys) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'executeUpdate'");
+        return delegate.executeUpdate(sql, autoGeneratedKeys);
     }
 
     @Override
     public int executeUpdate(final String sql, final int[] columnIndexes) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'executeUpdate'");
+        return delegate.executeUpdate(sql, columnIndexes);
     }
 
     @Override
     public int executeUpdate(final String sql, final String[] columnNames) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'executeUpdate'");
+        return delegate.executeUpdate(sql, columnNames);
     }
 
     @Override
     public boolean execute(final String sql, final int autoGeneratedKeys) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        return delegate.execute(sql, autoGeneratedKeys);
     }
 
     @Override
     public boolean execute(final String sql, final int[] columnIndexes) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        return delegate.execute(sql, columnIndexes);
     }
 
     @Override
     public boolean execute(final String sql, final String[] columnNames) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        return delegate.execute(sql, columnNames);
     }
 
     @Override
     public int getResultSetHoldability() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getResultSetHoldability'");
+        return delegate.getResultSetHoldability();
     }
 
     @Override
     public boolean isClosed() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isClosed'");
+        return delegate.isClosed();
     }
 
     @Override
     public void setPoolable(final boolean poolable) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setPoolable'");
+        delegate.setPoolable(poolable);
     }
 
     @Override
     public boolean isPoolable() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isPoolable'");
+        return delegate.isPoolable();
     }
 
     @Override
     public void closeOnCompletion() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'closeOnCompletion'");
+        delegate.closeOnCompletion();
     }
 
     @Override
     public boolean isCloseOnCompletion() throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isCloseOnCompletion'");
+        return delegate.isCloseOnCompletion();
     }
-
 }
