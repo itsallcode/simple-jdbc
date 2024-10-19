@@ -348,5 +348,4 @@ class DelegatingPreparedStatement extends DelegatingStatement implements Prepare
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setNClob'");
     }
-
 }
