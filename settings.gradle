@@ -10,7 +10,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         libs {
-            version('mockito', '5.14.1')
+            version('mockito', '5.14.2')
             library('assertj', 'org.assertj:assertj-core:3.26.3')
             library('h2', 'com.h2database:h2:2.3.232')
             library('junitPioneer', 'org.junit-pioneer:junit-pioneer:2.2.0')
