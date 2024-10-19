@@ -51,9 +51,9 @@ class SimplePreparedStatement implements AutoCloseable {
 
     }
 
-    void executeBatch() {
+    int[] executeBatch() {
         try {
-            statement.executeBatch();
+            return statement.executeBatch();
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error executing batch sql '" + sql + "'", e);
         }
