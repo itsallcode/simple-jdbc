@@ -5,7 +5,7 @@ import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
 /**
  * Dialect for the Exasol database.
  */
-public class ExasolDialect extends BaseDbDialect {
+public class ExasolDialect extends AbstractDbDialect {
 
     /**
      * Create a new instance.

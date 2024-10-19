@@ -11,10 +11,7 @@ plugins {
 }
 
 group 'org.itsallcode'
-version = '0.7.1'
-
-dependencies {
-}
+version = '0.8.0'
 
 java {
     toolchain {
@@ -37,6 +34,15 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+def getMockitoAgentPath() {
+    def mockitoAgentConfig = configurations.create("mockitoAgent")
+    dependencies {
+        mockitoAgent(libs.mockitoCore.get()) { transitive = false }
+    }
+    return mockitoAgentConfig.asPath
+}
+def mockitoAgentPath = getMockitoAgentPath()
+
 testing {
     suites {
         configureEach {
@@ -44,6 +50,8 @@ testing {
             dependencies {
                 implementation project()
                 implementation libs.assertj
+                implementation libs.mockitoJunit
+                runtimeOnly libs.slf4jApi
                 runtimeOnly libs.slf4jLogger
             }
             targets {
@@ -53,6 +61,7 @@ testing {
                             testLogging.showStandardStreams = true
                         }
                         jvmArgs '-enableassertions'
+                        jvmArgs "-javaagent:${mockitoAgentPath}"
                         systemProperty 'java.util.logging.config.file', file('src/test/resources/logging.properties')
                     }
                 }
@@ -61,7 +70,6 @@ testing {
         test {
             dependencies {
                 implementation libs.h2
-                implementation libs.mockitoJunit
                 implementation libs.tostringverifier
                 implementation libs.equalsverifier
             }
