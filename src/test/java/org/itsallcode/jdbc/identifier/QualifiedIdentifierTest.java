@@ -8,6 +8,11 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 class QualifiedIdentifierTest {
     @Test
+    void ofStringArray() {
+        assertThat(QualifiedIdentifier.of(new String[] { "a", "b" })).hasToString("\"a\".\"b\"");
+    }
+
+    @Test
     void testToString() {
         assertThat(QualifiedIdentifier.of(SimpleIdentifier.of("id"))).hasToString("\"id\"");
     }

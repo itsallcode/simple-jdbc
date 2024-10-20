@@ -46,7 +46,7 @@ def mockitoAgentPath = getMockitoAgentPath()
 testing {
     suites {
         configureEach {
-            useJUnitJupiter()
+            useJUnitJupiter(libs.versions.junitJupiter.get())
             dependencies {
                 implementation project()
                 implementation libs.assertj

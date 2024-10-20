@@ -9,16 +9,6 @@ public final class Context {
     }
 
     /**
-     * Get the configured {@link ParameterMapper}.
-     * 
-     * @return parameter mapper
-     */
-    @SuppressWarnings("java:S2325") // Not-static by intention
-    public ParameterMapper getParameterMapper() {
-        return ParameterMapper.create();
-    }
-
-    /**
      * Create a new builder for {@link Context} objects.
      * 
      * @return a new builder
@@ -40,7 +30,7 @@ public final class Context {
          * 
          * @return a new context
          */
-        @SuppressWarnings("java:S2325") // Not-static by intention
+        @SuppressWarnings({ "java:S2325", "java:S2440" }) // Not-static by intention
         public Context build() {
             return new Context();
         }

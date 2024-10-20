@@ -6,12 +6,14 @@ import java.util.TimeZone;
 
 final class Extractors {
 
+    @SuppressWarnings({ "java:S2143", "java:S2885" }) // Need to use calendar api; using Calendar in a thread-safe way
+    private static final Calendar UTC_CALENDAR = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
     private Extractors() {
     }
 
     static ColumnValueExtractor timestampToUTCInstant() {
-        final Calendar utcCalendar = createUtcCalendar();
-        return nonNull((resultSet, columnIndex) -> resultSet.getTimestamp(columnIndex, utcCalendar).toInstant());
+        return nonNull((resultSet, columnIndex) -> resultSet.getTimestamp(columnIndex, UTC_CALENDAR).toInstant());
     }
 
     public static ColumnValueExtractor timestampToInstant() {
@@ -19,13 +21,7 @@ final class Extractors {
     }
 
     static ColumnValueExtractor dateToLocalDate() {
-        final Calendar utcCalendar = createUtcCalendar();
-        return nonNull((resultSet, columnIndex) -> resultSet.getDate(columnIndex, utcCalendar).toLocalDate());
-    }
-
-    @SuppressWarnings("java:S2143") // Need to use calendar api
-    private static Calendar createUtcCalendar() {
-        return Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        return nonNull((resultSet, columnIndex) -> resultSet.getDate(columnIndex, UTC_CALENDAR).toLocalDate());
     }
 
     private static ColumnValueExtractor nonNull(final ColumnValueExtractor extractor) {

@@ -22,4 +22,14 @@ public interface DbDialect {
      * @return extractor
      */
     ColumnValueExtractor createExtractor(final ColumnMetaData column);
+
+    /**
+     * Create a new column value setter for setting values on a
+     * {@link java.sql.PreparedStatement} specific to the dialect.
+     * 
+     * @param <T>  object type
+     * @param type object type
+     * @return column value setter
+     */
+    <T> ColumnValueSetter<T> createSetter(Class<T> type);
 }

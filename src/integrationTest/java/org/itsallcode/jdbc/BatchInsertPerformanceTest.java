@@ -3,6 +3,7 @@ package org.itsallcode.jdbc;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.*;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -34,10 +35,25 @@ class BatchInsertPerformanceTest {
     }
 
     private BatchInsertBuilder<NameRow> testee() {
-        final PreparedStatement stmt = new NoopPreparedStatement();
+        final PreparedStatement stmt = createNoopPreparedStatement();
         when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(new SimplePreparedStatement(null, null, stmt, "sql"));
-        return new BatchInsertBuilder<NameRow>(connectionMock::prepareStatement, Context.builder().build());
+        return new BatchInsertBuilder<NameRow>(connectionMock::prepareStatement);
+    }
+
+    private PreparedStatement createNoopPreparedStatement() {
+        final InvocationHandler invocationHandler = (final Object proxy, final Method method,
+                final Object[] args) -> {
+            switch (method.getName()) {
+            case "executeBatch":
+                return new int[0];
+
+            default:
+                return null;
+            }
+        };
+        return (PreparedStatement) Proxy.newProxyInstance(this.getClass().getClassLoader(),
+                new Class<?>[] { PreparedStatement.class }, invocationHandler);
     }
 
     @Test
