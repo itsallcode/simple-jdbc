@@ -157,13 +157,13 @@ class DelegatingPreparedStatementTest extends DelegatingStatementTest {
     }
 
     @Test
-    void execute() throws SQLException {
+    void executeWithoutArgs() throws SQLException {
         when(getStatementMock().execute()).thenReturn(true);
         assertTrue(testee().execute());
     }
 
     @Test
-    void addBatch() throws SQLException {
+    void addBatchWithoutArgs() throws SQLException {
         testee().addBatch();
         verify(getStatementMock()).addBatch();
     }
