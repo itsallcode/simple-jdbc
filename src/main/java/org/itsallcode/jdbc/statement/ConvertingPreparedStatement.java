@@ -3,10 +3,10 @@ package org.itsallcode.jdbc.statement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-
 /**
- * A {@link PreparedStatement} that delegates all methods and converts parameter
- * value of {@link #convert(Object)} using a {@link ParameterMapper}.
+ * A {@link PreparedStatement} that delegates calls to
+ * {@link #setObject(int, Object)} to a setter provided by
+ * {@link ParamSetterProvider#findSetter(Object)}.
  */
 public class ConvertingPreparedStatement extends DelegatingPreparedStatement {
     private final PreparedStatement originalDelegate;
