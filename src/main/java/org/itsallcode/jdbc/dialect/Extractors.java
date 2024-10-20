@@ -6,8 +6,8 @@ import java.util.TimeZone;
 
 final class Extractors {
 
-    @SuppressWarnings("java:S2143") // Need to use calendar api
-    private final static Calendar UTC_CALENDAR = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    @SuppressWarnings({ "java:S2143", "java:S2885" }) // Need to use calendar api; using Calendar in a thread-safe way
+    private static final Calendar UTC_CALENDAR = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
     private Extractors() {
     }
