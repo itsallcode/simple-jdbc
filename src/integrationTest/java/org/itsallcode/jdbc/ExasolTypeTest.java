@@ -2,12 +2,14 @@ package org.itsallcode.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.JDBCType;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
@@ -172,6 +174,20 @@ class ExasolTypeTest {
 
     record TypeTest(String value, String type, Object expectedValue, JDBCType expectedType, String expectedTypeName,
             String expectedClassName) {
+    }
 
+    @Test
+    void batchInsert() {
+        final LocalDate date = LocalDate.parse("2024-10-20");
+        try (final SimpleConnection connection = connect()) {
+            connection.executeStatement("create schema test");
+            connection.executeStatement("create table tab(col date)");
+            connection.batchInsert(LocalDate.class).into("TAB", List.of("COL"))
+                    .mapping((row, stmt) -> stmt.setObject(1, row)).rows(Stream.of(date)).start();
+            try (SimpleResultSet<LocalDate> resultSet = connection.query("select * from tab",
+                    (rs, rowNum) -> rs.getObject(1, LocalDate.class))) {
+                assertEquals(date, resultSet.toList().get(0));
+            }
+        }
     }
 }

@@ -38,7 +38,7 @@ class BatchInsertPerformanceTest {
         final PreparedStatement stmt = createNoopPreparedStatement();
         when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(new SimplePreparedStatement(null, null, stmt, "sql"));
-        return new BatchInsertBuilder<NameRow>(connectionMock::prepareStatement, Context.builder().build());
+        return new BatchInsertBuilder<NameRow>(connectionMock::prepareStatement);
     }
 
     private PreparedStatement createNoopPreparedStatement() {

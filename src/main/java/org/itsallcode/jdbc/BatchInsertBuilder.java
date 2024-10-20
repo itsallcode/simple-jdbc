@@ -19,15 +19,13 @@ public class BatchInsertBuilder<T> {
     private static final Logger LOG = Logger.getLogger(BatchInsertBuilder.class.getName());
     private static final int DEFAULT_MAX_BATCH_SIZE = 200_000;
     private final Function<String, SimplePreparedStatement> statementFactory;
-    private final Context context;
     private String sql;
     private RowPreparedStatementSetter<T> mapper;
     private Iterator<T> rows;
     private int maxBatchSize = DEFAULT_MAX_BATCH_SIZE;
 
-    BatchInsertBuilder(final Function<String, SimplePreparedStatement> statementFactory, final Context context) {
+    BatchInsertBuilder(final Function<String, SimplePreparedStatement> statementFactory) {
         this.statementFactory = statementFactory;
-        this.context = context;
     }
 
     /**
@@ -86,8 +84,7 @@ public class BatchInsertBuilder<T> {
      * @return {@code this} for fluent programming
      */
     public BatchInsertBuilder<T> mapping(final ParamConverter<T> rowMapper) {
-        final RowPreparedStatementSetter<Object[]> setter = new ObjectArrayPreparedStatementSetter(
-                context.getParameterMapper());
+        final RowPreparedStatementSetter<Object[]> setter = new ObjectArrayPreparedStatementSetter();
         return mapping(
                 (final T row, final PreparedStatement preparedStatement) -> setter.setValues(rowMapper.map(row),
                         preparedStatement));
