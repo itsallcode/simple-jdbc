@@ -5,10 +5,20 @@ import java.sql.SQLException;
 
 import org.itsallcode.jdbc.ParameterMapper;
 
+/**
+ * A {@link PreparedStatement} that delegates all methods and converts parameter
+ * value of {@link #convert(Object)} using a {@link ParameterMapper}.
+ */
 public class ConvertingPreparedStatement extends DelegatingPreparedStatement {
 
     private final ParameterMapper parameterMapper;
 
+    /**
+     * Create a new instance.
+     * 
+     * @param delegate        delegate
+     * @param parameterMapper parameter mapper
+     */
     public ConvertingPreparedStatement(final PreparedStatement delegate, final ParameterMapper parameterMapper) {
         super(delegate);
         this.parameterMapper = parameterMapper;
