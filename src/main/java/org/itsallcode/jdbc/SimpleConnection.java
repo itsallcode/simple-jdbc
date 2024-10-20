@@ -1,9 +1,6 @@
 package org.itsallcode.jdbc;
 
-import static java.util.function.Predicate.not;
-
 import java.sql.*;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -17,7 +14,7 @@ import org.itsallcode.jdbc.statement.ParamSetterProvider;
  * A simplified version of a JDBC {@link Connection}. Create new connections
  * with {@link ConnectionFactory#create(String, String, String)}.
  */
-public class SimpleConnection implements AutoCloseable {
+public class SimpleConnection implements DbOperations {
     private static final Logger LOG = Logger.getLogger(SimpleConnection.class.getName());
 
     private final Connection connection;
@@ -32,23 +29,11 @@ public class SimpleConnection implements AutoCloseable {
         this.paramSetterProvider = new ParamSetterProvider(dialect);
     }
 
-    /**
-     * Execute all commands in a SQL script, separated with {@code ;}.
-     * 
-     * @param sqlScript the script to execute.
-     */
-    public void executeScript(final String sqlScript) {
-        Arrays.stream(sqlScript.split(";"))
-                .map(String::trim)
-                .filter(not(String::isEmpty))
-                .forEach(this::executeStatement);
+    public Transaction startTransaction() {
+        return Transaction.start(this);
     }
 
-    /**
-     * Execute a single SQL statement.
-     * 
-     * @param sql the statement
-     */
+    @Override
     public void executeStatement(final String sql) {
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
@@ -57,41 +42,18 @@ public class SimpleConnection implements AutoCloseable {
         }
     }
 
-    /**
-     * Execute a SQL query and return a {@link SimpleResultSet result set} with
-     * generic {@link Row}s.
-     * 
-     * @param sql the query
-     * @return the result set
-     */
+    @Override
     public SimpleResultSet<Row> query(final String sql) {
         return query(sql, ContextRowMapper.generic(dialect));
     }
 
-    /**
-     * Execute a SQL query and return a {@link SimpleResultSet result set} with rows
-     * converted to a custom type {@link T}.
-     * 
-     * @param <T>       generic row type
-     * @param sql       SQL query
-     * @param rowMapper row mapper
-     * @return the result set
-     */
+    @Override
     public <T> SimpleResultSet<T> query(final String sql, final RowMapper<T> rowMapper) {
         return query(sql, ps -> {
         }, rowMapper);
     }
 
-    /**
-     * Execute a SQL query, set parameters and return a {@link SimpleResultSet
-     * result set} with rows converted to a custom type {@link T}.
-     * 
-     * @param <T>                     generic row type
-     * @param sql                     SQL query
-     * @param preparedStatementSetter the prepared statement setter
-     * @param rowMapper               row mapper
-     * @return the result set
-     */
+    @Override
     public <T> SimpleResultSet<T> query(final String sql, final PreparedStatementSetter preparedStatementSetter,
             final RowMapper<T> rowMapper) {
         LOG.finest(() -> "Executing query '" + sql + "'...");
@@ -108,13 +70,7 @@ public class SimpleConnection implements AutoCloseable {
         return new ConvertingPreparedStatement(preparedStatement, paramSetterProvider);
     }
 
-    /**
-     * Create a batch insert builder
-     * 
-     * @param rowType row type
-     * @param <T>     row type
-     * @return batch insert builder
-     */
+    @Override
     public <T> BatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
         return new BatchInsertBuilder<>(this::prepareStatement);
     }
@@ -127,13 +83,28 @@ public class SimpleConnection implements AutoCloseable {
         }
     }
 
-    /**
-     * Database dialect of this connection.
-     * 
-     * @return dialect
-     */
-    public DbDialect getDialect() {
-        return dialect;
+    void setAutoCommit(final boolean autoCommit) {
+        try {
+            this.connection.setAutoCommit(autoCommit);
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Failed to set autoCommit to " + autoCommit, e);
+        }
+    }
+
+    void rollback() {
+        try {
+            this.connection.rollback();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Failed to rollback transaction", e);
+        }
+    }
+
+    void commit() {
+        try {
+            this.connection.commit();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Failed to commit transaction", e);
+        }
     }
 
     @Override

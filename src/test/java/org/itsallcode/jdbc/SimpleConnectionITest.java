@@ -10,7 +10,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.resultset.*;
+import org.itsallcode.jdbc.resultset.RowMapper;
+import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -71,22 +72,6 @@ class SimpleConnectionITest {
                         () -> assertThat(rows.get(0).columnValues()).hasSize(1),
                         () -> assertThat(rows.get(0).get(0).value()).isEqualTo(1L),
                         () -> assertThat(rows.get(0).get(0, Long.class)).isEqualTo(1L));
-            }
-        }
-    }
-
-    @Test
-    void executeQueryWithListRowMapper() {
-        final ConnectionFactory factory = ConnectionFactory.create(Context.builder().build());
-        try (SimpleConnection connection = factory.create("jdbc:h2:mem:")) {
-            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
-                    + "insert into test (id, name) values (1, 'test');");
-            try (SimpleResultSet<List<Object>> resultSet = connection.query("select * from test",
-                    ContextRowMapper.columnValueList(connection.getDialect()))) {
-                final List<List<Object>> rows = resultSet.toList();
-                assertAll(
-                        () -> assertThat(rows).hasSize(1),
-                        () -> assertThat(rows.get(0)).containsExactly(1, "test"));
             }
         }
     }
