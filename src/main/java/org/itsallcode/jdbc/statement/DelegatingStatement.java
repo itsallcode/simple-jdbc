@@ -2,6 +2,7 @@ package org.itsallcode.jdbc.statement;
 
 import java.sql.*;
 
+@SuppressWarnings("java:S1448") // Long file with many methods required for implementing Statement
 class DelegatingStatement implements Statement {
 
     private final Statement delegate;
