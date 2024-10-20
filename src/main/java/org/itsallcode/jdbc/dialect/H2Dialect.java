@@ -29,4 +29,9 @@ public class H2Dialect extends AbstractDbDialect {
         default -> Extractors.generic();
         };
     }
+
+    @Override
+    public <T> ColumnValueSetter<T> createSetter(final Class<T> type) {
+        return Setters.generic();
+    }
 }

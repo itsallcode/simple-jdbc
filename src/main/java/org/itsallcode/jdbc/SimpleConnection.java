@@ -11,6 +11,7 @@ import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.itsallcode.jdbc.statement.ConvertingPreparedStatement;
+import org.itsallcode.jdbc.statement.ParamSetterProvider;
 
 /**
  * A simplified version of a JDBC {@link Connection}. Create new connections
@@ -22,11 +23,13 @@ public class SimpleConnection implements AutoCloseable {
     private final Connection connection;
     private final Context context;
     private final DbDialect dialect;
+    private final ParamSetterProvider paramSetterProvider;
 
     SimpleConnection(final Connection connection, final Context context, final DbDialect dialect) {
         this.connection = Objects.requireNonNull(connection, "connection");
         this.context = Objects.requireNonNull(context, "context");
         this.dialect = Objects.requireNonNull(dialect, "dialect");
+        this.paramSetterProvider = new ParamSetterProvider(dialect);
     }
 
     /**
@@ -102,7 +105,7 @@ public class SimpleConnection implements AutoCloseable {
     }
 
     private PreparedStatement wrap(final PreparedStatement preparedStatement) {
-        return new ConvertingPreparedStatement(preparedStatement, context.getParameterMapper());
+        return new ConvertingPreparedStatement(preparedStatement, paramSetterProvider);
     }
 
     /**

@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.itsallcode.jdbc.ParameterMapper;
+import org.itsallcode.jdbc.dialect.ColumnValueSetter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -19,15 +19,16 @@ class ConvertingPreparedStatementTest {
     @Mock
     PreparedStatement delegateMock;
     @Mock
-    ParameterMapper parameterMapperMock;
+    ParamSetterProvider paramSetterProviderMock;
+    @Mock
+    ColumnValueSetter<Object> paramSetterMock;
 
     @SuppressWarnings("resource")
     @Test
     void setObject() throws SQLException {
-        final Object o1 = new Object();
-        final Object o2 = new Object();
-        when(parameterMapperMock.map(same(o1))).thenReturn(o2);
-        new ConvertingPreparedStatement(delegateMock, parameterMapperMock).setObject(1, o1);
-        verify(delegateMock).setObject(eq(1), same(o2));
+        final Object o = new Object();
+        when(paramSetterProviderMock.findSetter(same(o))).thenReturn(paramSetterMock);
+        new ConvertingPreparedStatement(delegateMock, paramSetterProviderMock).setObject(1, o);
+        verify(paramSetterMock).setObject(same(delegateMock), eq(1), same(o));
     }
 }

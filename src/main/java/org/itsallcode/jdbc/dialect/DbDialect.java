@@ -22,4 +22,6 @@ public interface DbDialect {
      * @return extractor
      */
     ColumnValueExtractor createExtractor(final ColumnMetaData column);
+
+    <T> ColumnValueSetter<T> createSetter(Class<T> type);
 }
