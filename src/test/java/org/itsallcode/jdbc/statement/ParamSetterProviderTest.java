@@ -31,7 +31,7 @@ class ParamSetterProviderTest {
     }
 
     @Test
-    void findSetter() throws SQLException {
+    void findSetter() {
         final Object o = new Object();
         when(dialectMock.createSetter(Object.class)).thenReturn(setterMock);
         final ColumnValueSetter<Object> setter = testee().findSetter(o);
@@ -39,7 +39,7 @@ class ParamSetterProviderTest {
     }
 
     @Test
-    void cachesSetterSetter() throws SQLException {
+    void cachesSetterSetter() {
         final Object o = new Object();
         when(dialectMock.createSetter(Object.class)).thenReturn(setterMock);
         final ParamSetterProvider testee = testee();

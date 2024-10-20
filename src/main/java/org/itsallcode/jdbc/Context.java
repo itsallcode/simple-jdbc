@@ -30,7 +30,7 @@ public final class Context {
          * 
          * @return a new context
          */
-        @SuppressWarnings("java:S2325") // Not-static by intention
+        @SuppressWarnings({ "java:S2325", "java:S2440" }) // Not-static by intention
         public Context build() {
             return new Context();
         }

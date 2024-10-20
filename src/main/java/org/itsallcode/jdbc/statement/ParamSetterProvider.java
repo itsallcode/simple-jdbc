@@ -14,7 +14,7 @@ import org.itsallcode.jdbc.dialect.DbDialect;
 public class ParamSetterProvider {
     private static final ColumnValueSetter<Object> GENERIC_SETTER = PreparedStatement::setObject;
     private final DbDialect dialect;
-    private final Map<Class<?>, ColumnValueSetter<Object>> setters = new HashMap<>();
+    private final Map<String, ColumnValueSetter<Object>> setters = new HashMap<>();
 
     /**
      * Create a new instance.
@@ -30,7 +30,7 @@ public class ParamSetterProvider {
         if (object == null) {
             return GENERIC_SETTER;
         }
-        return setters.computeIfAbsent(object.getClass(),
-                type -> (ColumnValueSetter<Object>) dialect.createSetter(type));
+        return setters.computeIfAbsent(object.getClass().getName(),
+                type -> (ColumnValueSetter<Object>) dialect.createSetter(object.getClass()));
     }
 }
