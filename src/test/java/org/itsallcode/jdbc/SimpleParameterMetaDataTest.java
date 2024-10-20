@@ -64,6 +64,14 @@ class SimpleParameterMetaDataTest {
     }
 
     @Test
+    void getParameterFails() throws SQLException {
+        when(parameterMetadataMock.getParameterCount()).thenThrow(new SQLException("mock"));
+        assertThatThrownBy(() -> SimpleParameterMetaData.create(parameterMetadataMock))
+                .isInstanceOf(UncheckedSQLException.class)
+                .hasMessage("Error getting parameter metadata: mock");
+    }
+
+    @Test
     void invalidNullable() throws SQLException {
         when(parameterMetadataMock.getParameterCount()).thenReturn(1);
         when(parameterMetadataMock.isNullable(1)).thenReturn(-99);
