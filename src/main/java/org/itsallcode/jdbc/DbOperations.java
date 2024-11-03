@@ -8,6 +8,9 @@ import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 
+/**
+ * Interface for various DB operations.
+ */
 public interface DbOperations extends AutoCloseable {
     /**
      * Execute all commands in a SQL script, separated with {@code ;}.

@@ -4,6 +4,10 @@ import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 
+/**
+ * A running database transaction. The transaction will be rolled back
+ * automatically in {@link #close()}.
+ */
 public final class Transaction implements DbOperations {
 
     private final SimpleConnection connection;
@@ -12,15 +16,21 @@ public final class Transaction implements DbOperations {
         this.connection = connection;
     }
 
-    public static Transaction start(final SimpleConnection connection) {
+    static Transaction start(final SimpleConnection connection) {
         connection.setAutoCommit(false);
         return new Transaction(connection);
     }
 
+    /**
+     * Commit the transaction.
+     */
     public void commit() {
         connection.commit();
     }
 
+    /**
+     * Rollback the transaction.
+     */
     public void rollback() {
         connection.rollback();
     }
@@ -31,10 +41,12 @@ public final class Transaction implements DbOperations {
         connection.setAutoCommit(true);
     }
 
+    @Override
     public void executeStatement(final String sql) {
         connection.executeStatement(sql);
     }
 
+    @Override
     public SimpleResultSet<Row> query(final String sql) {
         return connection.query(sql);
     }

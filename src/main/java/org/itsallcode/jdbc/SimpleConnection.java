@@ -29,6 +29,11 @@ public class SimpleConnection implements DbOperations {
         this.paramSetterProvider = new ParamSetterProvider(dialect);
     }
 
+    /**
+     * Start a new transaction.
+     * 
+     * @return a new, running transaction.
+     */
     public Transaction startTransaction() {
         return Transaction.start(this);
     }
