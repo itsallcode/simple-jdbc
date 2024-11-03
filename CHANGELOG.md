@@ -6,11 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.9.0] - unreleased
 
-## [0.8.0] - 2024-10-20
+## [0.8.0] - 2024-11-03
 
 - [PR #27](https://github.com/itsallcode/simple-jdbc/pull/27): Update dependencies
 - [PR #28](https://github.com/itsallcode/simple-jdbc/pull/28): Refactored batch inserts (**Breaking change**)
 - [PR #29](https://github.com/itsallcode/simple-jdbc/pull/29): Setting values for a `PreparedStatement` (**Breaking change**)
+- [PR #30](https://github.com/itsallcode/simple-jdbc/pull/30): Add transaction support
 
 ## [0.7.1] - 2024-09-01
 

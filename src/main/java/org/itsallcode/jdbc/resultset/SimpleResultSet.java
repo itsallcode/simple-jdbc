@@ -54,7 +54,9 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
      * @return a list with all rows.
      */
     public List<T> toList() {
-        return stream().toList();
+        try (Stream<T> stream = stream()) {
+            return stream.toList();
+        }
     }
 
     /**
@@ -106,7 +108,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
             this.hasNext = hasNext;
         }
 
-        public static <T> Iterator<T> create(final Context context, final SimpleResultSet<T> simpleResultSet,
+        private static <T> Iterator<T> create(final Context context, final SimpleResultSet<T> simpleResultSet,
                 final ContextRowMapper<T> rowMapper) {
             final boolean firstRowExists = simpleResultSet.next();
             return new ResultSetIterator<>(context, simpleResultSet, rowMapper, firstRowExists);

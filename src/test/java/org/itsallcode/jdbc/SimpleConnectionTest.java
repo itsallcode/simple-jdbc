@@ -40,6 +40,46 @@ class SimpleConnectionTest {
                 .hasMessage("Error closing connection: expected");
     }
 
+    @Test
+    void setAutoCommit() throws SQLException {
+        testee().setAutoCommit(false);
+        verify(connectionMock).setAutoCommit(false);
+    }
+
+    @Test
+    void setAutoCommitFails() throws SQLException {
+        doThrow(new SQLException("expected")).when(connectionMock).setAutoCommit(false);
+        final SimpleConnection testee = testee();
+        assertThatThrownBy(() -> testee.setAutoCommit(false)).isInstanceOf(UncheckedSQLException.class)
+                .hasMessage("Failed to set autoCommit to false: expected");
+    }
+
+    @Test
+    void commit() throws SQLException {
+        testee().commit();
+        verify(connectionMock).commit();
+    }
+
+    @Test
+    void commitFails() throws SQLException {
+        doThrow(new SQLException("expected")).when(connectionMock).commit();
+        assertThatThrownBy(testee()::commit).isInstanceOf(UncheckedSQLException.class)
+                .hasMessage("Failed to commit transaction: expected");
+    }
+
+    @Test
+    void rollback() throws SQLException {
+        testee().rollback();
+        verify(connectionMock).rollback();
+    }
+
+    @Test
+    void rollbackFails() throws SQLException {
+        doThrow(new SQLException("expected")).when(connectionMock).rollback();
+        assertThatThrownBy(testee()::rollback).isInstanceOf(UncheckedSQLException.class)
+                .hasMessage("Failed to rollback transaction: expected");
+    }
+
     SimpleConnection testee() {
         return new SimpleConnection(connectionMock, Context.builder().build(), new H2Dialect());
     }

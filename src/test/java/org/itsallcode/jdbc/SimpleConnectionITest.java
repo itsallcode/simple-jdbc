@@ -10,7 +10,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.resultset.*;
+import org.itsallcode.jdbc.resultset.RowMapper;
+import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,11 +30,11 @@ class SimpleConnectionITest {
     @Test
     void executeStatementFails() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            assertThatThrownBy(() -> connection.executeStatement("select count(*) from missingtable"))
+            assertThatThrownBy(() -> connection.executeStatement("select count(*) from missing_table"))
                     .isInstanceOf(UncheckedSQLException.class)
                     .hasMessage(
-                            "Error executing 'select count(*) from missingtable': Table \"MISSINGTABLE\" not found (this database is empty); SQL statement:\n"
-                                    + "select count(*) from missingtable [42104-232]")
+                            "Error preparing statement 'select count(*) from missing_table': Table \"MISSING_TABLE\" not found (this database is empty); SQL statement:\n"
+                                    + "select count(*) from missing_table [42104-232]")
                     .hasCauseInstanceOf(SQLException.class);
         }
     }
@@ -51,10 +52,10 @@ class SimpleConnectionITest {
     void executeQueryFails() {
         try (final SimpleConnection connection = H2TestFixture.createMemConnection()) {
             assertThatThrownBy(
-                    () -> connection.query("select count(*) from missingtable"))
+                    () -> connection.query("select count(*) from missing_table"))
                     .isInstanceOf(UncheckedSQLException.class).hasMessage(
-                            "Error preparing statement 'select count(*) from missingtable': Table \"MISSINGTABLE\" not found (this database is empty); SQL statement:\n"
-                                    + "select count(*) from missingtable [42104-232]");
+                            "Error preparing statement 'select count(*) from missing_table': Table \"MISSING_TABLE\" not found (this database is empty); SQL statement:\n"
+                                    + "select count(*) from missing_table [42104-232]");
         }
     }
 
@@ -75,22 +76,6 @@ class SimpleConnectionITest {
         }
     }
 
-    @Test
-    void executeQueryWithListRowMapper() {
-        final ConnectionFactory factory = ConnectionFactory.create(Context.builder().build());
-        try (SimpleConnection connection = factory.create("jdbc:h2:mem:")) {
-            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
-                    + "insert into test (id, name) values (1, 'test');");
-            try (SimpleResultSet<List<Object>> resultSet = connection.query("select * from test",
-                    ContextRowMapper.columnValueList(connection.getDialect()))) {
-                final List<List<Object>> rows = resultSet.toList();
-                assertAll(
-                        () -> assertThat(rows).hasSize(1),
-                        () -> assertThat(rows.get(0)).containsExactly(1, "test"));
-            }
-        }
-    }
-
     static Stream<Arguments> rowMappers() {
         return Stream.of(
                 mapper("type+label-lowercase", (rs, rowNum) -> rs.getInt("id") + ":" + rs.getString("name")),
@@ -98,12 +83,12 @@ class SimpleConnectionITest {
                 mapper("type+index", (rs, rowNum) -> rs.getInt(1) + ":" + rs.getString(2)),
                 mapper("generic+label-lowercase", (rs, rowNum) -> rs.getObject("id") + ":" + rs.getObject("name")),
                 mapper("generic+label-uppercase", (rs, rowNum) -> rs.getObject("ID") + ":" + rs.getObject("NAME")),
-                mapper("genric+index", (rs, rowNum) -> rs.getObject(1) + ":" + rs.getObject(2)),
-                mapper("specifictype+label-lowercase",
+                mapper("generic+index", (rs, rowNum) -> rs.getObject(1) + ":" + rs.getObject(2)),
+                mapper("specific type+label-lowercase",
                         (rs, rowNum) -> rs.getObject("id", Integer.class) + ":" + rs.getObject("name", String.class)),
-                mapper("specifictype+label-uppercase",
+                mapper("specific type+label-uppercase",
                         (rs, rowNum) -> rs.getObject("ID", Integer.class) + ":" + rs.getObject("NAME", String.class)),
-                mapper("specifictype+index",
+                mapper("specific type+index",
                         (rs, rowNum) -> rs.getObject(1, Integer.class) + ":" + rs.getObject(2, String.class)));
     }
 

@@ -20,16 +20,24 @@ class SimplePreparedStatement implements AutoCloseable {
     }
 
     <T> SimpleResultSet<T> executeQuery(final ContextRowMapper<T> rowMapper) {
-        final ResultSet resultSet = doExecute();
+        final ResultSet resultSet = doExecuteQuery();
         final ResultSet convertingResultSet = ConvertingResultSet.create(dialect, resultSet);
         return new SimpleResultSet<>(context, convertingResultSet, rowMapper);
     }
 
-    private ResultSet doExecute() {
+    private ResultSet doExecuteQuery() {
         try {
             return statement.executeQuery();
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error executing query '" + sql + "'", e);
+        }
+    }
+
+    boolean execute() {
+        try {
+            return statement.execute();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Error executing statement '" + sql + "'", e);
         }
     }
 
