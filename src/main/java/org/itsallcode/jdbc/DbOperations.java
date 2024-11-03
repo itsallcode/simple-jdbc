@@ -1,6 +1,6 @@
 package org.itsallcode.jdbc;
 
-import static org.assertj.core.api.Assertions.not;
+import static java.util.function.Predicate.not;
 
 import java.util.Arrays;
 
@@ -69,4 +69,7 @@ public interface DbOperations extends AutoCloseable {
      * @return batch insert builder
      */
     <T> BatchInsertBuilder<T> batchInsert(final Class<T> rowType);
+
+    @Override
+    void close();
 }
