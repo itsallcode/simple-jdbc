@@ -47,6 +47,11 @@ public final class Transaction implements DbOperations {
     }
 
     @Override
+    public void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
+        connection.executeStatement(sql, preparedStatementSetter);
+    }
+
+    @Override
     public SimpleResultSet<Row> query(final String sql) {
         return connection.query(sql);
     }

@@ -27,6 +27,14 @@ public interface DbOperations extends AutoCloseable {
     /**
      * Execute a single SQL statement.
      * 
+     * @param sql                     the statement
+     * @param preparedStatementSetter prepared statement setter
+     */
+    void executeStatement(final String sql, PreparedStatementSetter preparedStatementSetter);
+
+    /**
+     * Execute a single SQL statement.
+     * 
      * @param sql the statement
      */
     void executeStatement(final String sql);

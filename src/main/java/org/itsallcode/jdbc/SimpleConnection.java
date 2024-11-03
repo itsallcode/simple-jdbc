@@ -40,10 +40,15 @@ public class SimpleConnection implements DbOperations {
 
     @Override
     public void executeStatement(final String sql) {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(sql);
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error executing '" + sql + "'", e);
+        this.executeStatement(sql, stmt -> {
+        });
+    }
+
+    @Override
+    public void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
+        try (SimplePreparedStatement statement = prepareStatement(sql)) {
+            statement.setValues(preparedStatementSetter);
+            statement.execute();
         }
     }
 

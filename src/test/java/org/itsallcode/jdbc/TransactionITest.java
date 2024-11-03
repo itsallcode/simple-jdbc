@@ -51,4 +51,20 @@ class TransactionITest {
             assertEquals(0L, resultSet.get(0).get(0).getValue(Long.class));
         }
     }
+
+    @Test
+    void executeStatementWithParamSetter() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            try (Transaction tx = connection.startTransaction()) {
+                tx.executeStatement("insert into test (id, name) values (?, ?)", stmt -> {
+                    stmt.setInt(1, 1);
+                    stmt.setString(2, "a");
+                });
+                final List<Row> resultSet = tx.query("select count(*) as result from test where id=1 and name='a'")
+                        .toList();
+                assertEquals(1L, resultSet.get(0).get(0).getValue(Long.class));
+            }
+        }
+    }
 }

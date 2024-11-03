@@ -70,6 +70,18 @@ class SimpleResultSetTest {
         verify(resultSetMock).close();
     }
 
+    @Test
+    void streamClosesResultSet() throws SQLException {
+        testee().stream().close();
+        verify(resultSetMock).close();
+    }
+
+    @Test
+    void toListClosesResultSet() throws SQLException {
+        testee().toList();
+        verify(resultSetMock).close();
+    }
+
     private void simulateRowMapper() throws SQLException {
         when(rowMapper.mapRow(eq(null), same(resultSetMock), anyInt()))
                 .thenAnswer(invocation -> new TestingRowType(invocation.getArgument(2, Integer.class)));
