@@ -30,7 +30,7 @@ public class SimpleConnection implements DbOperations {
     }
 
     /**
-     * Start a new transaction.
+     * Start a new transaction by disabling auto commit.
      * 
      * @return a new, running transaction.
      */

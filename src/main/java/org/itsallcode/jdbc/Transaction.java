@@ -36,12 +36,6 @@ public final class Transaction implements DbOperations {
     }
 
     @Override
-    public void close() {
-        this.rollback();
-        connection.setAutoCommit(true);
-    }
-
-    @Override
     public void executeStatement(final String sql) {
         connection.executeStatement(sql);
     }
@@ -75,5 +69,16 @@ public final class Transaction implements DbOperations {
     @Override
     public <T> BatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
         return connection.batchInsert(rowType);
+    }
+
+    /**
+     * Rollback transaction and enable auto commit.
+     * <p>
+     * Explicitly run {@link #commit()} before to commit your transaction.
+     */
+    @Override
+    public void close() {
+        this.rollback();
+        connection.setAutoCommit(true);
     }
 }

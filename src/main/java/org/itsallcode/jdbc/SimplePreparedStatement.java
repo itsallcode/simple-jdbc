@@ -33,9 +33,9 @@ class SimplePreparedStatement implements AutoCloseable {
         }
     }
 
-    void execute() {
+    boolean execute() {
         try {
-            statement.execute();
+            return statement.execute();
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error executing statement '" + sql + "'", e);
         }
