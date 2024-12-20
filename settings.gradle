@@ -13,10 +13,10 @@ dependencyResolutionManagement {
             version('mockito', '5.14.2')
             version('junitJupiter', '5.11.2')
 
-            library('assertj', 'org.assertj:assertj-core:3.26.3')
+            library('assertj', 'org.assertj:assertj-core:3.27.0')
             library('h2', 'com.h2database:h2:2.3.232')
             library('junitPioneer', 'org.junit-pioneer:junit-pioneer:2.2.0')
-            library('equalsverifier', 'nl.jqno.equalsverifier:equalsverifier:3.17.1')
+            library('equalsverifier', 'nl.jqno.equalsverifier:equalsverifier:3.17.5')
             library('tostringverifier', 'com.jparams:to-string-verifier:1.4.8')
             library('hamcrest', 'org.hamcrest:hamcrest:3.0')
             library('hamcrestResultSetMatcher', 'com.exasol:hamcrest-resultset-matcher:1.6.3')
@@ -24,8 +24,8 @@ dependencyResolutionManagement {
             library('mockitoJunit', 'org.mockito', 'mockito-junit-jupiter').versionRef('mockito')
             library('slf4jApi', 'org.slf4j:slf4j-api:2.0.16')
             library('slf4jLogger', 'org.slf4j:slf4j-jdk14:2.0.16')
-            library('exasolJdbc', 'com.exasol:exasol-jdbc:24.1.2')
-            library('exasolTestcontainers', 'com.exasol:exasol-testcontainers:7.1.1')
+            library('exasolJdbc', 'com.exasol:exasol-jdbc:24.2.1')
+            library('exasolTestcontainers', 'com.exasol:exasol-testcontainers:7.1.2')
         }
     }
 }
