@@ -97,7 +97,6 @@ class SimplePreparedStatementTest {
     }
 
     @Test
-    @SuppressWarnings("resource")
     void executeBatchFails() throws SQLException {
         doThrow(new SQLException("expected")).when(statementMock).executeBatch();
         assertThatThrownBy(testee()::executeBatch).isInstanceOf(UncheckedSQLException.class)
@@ -111,7 +110,6 @@ class SimplePreparedStatementTest {
     }
 
     @Test
-    @SuppressWarnings("resource")
     void addBatchFails() throws SQLException {
         doThrow(new SQLException("expected")).when(statementMock).addBatch();
         assertThatThrownBy(testee()::addBatch).isInstanceOf(UncheckedSQLException.class)
@@ -125,7 +123,6 @@ class SimplePreparedStatementTest {
     }
 
     @Test
-    @SuppressWarnings("resource")
     void getParameterMetadataFails() throws SQLException {
         doThrow(new SQLException("expected")).when(statementMock).getParameterMetaData();
         assertThatThrownBy(testee()::getParameterMetadata).isInstanceOf(UncheckedSQLException.class)
