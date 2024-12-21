@@ -57,7 +57,7 @@ class SimplePreparedStatementTest {
     void executeStatementFails() throws SQLException {
         when(statementMock.execute()).thenThrow(new SQLException("expected"));
         final SimplePreparedStatement testee = testee();
-        assertThatThrownBy(() -> testee.execute()).isInstanceOf(UncheckedSQLException.class)
+        assertThatThrownBy(testee::execute).isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error executing statement 'query': expected");
     }
 
