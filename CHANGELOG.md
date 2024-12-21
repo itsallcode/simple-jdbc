@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.9.0] - unreleased
 
 - [PR #33](https://github.com/itsallcode/simple-jdbc/pull/33): Update dependencies
+- [#32](https://github.com/itsallcode/simple-jdbc/issues/32): Add support for data sources
+- [#31](https://github.com/itsallcode/simple-jdbc/issues/31): Avoid unnecessary `setAutoCommit()` calls in `Transaction`
 
 ## [0.8.0] - 2024-11-03
 
