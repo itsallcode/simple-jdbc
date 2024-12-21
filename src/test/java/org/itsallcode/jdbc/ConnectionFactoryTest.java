@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class ConnectionFactoryITest {
+class ConnectionFactoryTest {
     private ConnectionFactory connectionFactory;
 
     @BeforeEach
@@ -16,7 +16,7 @@ class ConnectionFactoryITest {
 
     @Test
     void createConnection() {
-        try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:")) {
+        try (SimpleConnection connection = connectionFactory.create(H2TestFixture.H2_MEM_JDBC_URL)) {
             assertThat(connection).isNotNull();
         }
     }

@@ -26,7 +26,8 @@ class ExampleTest {
     void example() {
         final ConnectionFactory connectionFactory = ConnectionFactory
                 .create(Context.builder().build());
-        try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
+        try (SimpleConnection connection = connectionFactory.create(H2TestFixture.H2_MEM_JDBC_URL, "user",
+                "password")) {
             connection.executeScript(readResource("/schema.sql"));
             connection.batchInsert(Name.class)
                     .into("NAMES", List.of("ID", "NAME"))

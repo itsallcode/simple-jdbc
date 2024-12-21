@@ -100,7 +100,7 @@ class SimpleConnectionITest {
     @MethodSource("rowMappers")
     void executeQueryWithCustomRowMapper(final String testName, final RowMapper<String> mapper) {
         final ConnectionFactory factory = ConnectionFactory.create(Context.builder().build());
-        try (SimpleConnection connection = factory.create("jdbc:h2:mem:")) {
+        try (SimpleConnection connection = factory.create(H2TestFixture.H2_MEM_JDBC_URL)) {
             try (SimpleResultSet<String> resultSet = connection.query(
                     "select t.* from (values (1, 'a'), (2, 'b'), (3, 'c')) as t(id, name)", mapper)) {
                 final List<String> rows = resultSet.toList();

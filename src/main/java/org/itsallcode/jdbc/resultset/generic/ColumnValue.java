@@ -20,6 +20,15 @@ public record ColumnValue(ColumnType type, Object value) {
     }
 
     /**
+     * Get the column value as an object.
+     * 
+     * @return column value
+     */
+    public Object getValue() {
+        return value;
+    }
+
+    /**
      * Get the column value as a string.
      * 
      * @return column value as string
