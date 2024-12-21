@@ -11,18 +11,6 @@ import org.junit.jupiter.api.Test;
 
 class DataSourceConnectionFactoryTest {
 
-    DataSourceConnectionFactory dataSourceWithDialectUrl() {
-        final JdbcDataSource dataSource = new JdbcDataSource();
-        dataSource.setURL(H2TestFixture.H2_MEM_JDBC_URL);
-        return DataSourceConnectionFactory.create(dataSource.getURL(), dataSource);
-    }
-
-    DataSourceConnectionFactory dataSourceWithExplicitDialect() {
-        final JdbcDataSource dataSource = new JdbcDataSource();
-        dataSource.setURL(H2TestFixture.H2_MEM_JDBC_URL);
-        return DataSourceConnectionFactory.create(new H2Dialect(), dataSource);
-    }
-
     @Test
     void createConnection() {
         try (SimpleConnection connection = dataSourceWithDialectUrl().getConnection()) {
@@ -50,5 +38,17 @@ class DataSourceConnectionFactoryTest {
                     .first().extracting(row -> row.get(0).getValue())
                     .isEqualTo(1);
         }
+    }
+
+    private DataSourceConnectionFactory dataSourceWithDialectUrl() {
+        final JdbcDataSource dataSource = new JdbcDataSource();
+        dataSource.setURL(H2TestFixture.H2_MEM_JDBC_URL);
+        return DataSourceConnectionFactory.create(dataSource.getURL(), dataSource);
+    }
+
+    private DataSourceConnectionFactory dataSourceWithExplicitDialect() {
+        final JdbcDataSource dataSource = new JdbcDataSource();
+        dataSource.setURL(H2TestFixture.H2_MEM_JDBC_URL);
+        return DataSourceConnectionFactory.create(new H2Dialect(), dataSource);
     }
 }

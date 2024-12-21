@@ -25,6 +25,9 @@ public final class DataSourceConnectionFactory {
     /**
      * Create a new {@link DataSourceConnectionFactory} using the given JDBC URL and
      * data source.
+     * <p>
+     * Note: The data source will not be closed automatically. It is the caller's
+     * responsibility to close the data source.
      * 
      * @param jdbcUrl    JDBC URL used to determine the database dialect
      * @param dataSource data source
@@ -38,6 +41,9 @@ public final class DataSourceConnectionFactory {
     /**
      * Create a new {@link DataSourceConnectionFactory} using the given dialect and
      * data source.
+     * <p>
+     * Note: The data source will not be closed automatically. It is the caller's
+     * responsibility to close the data source.
      * 
      * @param dialect    database dialect
      * @param dataSource data source
