@@ -1,10 +1,12 @@
 package org.itsallcode.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 
 import org.h2.jdbcx.JdbcDataSource;
+import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.dialect.H2Dialect;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
@@ -38,6 +40,15 @@ class DataSourceConnectionFactoryTest {
                     .first().extracting(row -> row.get(0).getValue())
                     .isEqualTo(1);
         }
+    }
+
+    @Test
+    void creatingConnectionFails() {
+        final DataSourceConnectionFactory factory = DataSourceConnectionFactory.create((DbDialect) null,
+                new JdbcDataSource());
+        assertThatThrownBy(factory::getConnection)
+                .isInstanceOf(UncheckedSQLException.class)
+                .hasMessageStartingWith("Error getting connection from data source: URL format error;");
     }
 
     private DataSourceConnectionFactory dataSourceWithDialectUrl() {
