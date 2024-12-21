@@ -43,8 +43,7 @@ import org.itsallcode.jdbc.resultset.generic.Row;
 
 // Execute query and fetch result
 final ConnectionFactory connectionFactory = ConnectionFactory.create(Context.builder().build());
-try (SimpleConnection connection = connectionFactory.create(H2TestFixture.H2_MEM_JDBC_URL, "user",
-        "password")) {
+try (SimpleConnection connection = connectionFactory.create(H2TestFixture.H2_MEM_JDBC_URL, "user", "password")) {
     connection.executeScript(readResource("/schema.sql"));
     connection.batchInsert(Name.class)
             .into("NAMES", List.of("ID", "NAME"))
