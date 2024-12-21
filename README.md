@@ -30,26 +30,29 @@ dependencies {
 ```java
 // Define a model record or class
 record Name(int id, String name) {
-    Object[] toRow() {
-        return new Object[] { id, name };
+    static void setPreparedStatement(final Name row, final PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, row.id);
+        stmt.setString(2, row.name);
     }
 }
 
 import org.itsallcode.jdbc.ConnectionFactory;
 import org.itsallcode.jdbc.SimpleConnection;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.Row;
 
 // Execute query and fetch result
-ConnectionFactory connectionFactory = ConnectionFactory.create();
-try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
+final ConnectionFactory connectionFactory = ConnectionFactory.create(Context.builder().build());
+try (SimpleConnection connection = connectionFactory.create(H2TestFixture.H2_MEM_JDBC_URL, "user",
+        "password")) {
     connection.executeScript(readResource("/schema.sql"));
     connection.batchInsert(Name.class)
-        .into("NAMES", List.of("ID", "NAME"))
-        .rows(Stream.of(new Name(1, "a"), new Name(2, "b"), new Name(3, "c")))
-        .mapping(Name::setPreparedStatement)
-        .start();
+            .into("NAMES", List.of("ID", "NAME"))
+            .rows(Stream.of(new Name(1, "a"), new Name(2, "b"), new Name(3, "c")))
+            .mapping(Name::setPreparedStatement)
+            .start();
     try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
-        List<Row> result = rs.stream().toList();
+        final List<Row> result = rs.stream().toList();
         assertEquals(3, result.size());
         assertEquals(1, result.get(0).get(0).value());
     }
