@@ -48,17 +48,25 @@ class SimpleConnectionTest {
     }
 
     @Test
+    void setAutoCommitFails() throws SQLException {
+        doThrow(new SQLException("expected")).when(connectionMock).setAutoCommit(false);
+        final SimpleConnection testee = testee();
+        assertThatThrownBy(() -> testee.setAutoCommit(false)).isInstanceOf(UncheckedSQLException.class)
+                .hasMessage("Failed to set autoCommit to false: expected");
+    }
+
+    @Test
     void getAutoCommit() throws SQLException {
         when(connectionMock.getAutoCommit()).thenReturn(true);
         assertThat(testee().getAutoCommit()).isTrue();
     }
 
     @Test
-    void setAutoCommitFails() throws SQLException {
-        doThrow(new SQLException("expected")).when(connectionMock).setAutoCommit(false);
+    void getAutoCommitFails() throws SQLException {
+        doThrow(new SQLException("expected")).when(connectionMock).getAutoCommit();
         final SimpleConnection testee = testee();
-        assertThatThrownBy(() -> testee.setAutoCommit(false)).isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Failed to set autoCommit to false: expected");
+        assertThatThrownBy(() -> testee.getAutoCommit()).isInstanceOf(UncheckedSQLException.class)
+                .hasMessage("Failed to get autoCommit: expected");
     }
 
     @Test
