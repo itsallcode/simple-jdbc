@@ -8,7 +8,7 @@ import javax.sql.DataSource;
 import org.itsallcode.jdbc.dialect.DbDialect;
 
 /**
- * This class connects to a database using a {@DataSource} and returns new
+ * This class connects to a database using a {@link DataSource} and returns new
  * {@link SimpleConnection}s.
  */
 public final class DataSourceConnectionFactory {
@@ -53,6 +53,11 @@ public final class DataSourceConnectionFactory {
         return new DataSourceConnectionFactory(Context.builder().build(), dialect, dataSource);
     }
 
+    /**
+     * Get a new {@link SimpleConnection} from the {@link DataSource}.
+     * 
+     * @return new connection
+     */
     public SimpleConnection getConnection() {
         return new SimpleConnection(createConnection(), context, dialect);
     }
