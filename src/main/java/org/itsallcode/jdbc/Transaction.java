@@ -6,22 +6,33 @@ import org.itsallcode.jdbc.resultset.generic.Row;
 
 /**
  * A running database transaction. The transaction will be rolled back
- * automatically in {@link #close()}.
+ * automatically in {@link #close()} if not explicitly committed or rolled back
+ * before.
+ * <p>
+ * Operations are not allowed on a closed, committed or rolled back transaction.
+ * <p>
+ * Closing an already closed transaction is a no-op.
  */
 public final class Transaction implements DbOperations {
 
     private final SimpleConnection connection;
+    private final boolean restoreAutoCommitRequired;
     private boolean closed;
     private boolean committed;
     private boolean rolledBack;
 
-    Transaction(final SimpleConnection connection) {
+    private Transaction(final SimpleConnection connection, final boolean restoreAutoCommitRequired) {
         this.connection = connection;
+        this.restoreAutoCommitRequired = restoreAutoCommitRequired;
     }
 
     static Transaction start(final SimpleConnection connection) {
-        connection.setAutoCommit(false);
-        return new Transaction(connection);
+        boolean restoreAutoCommitRequired = false;
+        if (connection.getAutoCommit()) {
+            connection.setAutoCommit(false);
+            restoreAutoCommitRequired = true;
+        }
+        return new Transaction(connection, restoreAutoCommitRequired);
     }
 
     /**
@@ -102,7 +113,8 @@ public final class Transaction implements DbOperations {
     }
 
     /**
-     * Rollback transaction and enable auto commit.
+     * Rollback transaction if not already committed or rolled back and restore
+     * original auto commit setting if necessary.
      * <p>
      * Explicitly run {@link #commit()} before to commit your transaction.
      * <p>
@@ -116,7 +128,9 @@ public final class Transaction implements DbOperations {
         if (!rolledBack && !committed) {
             this.rollback();
         }
-        connection.setAutoCommit(true);
+        if (restoreAutoCommitRequired) {
+            connection.setAutoCommit(true);
+        }
         this.closed = true;
     }
 }

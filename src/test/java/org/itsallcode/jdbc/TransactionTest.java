@@ -2,6 +2,7 @@ package org.itsallcode.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
 import java.util.function.Consumer;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -19,6 +21,37 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class TransactionTest {
     @Mock
     SimpleConnection connectionMock;
+
+    @Test
+    void startDisablesAutoCommitWhenEnabledBefore() {
+        when(connectionMock.getAutoCommit()).thenReturn(true);
+        Transaction.start(connectionMock);
+        verify(connectionMock).setAutoCommit(false);
+    }
+
+    @Test
+    void startDoesNotDisableAutoCommitWhenAlreadyDisabled() {
+        when(connectionMock.getAutoCommit()).thenReturn(false);
+        Transaction.start(connectionMock);
+        verify(connectionMock, never()).setAutoCommit(anyBoolean());
+    }
+
+    @Test
+    void closeDoesNotRestoreAutoCommitWhenAlreadyDisabled() {
+        when(connectionMock.getAutoCommit()).thenReturn(false);
+        Transaction.start(connectionMock).close();
+        verify(connectionMock, never()).setAutoCommit(anyBoolean());
+    }
+
+    @Test
+    void closeRestoresAutoCommit() {
+        when(connectionMock.getAutoCommit()).thenReturn(true);
+        final InOrder inOrder = inOrder(connectionMock);
+        Transaction.start(connectionMock).close();
+        inOrder.verify(connectionMock).setAutoCommit(false);
+        inOrder.verify(connectionMock).setAutoCommit(true);
+        inOrder.verifyNoMoreInteractions();
+    }
 
     static Stream<Arguments> operations() {
         return Stream.of(
@@ -125,6 +158,6 @@ class TransactionTest {
     }
 
     private Transaction testee() {
-        return new Transaction(connectionMock);
+        return Transaction.start(connectionMock);
     }
 }

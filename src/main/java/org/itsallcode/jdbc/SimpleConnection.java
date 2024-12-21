@@ -101,6 +101,14 @@ public class SimpleConnection implements DbOperations {
         }
     }
 
+    boolean getAutoCommit() {
+        try {
+            return this.connection.getAutoCommit();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Failed to get autoCommit", e);
+        }
+    }
+
     void rollback() {
         try {
             this.connection.rollback();

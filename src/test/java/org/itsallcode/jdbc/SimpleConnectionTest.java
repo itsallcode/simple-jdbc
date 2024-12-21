@@ -1,5 +1,6 @@
 package org.itsallcode.jdbc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
@@ -44,6 +45,12 @@ class SimpleConnectionTest {
     void setAutoCommit() throws SQLException {
         testee().setAutoCommit(false);
         verify(connectionMock).setAutoCommit(false);
+    }
+
+    @Test
+    void getAutoCommit() throws SQLException {
+        when(connectionMock.getAutoCommit()).thenReturn(true);
+        assertThat(testee().getAutoCommit()).isTrue();
     }
 
     @Test
