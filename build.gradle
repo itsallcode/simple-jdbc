@@ -10,7 +10,7 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.51.0'
 }
 
-group 'org.itsallcode'
+group = 'org.itsallcode'
 version = '0.8.0'
 
 java {
