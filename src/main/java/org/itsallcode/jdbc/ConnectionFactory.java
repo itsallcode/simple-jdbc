@@ -4,7 +4,8 @@ import java.sql.*;
 import java.util.Properties;
 
 /**
- * This class connects to a database and returns new {@link SimpleConnection}s.
+ * This class connects to a database using {@link DriverManager} and returns new
+ * {@link SimpleConnection}s.
  */
 public final class ConnectionFactory {
     private final Context context;

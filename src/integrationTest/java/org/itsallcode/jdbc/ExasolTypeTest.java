@@ -25,7 +25,7 @@ import com.exasol.containers.ExasolService;
 class ExasolTypeTest {
 
     @SuppressWarnings("resource") // Will be closed in @AfterAll
-    private static final ExasolContainer<?> container = new ExasolContainer<>("8.31.0")
+    private static final ExasolContainer<?> container = new ExasolContainer<>("8.32.0")
             .withRequiredServices(ExasolService.JDBC).withReuse(true);
 
     @BeforeAll
