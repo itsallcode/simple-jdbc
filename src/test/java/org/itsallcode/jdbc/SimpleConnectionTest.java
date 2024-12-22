@@ -1,5 +1,6 @@
 package org.itsallcode.jdbc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
@@ -52,6 +53,20 @@ class SimpleConnectionTest {
         final SimpleConnection testee = testee();
         assertThatThrownBy(() -> testee.setAutoCommit(false)).isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Failed to set autoCommit to false: expected");
+    }
+
+    @Test
+    void getAutoCommit() throws SQLException {
+        when(connectionMock.getAutoCommit()).thenReturn(true);
+        assertThat(testee().getAutoCommit()).isTrue();
+    }
+
+    @Test
+    void getAutoCommitFails() throws SQLException {
+        doThrow(new SQLException("expected")).when(connectionMock).getAutoCommit();
+        final SimpleConnection testee = testee();
+        assertThatThrownBy(() -> testee.getAutoCommit()).isInstanceOf(UncheckedSQLException.class)
+                .hasMessage("Failed to get autoCommit: expected");
     }
 
     @Test
