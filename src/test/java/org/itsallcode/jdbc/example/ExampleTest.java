@@ -1,4 +1,4 @@
-package org.itsallcode.jdbc;
+package org.itsallcode.jdbc.example;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.*;
 import org.itsallcode.jdbc.batch.BatchInsert;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -20,6 +21,22 @@ class ExampleTest {
         static void setPreparedStatement(final Name row, final PreparedStatement stmt) throws SQLException {
             stmt.setInt(1, row.id);
             stmt.setString(2, row.name);
+        }
+    }
+
+    @Test
+    void exampleInsertSelect() {
+        final ConnectionFactory connectionFactory = ConnectionFactory
+                .create(Context.builder().build());
+        try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
+            connection.executeScript(readResource("/schema.sql"));
+            connection.executeStatement("insert into names (id, name) values (1, 'a'), (2, 'b'), (3, 'c')");
+
+            try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
+                final List<Row> result = rs.stream().toList();
+                assertEquals(3, result.size());
+                assertEquals(1, result.get(0).get(0).value());
+            }
         }
     }
 
