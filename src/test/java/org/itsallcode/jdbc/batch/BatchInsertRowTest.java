@@ -1,9 +1,11 @@
-package org.itsallcode.jdbc;
+package org.itsallcode.jdbc.batch;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
+import org.itsallcode.jdbc.RowPreparedStatementSetter;
+import org.itsallcode.jdbc.SimplePreparedStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -11,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class BatchInsertTest {
+class BatchInsertRowTest {
 
     @Mock
     SimplePreparedStatement stmtMock;
@@ -20,7 +22,7 @@ class BatchInsertTest {
 
     @Test
     void addDoesNotFlush() {
-        final BatchInsert<Row> testee = testee(2);
+        final BatchInsertRow<Row> testee = testee(2);
         testee.add(new Row());
 
         final InOrder inOrder = inOrder(stmtMock);
@@ -31,7 +33,7 @@ class BatchInsertTest {
 
     @Test
     void addDoesNotFlushesAfterBatchSizeReached() {
-        final BatchInsert<Row> testee = testee(2);
+        final BatchInsertRow<Row> testee = testee(2);
         when(stmtMock.executeBatch()).thenReturn(new int[0]);
 
         testee.add(new Row());
@@ -46,8 +48,8 @@ class BatchInsertTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    BatchInsert<Row> testee(final int maxBatchSize) {
-        return new BatchInsert<>(stmtMock, stmtSetterMock, maxBatchSize);
+    BatchInsertRow<Row> testee(final int maxBatchSize) {
+        return new BatchInsertRow<>(stmtMock, stmtSetterMock, maxBatchSize);
     }
 
     record Row() {

@@ -1,4 +1,4 @@
-package org.itsallcode.jdbc;
+package org.itsallcode.jdbc.batch;
 
 import static java.util.stream.Collectors.joining;
 
@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.*;
 import org.itsallcode.jdbc.identifier.Identifier;
 
 /**
@@ -15,8 +16,8 @@ import org.itsallcode.jdbc.identifier.Identifier;
  * 
  * @param <T> row type
  */
-public class BatchInsertBuilder<T> {
-    private static final Logger LOG = Logger.getLogger(BatchInsertBuilder.class.getName());
+public class BatchInsertRowBuilder<T> {
+    private static final Logger LOG = Logger.getLogger(BatchInsertRowBuilder.class.getName());
     private static final int DEFAULT_MAX_BATCH_SIZE = 200_000;
     private final Function<String, SimplePreparedStatement> statementFactory;
     private String sql;
@@ -24,7 +25,7 @@ public class BatchInsertBuilder<T> {
     private Iterator<T> rows;
     private int maxBatchSize = DEFAULT_MAX_BATCH_SIZE;
 
-    BatchInsertBuilder(final Function<String, SimplePreparedStatement> statementFactory) {
+    public BatchInsertRowBuilder(final Function<String, SimplePreparedStatement> statementFactory) {
         this.statementFactory = statementFactory;
     }
 
@@ -37,7 +38,7 @@ public class BatchInsertBuilder<T> {
      * @return {@code this} for fluent programming
      */
     @SuppressWarnings("java:S3242") // Using List instead of Collection to preserve column order
-    public BatchInsertBuilder<T> into(final Identifier tableName, final List<Identifier> columnNames) {
+    public BatchInsertRowBuilder<T> into(final Identifier tableName, final List<Identifier> columnNames) {
         this.sql = createInsertStatement(tableName, columnNames);
         return this;
     }
@@ -51,7 +52,7 @@ public class BatchInsertBuilder<T> {
      * @return {@code this} for fluent programming
      */
     @SuppressWarnings("java:S3242") // Using List instead of Collection to preserve column order
-    public BatchInsertBuilder<T> into(final String tableName, final List<String> columnNames) {
+    public BatchInsertRowBuilder<T> into(final String tableName, final List<String> columnNames) {
         return into(Identifier.simple(tableName), columnNames.stream().map(Identifier::simple).toList());
     }
 
@@ -61,9 +62,8 @@ public class BatchInsertBuilder<T> {
      * @param rows rows to insert
      * @return {@code this} for fluent programming
      */
-    public BatchInsertBuilder<T> rows(final Stream<T> rows) {
-        final Iterator<T> iterator = rows.iterator();
-        return rows(iterator);
+    public BatchInsertRowBuilder<T> rows(final Stream<T> rows) {
+        return rows(rows.iterator());
     }
 
     /**
@@ -72,7 +72,7 @@ public class BatchInsertBuilder<T> {
      * @param rows rows to insert
      * @return {@code this} for fluent programming
      */
-    public BatchInsertBuilder<T> rows(final Iterator<T> rows) {
+    public BatchInsertRowBuilder<T> rows(final Iterator<T> rows) {
         this.rows = rows;
         return this;
     }
@@ -83,7 +83,7 @@ public class BatchInsertBuilder<T> {
      * @param rowMapper row mapper
      * @return {@code this} for fluent programming
      */
-    public BatchInsertBuilder<T> mapping(final ParamConverter<T> rowMapper) {
+    public BatchInsertRowBuilder<T> mapping(final ParamConverter<T> rowMapper) {
         final RowPreparedStatementSetter<Object[]> setter = new ObjectArrayPreparedStatementSetter();
         return mapping(
                 (final T row, final PreparedStatement preparedStatement) -> setter.setValues(rowMapper.map(row),
@@ -97,7 +97,7 @@ public class BatchInsertBuilder<T> {
      * @param preparedStatementSetter prepared statement setter
      * @return {@code this} for fluent programming
      */
-    public BatchInsertBuilder<T> mapping(final RowPreparedStatementSetter<T> preparedStatementSetter) {
+    public BatchInsertRowBuilder<T> mapping(final RowPreparedStatementSetter<T> preparedStatementSetter) {
         this.mapper = preparedStatementSetter;
         return this;
     }
@@ -108,7 +108,7 @@ public class BatchInsertBuilder<T> {
      * @param maxBatchSize maximum batch size
      * @return {@code this} for fluent programming
      */
-    public BatchInsertBuilder<T> maxBatchSize(final int maxBatchSize) {
+    public BatchInsertRowBuilder<T> maxBatchSize(final int maxBatchSize) {
         this.maxBatchSize = maxBatchSize;
         return this;
     }
@@ -120,7 +120,7 @@ public class BatchInsertBuilder<T> {
     }
 
     /**
-     * Start the batch insert process.
+     * Start the batch insert process using the given rows.
      */
     public void start() {
         Objects.requireNonNull(this.sql, "sql");
@@ -128,7 +128,7 @@ public class BatchInsertBuilder<T> {
         Objects.requireNonNull(this.rows, "rows");
         LOG.finest(() -> "Running insert statement '" + sql + "'...");
         final SimplePreparedStatement statement = statementFactory.apply(sql);
-        try (BatchInsert<T> batch = new BatchInsert<>(statement, this.mapper, this.maxBatchSize)) {
+        try (BatchInsertRow<T> batch = new BatchInsertRow<>(statement, this.mapper, this.maxBatchSize)) {
             while (rows.hasNext()) {
                 batch.add(rows.next());
             }

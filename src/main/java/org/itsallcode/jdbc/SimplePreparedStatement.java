@@ -5,7 +5,7 @@ import java.sql.*;
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.*;
 
-class SimplePreparedStatement implements AutoCloseable {
+public class SimplePreparedStatement implements AutoCloseable {
     private final Context context;
     private final DbDialect dialect;
     private final PreparedStatement statement;
@@ -50,7 +50,7 @@ class SimplePreparedStatement implements AutoCloseable {
         }
     }
 
-    void setValues(final PreparedStatementSetter preparedStatementSetter) {
+    public void setValues(final PreparedStatementSetter preparedStatementSetter) {
         try {
             preparedStatementSetter.setValues(statement);
         } catch (final SQLException e) {
@@ -59,7 +59,7 @@ class SimplePreparedStatement implements AutoCloseable {
 
     }
 
-    int[] executeBatch() {
+    public int[] executeBatch() {
         try {
             return statement.executeBatch();
         } catch (final SQLException e) {
@@ -67,7 +67,7 @@ class SimplePreparedStatement implements AutoCloseable {
         }
     }
 
-    void addBatch() {
+    public void addBatch() {
         try {
             this.statement.addBatch();
         } catch (final SQLException e) {

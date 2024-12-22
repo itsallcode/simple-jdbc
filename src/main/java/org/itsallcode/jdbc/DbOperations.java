@@ -4,6 +4,7 @@ import static java.util.function.Predicate.not;
 
 import java.util.Arrays;
 
+import org.itsallcode.jdbc.batch.BatchInsertRowBuilder;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -79,7 +80,7 @@ public interface DbOperations extends AutoCloseable {
      * @param <T>     row type
      * @return batch insert builder
      */
-    <T> BatchInsertBuilder<T> batchInsert(final Class<T> rowType);
+    <T> BatchInsertRowBuilder<T> batchInsert(final Class<T> rowType);
 
     @Override
     void close();

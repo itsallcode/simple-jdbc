@@ -4,6 +4,7 @@
 
 module org.itsallcode.jdbc {
     exports org.itsallcode.jdbc;
+    exports org.itsallcode.jdbc.batch;
     exports org.itsallcode.jdbc.identifier;
     exports org.itsallcode.jdbc.resultset;
     exports org.itsallcode.jdbc.resultset.generic;

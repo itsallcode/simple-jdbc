@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import org.itsallcode.jdbc.batch.BatchInsertRowBuilder;
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -81,8 +82,8 @@ public class SimpleConnection implements DbOperations {
     }
 
     @Override
-    public <T> BatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
-        return new BatchInsertBuilder<>(this::prepareStatement);
+    public <T> BatchInsertRowBuilder<T> batchInsert(final Class<T> rowType) {
+        return new BatchInsertRowBuilder<>(this::prepareStatement);
     }
 
     private PreparedStatement prepare(final String sql) {
