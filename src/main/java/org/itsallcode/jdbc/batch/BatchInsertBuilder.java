@@ -7,16 +7,27 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
+import org.itsallcode.jdbc.SimpleConnection;
 import org.itsallcode.jdbc.SimplePreparedStatement;
 import org.itsallcode.jdbc.identifier.Identifier;
 
+/**
+ * Builder for {@link BatchInsert}. Create a new builder instance using
+ * {@link SimpleConnection#batchInsert()}.
+ */
 public class BatchInsertBuilder {
     private static final Logger LOG = Logger.getLogger(BatchInsertBuilder.class.getName());
-    private static final int DEFAULT_MAX_BATCH_SIZE = 200_000;
+    /** Default maximum batch size. */
+    public static final int DEFAULT_MAX_BATCH_SIZE = 200_000;
     private final Function<String, SimplePreparedStatement> statementFactory;
     private String sql;
     private int maxBatchSize = DEFAULT_MAX_BATCH_SIZE;
 
+    /**
+     * Create a new instance.
+     * 
+     * @param statementFactory factory for creating {@link SimplePreparedStatement}.
+     */
     public BatchInsertBuilder(final Function<String, SimplePreparedStatement> statementFactory) {
         this.statementFactory = statementFactory;
     }
@@ -66,9 +77,9 @@ public class BatchInsertBuilder {
     }
 
     /**
-     * Built the batch inserter.
+     * Build the batch inserter.
      * 
-     * @return
+     * @return the batch inserter
      */
     public BatchInsert build() {
         Objects.requireNonNull(this.sql, "sql");

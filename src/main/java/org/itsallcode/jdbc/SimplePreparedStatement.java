@@ -5,6 +5,9 @@ import java.sql.*;
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.*;
 
+/**
+ * Simple wrapper for a JDBC {@link PreparedStatement}.
+ */
 public class SimplePreparedStatement implements AutoCloseable {
     private final Context context;
     private final DbDialect dialect;
@@ -50,15 +53,25 @@ public class SimplePreparedStatement implements AutoCloseable {
         }
     }
 
+    /**
+     * Set the values for the prepared statement.
+     * 
+     * @param preparedStatementSetter prepared statement setter
+     */
     public void setValues(final PreparedStatementSetter preparedStatementSetter) {
         try {
             preparedStatementSetter.setValues(statement);
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error setting values for prepared statement", e);
         }
-
     }
 
+    /**
+     * Execute the batch statement.
+     * 
+     * @return array of update counts
+     * @see Statement#executeBatch()
+     */
     public int[] executeBatch() {
         try {
             return statement.executeBatch();
@@ -67,6 +80,11 @@ public class SimplePreparedStatement implements AutoCloseable {
         }
     }
 
+    /**
+     * Add the current set of parameters to the batch.
+     * 
+     * @see PreparedStatement#addBatch()
+     */
     public void addBatch() {
         try {
             this.statement.addBatch();

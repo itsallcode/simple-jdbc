@@ -41,6 +41,24 @@ class ExampleTest {
     }
 
     @Test
+    void examplePreparedStatementWithRowMapper() {
+        final ConnectionFactory connectionFactory = ConnectionFactory
+                .create(Context.builder().build());
+        try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
+            connection.executeScript(readResource("/schema.sql"));
+            connection.executeStatement("insert into names (id, name) values (1, 'a'), (2, 'b'), (3, 'c')");
+
+            try (SimpleResultSet<Name> result = connection.query("select id, name from names where id = ?",
+                    ps -> ps.setInt(1, 2),
+                    (rs, idx) -> new Name(rs.getInt("id"), rs.getString("name")))) {
+                final List<Name> names = result.stream().toList();
+                assertEquals(1, names.size());
+                assertEquals(new Name(2, "b"), names.get(0));
+            }
+        }
+    }
+
+    @Test
     void exampleRowBatchInsert() {
         final ConnectionFactory connectionFactory = ConnectionFactory
                 .create(Context.builder().build());

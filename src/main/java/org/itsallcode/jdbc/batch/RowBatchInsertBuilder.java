@@ -14,16 +14,21 @@ import org.itsallcode.jdbc.identifier.Identifier;
  * @param <T> row type
  */
 public class RowBatchInsertBuilder<T> {
+    private final BatchInsertBuilder baseBuilder;
     private RowPreparedStatementSetter<T> mapper;
     private Iterator<T> rows;
-    private final BatchInsertBuilder builder;
 
+    /**
+     * Create a new instance.
+     * 
+     * @param statementFactory factory for creating {@link SimplePreparedStatement}
+     */
     public RowBatchInsertBuilder(final Function<String, SimplePreparedStatement> statementFactory) {
         this(new BatchInsertBuilder(statementFactory));
     }
 
-    private RowBatchInsertBuilder(final BatchInsertBuilder builder) {
-        this.builder = builder;
+    RowBatchInsertBuilder(final BatchInsertBuilder baseBuilder) {
+        this.baseBuilder = baseBuilder;
     }
 
     /**
@@ -36,7 +41,7 @@ public class RowBatchInsertBuilder<T> {
      */
     @SuppressWarnings("java:S3242") // Using List instead of Collection to preserve column order
     public RowBatchInsertBuilder<T> into(final Identifier tableName, final List<Identifier> columnNames) {
-        this.builder.into(tableName, columnNames);
+        this.baseBuilder.into(tableName, columnNames);
         return this;
     }
 
@@ -100,13 +105,14 @@ public class RowBatchInsertBuilder<T> {
     }
 
     /**
-     * Define maximum batch size, using {@link #DEFAULT_MAX_BATCH_SIZE} as default.
+     * Define maximum batch size, using
+     * {@link BatchInsertBuilder#DEFAULT_MAX_BATCH_SIZE} as default.
      * 
      * @param maxBatchSize maximum batch size
      * @return {@code this} for fluent programming
      */
     public RowBatchInsertBuilder<T> maxBatchSize(final int maxBatchSize) {
-        this.builder.maxBatchSize(maxBatchSize);
+        this.baseBuilder.maxBatchSize(maxBatchSize);
         return this;
     }
 
@@ -116,7 +122,7 @@ public class RowBatchInsertBuilder<T> {
     public void start() {
         Objects.requireNonNull(this.mapper, "mapper");
         Objects.requireNonNull(this.rows, "rows");
-        try (BatchInsert batchInsert = builder.build();
+        try (BatchInsert batchInsert = baseBuilder.build();
                 RowBatchInsert<T> rowBatchInsert = new RowBatchInsert<>(batchInsert, this.mapper)) {
             while (rows.hasNext()) {
                 rowBatchInsert.add(rows.next());

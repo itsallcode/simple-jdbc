@@ -27,6 +27,32 @@ dependencies {
 }
 ```
 
+### Examples
+
+See complete example code in [ExampleTest](src/test/java/org/itsallcode/jdbc/example/ExampleTest.java).
+
+#### Imports
+
+```java
+import org.itsallcode.jdbc.ConnectionFactory;
+import org.itsallcode.jdbc.SimpleConnection;
+import org.itsallcode.jdbc.Transaction;
+import org.itsallcode.jdbc.resultset.batch.BatchInsert;
+import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.Row;
+```
+
+#### Create `SimpleConnection`
+
+```java
+final ConnectionFactory connectionFactory = ConnectionFactory.create(Context.builder().build());
+try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
+    // Use connection...
+}
+```
+
+#### Batch Insert Using Rows
+
 ```java
 // Define a model record or class
 record Name(int id, String name) {
@@ -36,25 +62,61 @@ record Name(int id, String name) {
     }
 }
 
-import org.itsallcode.jdbc.ConnectionFactory;
-import org.itsallcode.jdbc.SimpleConnection;
-import org.itsallcode.jdbc.resultset.SimpleResultSet;
-import org.itsallcode.jdbc.resultset.generic.Row;
+connection.batchInsert(Name.class)
+        .into("NAMES", List.of("ID", "NAME"))
+        .rows(Stream.of(new Name(1, "a"), new Name(2, "b"), new Name(3, "c")))
+        .mapping(Name::setPreparedStatement)
+        .start();
+```
 
-// Execute query and fetch result
-final ConnectionFactory connectionFactory = ConnectionFactory.create(Context.builder().build());
-try (SimpleConnection connection = connectionFactory.create(H2TestFixture.H2_MEM_JDBC_URL, "user", "password")) {
-    connection.executeScript(readResource("/schema.sql"));
-    connection.batchInsert(Name.class)
-            .into("NAMES", List.of("ID", "NAME"))
-            .rows(Stream.of(new Name(1, "a"), new Name(2, "b"), new Name(3, "c")))
-            .mapping(Name::setPreparedStatement)
-            .start();
-    try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
-        final List<Row> result = rs.stream().toList();
-        assertEquals(3, result.size());
-        assertEquals(1, result.get(0).get(0).value());
+#### Direct Batch Insert
+
+This allows using batch inserts without creating objects for each row to avoid memory allocations.
+
+```java
+try (BatchInsert batch = transaction.batchInsert().into("NAMES", List.of("ID", "NAME")).build()) {
+    for (int i = 0; i < 5; i++) {
+        final int id = i + 1;
+        batch.add(ps -> {
+            ps.setInt(1, id);
+            ps.setString(2, "name" + id);
+        });
     }
+}
+```
+
+#### Transactions
+
+`Transaction` implements `DbOperations` which provides most of the methods as `SimpleConnection`. Transactions will be automatically rolled back during close unless you commit before.
+
+```java
+try (Transaction transaction = connection.startTransaction()) {
+    // Use transaction
+    // ...
+    // Commit successful transaction
+    transaction.commit();
+}
+```
+
+#### Query Using Generic Row Type
+
+```java
+try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
+    final List<Row> result = rs.stream().toList();
+    assertEquals(3, result.size());
+    assertEquals(1, result.get(0).get(0).value());
+}
+```
+
+#### Query Using Row Mapper and Prepared Statement
+
+```java
+try (SimpleResultSet<Name> result = connection.query("select id, name from names where id = ?",
+        ps -> ps.setInt(1, 2),
+        (rs, idx) -> new Name(rs.getInt("id"), rs.getString("name")))) {
+    final List<Name> names = result.stream().toList();
+    assertEquals(1, names.size());
+    assertEquals(new Name(2, "b"), names.get(0));
 }
 ```
 

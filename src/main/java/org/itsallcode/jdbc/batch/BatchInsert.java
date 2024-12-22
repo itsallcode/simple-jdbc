@@ -1,5 +1,6 @@
 package org.itsallcode.jdbc.batch;
 
+import java.sql.PreparedStatement;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
@@ -8,8 +9,8 @@ import java.util.logging.Logger;
 import org.itsallcode.jdbc.*;
 
 /**
- * Batch insert of rows. Create a new instance using
- * {@link SimpleConnection#batchInsert(Class)}.
+ * Direct batch insert using {@link PreparedStatement}. Create a new instance
+ * using {@link SimpleConnection#batchInsert()}.
  */
 public class BatchInsert implements AutoCloseable {
     private static final Logger LOG = Logger.getLogger(BatchInsert.class.getName());
@@ -27,6 +28,13 @@ public class BatchInsert implements AutoCloseable {
         this.start = Instant.now();
     }
 
+    /**
+     * Add a new row to the batch.
+     * 
+     * @param preparedStatementSetter prepared statement setter that is used for
+     *                                setting row values of the
+     *                                {@link PreparedStatement}.
+     */
     public void add(final PreparedStatementSetter preparedStatementSetter) {
         statement.setValues(preparedStatementSetter);
         statement.addBatch();
