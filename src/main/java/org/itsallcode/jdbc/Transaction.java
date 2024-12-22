@@ -1,6 +1,7 @@
 package org.itsallcode.jdbc;
 
-import org.itsallcode.jdbc.batch.BatchInsertRowBuilder;
+import org.itsallcode.jdbc.batch.BatchInsertBuilder;
+import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -96,7 +97,13 @@ public final class Transaction implements DbOperations {
     }
 
     @Override
-    public <T> BatchInsertRowBuilder<T> batchInsert(final Class<T> rowType) {
+    public BatchInsertBuilder batchInsert() {
+        checkOperationAllowed();
+        return connection.batchInsert();
+    }
+
+    @Override
+    public <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
         checkOperationAllowed();
         return connection.batchInsert(rowType);
     }

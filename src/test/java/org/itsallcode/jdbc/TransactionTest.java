@@ -61,6 +61,7 @@ class TransactionTest {
                 operation(tx -> tx.query("sql")),
                 operation(tx -> tx.query("sql", null)),
                 operation(tx -> tx.query("sql", null, null)),
+                operation(tx -> tx.batchInsert()),
                 operation(tx -> tx.batchInsert(null)),
                 operation(tx -> tx.commit()),
                 operation(tx -> tx.rollback()));

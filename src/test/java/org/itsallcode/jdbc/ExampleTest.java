@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.batch.BatchInsert;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
@@ -23,11 +24,10 @@ class ExampleTest {
     }
 
     @Test
-    void example() {
+    void exampleRowBatchInsert() {
         final ConnectionFactory connectionFactory = ConnectionFactory
                 .create(Context.builder().build());
-        try (SimpleConnection connection = connectionFactory.create(H2TestFixture.H2_MEM_JDBC_URL, "user",
-                "password")) {
+        try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             connection.executeScript(readResource("/schema.sql"));
             connection.batchInsert(Name.class)
                     .into("NAMES", List.of("ID", "NAME"))
@@ -39,6 +39,35 @@ class ExampleTest {
                 final List<Row> result = rs.stream().toList();
                 assertEquals(3, result.size());
                 assertEquals(1, result.get(0).get(0).value());
+            }
+        }
+    }
+
+    @Test
+    void exampleDirectBatchInsert() {
+        final ConnectionFactory connectionFactory = ConnectionFactory
+                .create(Context.builder().build());
+        try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
+            try (Transaction transaction = connection.startTransaction()) {
+                transaction.executeScript(readResource("/schema.sql"));
+                try (BatchInsert batch = transaction.batchInsert().into("NAMES", List.of("ID", "NAME")).build()) {
+                    for (int i = 0; i < 5; i++) {
+                        final int id = i + 1;
+                        batch.add(ps -> {
+                            ps.setInt(1, id);
+                            ps.setString(2, "name" + id);
+                        });
+                    }
+                }
+                transaction.commit();
+            }
+
+            try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
+                final List<Row> result = rs.stream().toList();
+                assertEquals(5, result.size());
+                final Row firstRow = result.get(0);
+                assertEquals(1, firstRow.get(0).value());
+                assertEquals("name1", firstRow.get(1).value());
             }
         }
     }

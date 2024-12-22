@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class BatchInsertRowTest {
+class RowBatchInsertTest {
 
     @Mock
     SimplePreparedStatement stmtMock;
@@ -22,7 +22,7 @@ class BatchInsertRowTest {
 
     @Test
     void addDoesNotFlush() {
-        final BatchInsertRow<Row> testee = testee(2);
+        final RowBatchInsert<Row> testee = testee(2);
         testee.add(new Row());
 
         final InOrder inOrder = inOrder(stmtMock);
@@ -33,7 +33,7 @@ class BatchInsertRowTest {
 
     @Test
     void addDoesNotFlushesAfterBatchSizeReached() {
-        final BatchInsertRow<Row> testee = testee(2);
+        final RowBatchInsert<Row> testee = testee(2);
         when(stmtMock.executeBatch()).thenReturn(new int[0]);
 
         testee.add(new Row());
@@ -48,8 +48,8 @@ class BatchInsertRowTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    BatchInsertRow<Row> testee(final int maxBatchSize) {
-        return new BatchInsertRow<>(stmtMock, stmtSetterMock, maxBatchSize);
+    RowBatchInsert<Row> testee(final int maxBatchSize) {
+        return new RowBatchInsert<>(stmtMock, stmtSetterMock, maxBatchSize);
     }
 
     record Row() {

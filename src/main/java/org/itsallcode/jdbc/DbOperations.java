@@ -2,9 +2,13 @@ package org.itsallcode.jdbc;
 
 import static java.util.function.Predicate.not;
 
+import java.sql.PreparedStatement;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.batch.BatchInsertRowBuilder;
+import org.itsallcode.jdbc.batch.BatchInsertBuilder;
+import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -74,13 +78,28 @@ public interface DbOperations extends AutoCloseable {
             final RowMapper<T> rowMapper);
 
     /**
-     * Create a batch insert builder
+     * Create a batch insert builder for inserting rows by directly setting values
+     * of a {@link PreparedStatement}.
+     * <p>
+     * If you want to insert rows from an {@link Iterator} or a {@link Stream}, use
+     * {@link #batchInsert(Class)}.
+     * 
+     * @return batch insert builder
+     */
+    BatchInsertBuilder batchInsert();
+
+    /**
+     * Create a row-based batch insert builder for inserting rows from an
+     * {@link Iterator} or a {@link Stream}.
+     * <p>
+     * If you want to insert rows by directly setting values of a
+     * {@link PreparedStatement}, use {@link #batchInsert()}.
      * 
      * @param rowType row type
      * @param <T>     row type
-     * @return batch insert builder
+     * @return row-based batch insert builder
      */
-    <T> BatchInsertRowBuilder<T> batchInsert(final Class<T> rowType);
+    <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType);
 
     @Override
     void close();
