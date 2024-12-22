@@ -14,6 +14,9 @@ Wrapper to simplify working with JDBC.
 [![Maven Central](https://img.shields.io/maven-central/v/org.itsallcode/simple-jdbc)](https://search.maven.org/artifact/org.itsallcode/simple-jdbc)
 
 * [Changelog](CHANGELOG.md)
+* [JavaDoc](https://blog.itsallcode.org/simple-jdbc/javadoc/org.itsallcode.jdbc/org/itsallcode/jdbc/package-summary.html)
+* [Test report](https://blog.itsallcode.org/simple-jdbc/reports/tests/test/index.html)
+* [Coverage report](https://blog.itsallcode.org/simple-jdbc/reports/jacoco/test/html/index.html)
 
 ## Usage
 
