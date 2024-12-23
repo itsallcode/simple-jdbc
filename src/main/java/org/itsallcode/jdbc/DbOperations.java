@@ -14,13 +14,15 @@ import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 
 /**
- * Interface for various DB operations.
+ * Interface containing various DB operations. Use one of the implementations
+ * {@link SimpleConnection} or {@link Transaction}.
  */
 public interface DbOperations extends AutoCloseable {
+
     /**
      * Execute all commands in a SQL script, separated with {@code ;}.
      * 
-     * @param sqlScript the script to execute.
+     * @param sqlScript script to execute.
      */
     default void executeScript(final String sqlScript) {
         Arrays.stream(sqlScript.split(";"))
@@ -30,9 +32,9 @@ public interface DbOperations extends AutoCloseable {
     }
 
     /**
-     * Execute a single SQL statement.
+     * Execute a single SQL statement as a prepared statement with placeholders.
      * 
-     * @param sql                     the statement
+     * @param sql                     SQL statement
      * @param preparedStatementSetter prepared statement setter
      */
     void executeStatement(final String sql, PreparedStatementSetter preparedStatementSetter);
@@ -40,7 +42,7 @@ public interface DbOperations extends AutoCloseable {
     /**
      * Execute a single SQL statement.
      * 
-     * @param sql the statement
+     * @param sql SQL statement
      */
     void executeStatement(final String sql);
 
@@ -48,14 +50,14 @@ public interface DbOperations extends AutoCloseable {
      * Execute a SQL query and return a {@link SimpleResultSet result set} with
      * generic {@link Row}s.
      * 
-     * @param sql the query
-     * @return the result set
+     * @param sql SQL query
+     * @return result set
      */
     SimpleResultSet<Row> query(final String sql);
 
     /**
      * Execute a SQL query and return a {@link SimpleResultSet result set} with rows
-     * converted to a custom type {@link T}.
+     * converted to a custom type {@link T} using the given {@link RowMapper}.
      * 
      * @param <T>       generic row type
      * @param sql       SQL query

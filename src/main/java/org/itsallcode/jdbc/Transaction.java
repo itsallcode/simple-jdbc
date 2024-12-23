@@ -8,8 +8,10 @@ import org.itsallcode.jdbc.resultset.generic.Row;
 
 /**
  * A running database transaction. The transaction will be rolled back
- * automatically in {@link #close()} if not explicitly committed or rolled back
- * before.
+ * automatically in {@link #close()} if not explicitly committed using
+ * {@link #commit()} or rolled back using {@link #rollback()} before.
+ * <p>
+ * Start a new transaction using {@link SimpleConnection#startTransaction()}.
  * <p>
  * Operations are not allowed on a closed, committed or rolled back transaction.
  * <p>

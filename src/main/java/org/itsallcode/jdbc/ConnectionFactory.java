@@ -6,6 +6,8 @@ import java.util.Properties;
 /**
  * This class connects to a database using {@link DriverManager} and returns new
  * {@link SimpleConnection}s.
+ * <p>
+ * Create a new instance using {@link #create()}.
  */
 public final class ConnectionFactory {
     private final Context context;
