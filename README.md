@@ -22,13 +22,27 @@ Wrapper to simplify working with JDBC.
 
 This project requires Java 17 or later.
 
-Add dependency to your gradle project:
+### Add Dependency
+
+Add dependency to your Gradle project:
 
 ```groovy
 dependencies {
-    implementation 'org.itsallcode:simple-jdbc:0.8.0'
+    implementation 'org.itsallcode:simple-jdbc:0.9.0'
 }
 ```
+
+Add dependency to your Maven project:
+
+```xml
+<dependency>
+  <groupId>org.itsallcode</groupId>
+  <artifactId>simple-jdbc</artifactId>
+  <version>0.9.0</version>
+</dependency>
+```
+
+### Features
 
 See features and API documentation in the [API documentation](https://blog.itsallcode.org/simple-jdbc/javadoc/org.itsallcode.jdbc/module-summary.html).
 
