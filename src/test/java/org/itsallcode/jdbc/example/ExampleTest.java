@@ -68,6 +68,7 @@ class ExampleTest {
                     .into("NAMES", List.of("ID", "NAME"))
                     .rows(Stream.of(new Name(1, "a"), new Name(2, "b"), new Name(3, "c")))
                     .mapping(Name::setPreparedStatement)
+                    .maxBatchSize(100)
                     .start();
 
             try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
@@ -85,7 +86,10 @@ class ExampleTest {
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             try (Transaction transaction = connection.startTransaction()) {
                 transaction.executeScript(readResource("/schema.sql"));
-                try (BatchInsert batch = transaction.batchInsert().into("NAMES", List.of("ID", "NAME")).build()) {
+                try (BatchInsert batch = transaction.batchInsert()
+                        .into("NAMES", List.of("ID", "NAME"))
+                        .maxBatchSize(100)
+                        .build()) {
                     for (int i = 0; i < 5; i++) {
                         final int id = i + 1;
                         batch.add(ps -> {
