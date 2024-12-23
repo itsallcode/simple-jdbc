@@ -1,13 +1,17 @@
 package org.itsallcode.jdbc;
 
+import org.itsallcode.jdbc.batch.BatchInsertBuilder;
+import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 
 /**
  * A running database transaction. The transaction will be rolled back
- * automatically in {@link #close()} if not explicitly committed or rolled back
- * before.
+ * automatically in {@link #close()} if not explicitly committed using
+ * {@link #commit()} or rolled back using {@link #rollback()} before.
+ * <p>
+ * Start a new transaction using {@link SimpleConnection#startTransaction()}.
  * <p>
  * Operations are not allowed on a closed, committed or rolled back transaction.
  * <p>
@@ -95,7 +99,13 @@ public final class Transaction implements DbOperations {
     }
 
     @Override
-    public <T> BatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
+    public BatchInsertBuilder batchInsert() {
+        checkOperationAllowed();
+        return connection.batchInsert();
+    }
+
+    @Override
+    public <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
         checkOperationAllowed();
         return connection.batchInsert(rowType);
     }

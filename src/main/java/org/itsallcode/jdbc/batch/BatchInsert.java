@@ -1,31 +1,42 @@
-package org.itsallcode.jdbc;
+package org.itsallcode.jdbc.batch;
 
+import java.sql.PreparedStatement;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-class BatchInsert<T> implements AutoCloseable {
+import org.itsallcode.jdbc.*;
+
+/**
+ * Direct batch insert using {@link PreparedStatement}. Create a new instance
+ * using {@link SimpleConnection#batchInsert()}.
+ */
+public class BatchInsert implements AutoCloseable {
     private static final Logger LOG = Logger.getLogger(BatchInsert.class.getName());
 
     private final int maxBatchSize;
     private final SimplePreparedStatement statement;
-    private final RowPreparedStatementSetter<T> preparedStatementSetter;
     private final Instant start;
 
     private int rows;
     private int currentBatchSize;
 
-    BatchInsert(final SimplePreparedStatement statement, final RowPreparedStatementSetter<T> preparedStatementSetter,
-            final int maxBatchSize) {
-        this.preparedStatementSetter = preparedStatementSetter;
+    BatchInsert(final SimplePreparedStatement statement, final int maxBatchSize) {
         this.statement = Objects.requireNonNull(statement, "statement");
         this.maxBatchSize = maxBatchSize;
         this.start = Instant.now();
     }
 
-    void add(final T row) {
-        statement.setValues(stmt -> this.preparedStatementSetter.setValues(row, stmt));
+    /**
+     * Add a new row to the batch.
+     * 
+     * @param preparedStatementSetter prepared statement setter that is used for
+     *                                setting row values of the
+     *                                {@link PreparedStatement}.
+     */
+    public void add(final PreparedStatementSetter preparedStatementSetter) {
+        statement.setValues(preparedStatementSetter);
         statement.addBatch();
         currentBatchSize++;
         rows++;

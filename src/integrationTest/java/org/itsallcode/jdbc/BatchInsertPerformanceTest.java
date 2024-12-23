@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,11 +35,11 @@ class BatchInsertPerformanceTest {
                 }).rows(generateStream(rowCount)).start();
     }
 
-    private BatchInsertBuilder<NameRow> testee() {
+    private RowBatchInsertBuilder<NameRow> testee() {
         final PreparedStatement stmt = createNoopPreparedStatement();
         when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(new SimplePreparedStatement(null, null, stmt, "sql"));
-        return new BatchInsertBuilder<NameRow>(connectionMock::prepareStatement);
+        return new RowBatchInsertBuilder<NameRow>(connectionMock::prepareStatement);
     }
 
     private PreparedStatement createNoopPreparedStatement() {

@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import org.itsallcode.jdbc.batch.BatchInsertBuilder;
+import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -12,7 +14,11 @@ import org.itsallcode.jdbc.statement.ParamSetterProvider;
 
 /**
  * A simplified version of a JDBC {@link Connection}. Create new connections
- * with {@link ConnectionFactory#create(String, String, String)}.
+ * with
+ * <ul>
+ * <li>{@link ConnectionFactory#create(String, String, String)}</li>
+ * <li>or {@link DataSourceConnectionFactory#getConnection()}</li>
+ * </ul>
  */
 public class SimpleConnection implements DbOperations {
     private static final Logger LOG = Logger.getLogger(SimpleConnection.class.getName());
@@ -30,9 +36,9 @@ public class SimpleConnection implements DbOperations {
     }
 
     /**
-     * Start a new transaction by disabling auto commit.
+     * Start a new {@link Transaction} by disabling auto commit if necessary.
      * 
-     * @return a new, running transaction.
+     * @return new transaction
      */
     public Transaction startTransaction() {
         return Transaction.start(this);
@@ -81,8 +87,13 @@ public class SimpleConnection implements DbOperations {
     }
 
     @Override
-    public <T> BatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
-        return new BatchInsertBuilder<>(this::prepareStatement);
+    public BatchInsertBuilder batchInsert() {
+        return new BatchInsertBuilder(this::prepareStatement);
+    }
+
+    @Override
+    public <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
+        return new RowBatchInsertBuilder<>(this::prepareStatement);
     }
 
     private PreparedStatement prepare(final String sql) {
@@ -93,6 +104,12 @@ public class SimpleConnection implements DbOperations {
         }
     }
 
+    /**
+     * Set the auto commit state.
+     * 
+     * @param autoCommit auto commit state
+     * @see Connection#setAutoCommit(boolean)
+     */
     void setAutoCommit(final boolean autoCommit) {
         try {
             this.connection.setAutoCommit(autoCommit);
@@ -101,6 +118,12 @@ public class SimpleConnection implements DbOperations {
         }
     }
 
+    /**
+     * Get the current auto commit state.
+     * 
+     * @return auto commit state
+     * @see Connection#getAutoCommit()
+     */
     boolean getAutoCommit() {
         try {
             return this.connection.getAutoCommit();
@@ -109,6 +132,11 @@ public class SimpleConnection implements DbOperations {
         }
     }
 
+    /**
+     * Rollback the transaction.
+     * 
+     * @see Connection#rollback()
+     */
     void rollback() {
         try {
             this.connection.rollback();
@@ -117,6 +145,11 @@ public class SimpleConnection implements DbOperations {
         }
     }
 
+    /**
+     * Commit the transaction.
+     * 
+     * @see Connection#commit()
+     */
     void commit() {
         try {
             this.connection.commit();
@@ -125,6 +158,11 @@ public class SimpleConnection implements DbOperations {
         }
     }
 
+    /**
+     * Close the underlying {@link Connection}.
+     * 
+     * @see Connection#close()
+     */
     @Override
     public void close() {
         try {

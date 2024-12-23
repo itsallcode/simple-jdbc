@@ -10,6 +10,9 @@ import org.itsallcode.jdbc.dialect.DbDialect;
 /**
  * This class connects to a database using a {@link DataSource} and returns new
  * {@link SimpleConnection}s.
+ * <p>
+ * Create a new instance using {@link #create(String, DataSource)} or
+ * {@link #create(DbDialect, DataSource)}.
  */
 public final class DataSourceConnectionFactory {
     private final Context context;

@@ -28,6 +28,10 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Build Javadoc
         run: ./gradlew javadoc --info
+      - name: Build Reports
+        run: ./gradlew check jacocoTestReport --exclude-task integrationTest --info
+      - name: Collect artifacts
+        run: cp -r build/reports/ build/docs/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

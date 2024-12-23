@@ -2,20 +2,27 @@ package org.itsallcode.jdbc;
 
 import static java.util.function.Predicate.not;
 
+import java.sql.PreparedStatement;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.batch.BatchInsertBuilder;
+import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 
 /**
- * Interface for various DB operations.
+ * Interface containing various DB operations. Use one of the implementations
+ * {@link SimpleConnection} or {@link Transaction}.
  */
 public interface DbOperations extends AutoCloseable {
+
     /**
      * Execute all commands in a SQL script, separated with {@code ;}.
      * 
-     * @param sqlScript the script to execute.
+     * @param sqlScript script to execute.
      */
     default void executeScript(final String sqlScript) {
         Arrays.stream(sqlScript.split(";"))
@@ -25,9 +32,9 @@ public interface DbOperations extends AutoCloseable {
     }
 
     /**
-     * Execute a single SQL statement.
+     * Execute a single SQL statement as a prepared statement with placeholders.
      * 
-     * @param sql                     the statement
+     * @param sql                     SQL statement
      * @param preparedStatementSetter prepared statement setter
      */
     void executeStatement(final String sql, PreparedStatementSetter preparedStatementSetter);
@@ -35,7 +42,7 @@ public interface DbOperations extends AutoCloseable {
     /**
      * Execute a single SQL statement.
      * 
-     * @param sql the statement
+     * @param sql SQL statement
      */
     void executeStatement(final String sql);
 
@@ -43,14 +50,14 @@ public interface DbOperations extends AutoCloseable {
      * Execute a SQL query and return a {@link SimpleResultSet result set} with
      * generic {@link Row}s.
      * 
-     * @param sql the query
-     * @return the result set
+     * @param sql SQL query
+     * @return result set
      */
     SimpleResultSet<Row> query(final String sql);
 
     /**
      * Execute a SQL query and return a {@link SimpleResultSet result set} with rows
-     * converted to a custom type {@link T}.
+     * converted to a custom type {@link T} using the given {@link RowMapper}.
      * 
      * @param <T>       generic row type
      * @param sql       SQL query
@@ -73,13 +80,28 @@ public interface DbOperations extends AutoCloseable {
             final RowMapper<T> rowMapper);
 
     /**
-     * Create a batch insert builder
+     * Create a batch insert builder for inserting rows by directly setting values
+     * of a {@link PreparedStatement}.
+     * <p>
+     * If you want to insert rows from an {@link Iterator} or a {@link Stream}, use
+     * {@link #batchInsert(Class)}.
+     * 
+     * @return batch insert builder
+     */
+    BatchInsertBuilder batchInsert();
+
+    /**
+     * Create a row-based batch insert builder for inserting rows from an
+     * {@link Iterator} or a {@link Stream}.
+     * <p>
+     * If you want to insert rows by directly setting values of a
+     * {@link PreparedStatement}, use {@link #batchInsert()}.
      * 
      * @param rowType row type
      * @param <T>     row type
-     * @return batch insert builder
+     * @return row-based batch insert builder
      */
-    <T> BatchInsertBuilder<T> batchInsert(final Class<T> rowType);
+    <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType);
 
     @Override
     void close();
