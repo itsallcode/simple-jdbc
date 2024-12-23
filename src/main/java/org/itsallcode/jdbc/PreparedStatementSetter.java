@@ -10,8 +10,11 @@ import java.sql.SQLException;
 public interface PreparedStatementSetter {
     /**
      * Set values for the given prepared statement.
+     * <p>
+     * Only call {@link PreparedStatement#setObject(int, Object)} or similar
+     * methods. Do not call {@link PreparedStatement#addBatch()}.
      * 
-     * @param preparedStatement the prepared statement
+     * @param preparedStatement prepared statement
      * @throws SQLException if setting values fails
      */
     void setValues(PreparedStatement preparedStatement) throws SQLException;
