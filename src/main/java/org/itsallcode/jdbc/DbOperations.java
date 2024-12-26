@@ -35,7 +35,10 @@ public interface DbOperations extends AutoCloseable {
      * 
      * @param sql SQL statement
      */
-    void executeStatement(final String sql);
+    default void executeStatement(final String sql) {
+        this.executeStatement(sql, stmt -> {
+        });
+    }
 
     /**
      * Execute a single SQL statement as a prepared statement with placeholders.
@@ -77,7 +80,10 @@ public interface DbOperations extends AutoCloseable {
      * @param rowMapper row mapper
      * @return the result set
      */
-    <T> SimpleResultSet<T> query(final String sql, final RowMapper<T> rowMapper);
+    default <T> SimpleResultSet<T> query(final String sql, final RowMapper<T> rowMapper) {
+        return query(sql, ps -> {
+        }, rowMapper);
+    }
 
     /**
      * Execute a SQL query, set parameters and return a {@link SimpleResultSet

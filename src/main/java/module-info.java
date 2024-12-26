@@ -65,7 +65,6 @@
  * {@link org.itsallcode.jdbc.UncheckedSQLException}</li>
  * </ul>
  */
-
 module org.itsallcode.jdbc {
     exports org.itsallcode.jdbc;
     exports org.itsallcode.jdbc.batch;
