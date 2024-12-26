@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import java.sql.JDBCType;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.dialect.H2Dialect;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -19,6 +19,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class SimpleConnectionITest {
+
+    @Test
+    void wrap() throws SQLException {
+        try (Connection existingConnection = DriverManager.getConnection(H2TestFixture.H2_MEM_JDBC_URL);
+                SimpleConnection connection = SimpleConnection.wrap(existingConnection, new H2Dialect())) {
+            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            assertDoesNotThrow(() -> connection.executeStatement("select count(*) from test"));
+        }
+    }
+
     @Test
     void executeStatement() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {

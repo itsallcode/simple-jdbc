@@ -18,6 +18,7 @@ import org.itsallcode.jdbc.statement.ParamSetterProvider;
  * <ul>
  * <li>{@link ConnectionFactory#create(String, String, String)}</li>
  * <li>or {@link DataSourceConnectionFactory#getConnection()}</li>
+ * <li>or {@link #wrap(Connection, DbDialect)}</li>
  * </ul>
  */
 public class SimpleConnection implements DbOperations {
@@ -33,6 +34,19 @@ public class SimpleConnection implements DbOperations {
         this.context = Objects.requireNonNull(context, "context");
         this.dialect = Objects.requireNonNull(dialect, "dialect");
         this.paramSetterProvider = new ParamSetterProvider(dialect);
+    }
+
+    /**
+     * Wrap an existing {@link Connection} with a {@link SimpleConnection}.
+     * <p>
+     * Note: Calling {@link #close()} will close the underlying connection.
+     * 
+     * @param connection existing connection
+     * @param dialect    database dialect
+     * @return wrapped connection
+     */
+    public static SimpleConnection wrap(final Connection connection, final DbDialect dialect) {
+        return new SimpleConnection(connection, Context.builder().build(), dialect);
     }
 
     /**

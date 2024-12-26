@@ -42,6 +42,13 @@ class SimpleConnectionTest {
     }
 
     @Test
+    void closeClosesWrappedConnection() throws SQLException {
+        final SimpleConnection testee = SimpleConnection.wrap(connectionMock, new H2Dialect());
+        testee.close();
+        verify(connectionMock).close();
+    }
+
+    @Test
     void setAutoCommit() throws SQLException {
         testee().setAutoCommit(false);
         verify(connectionMock).setAutoCommit(false);
