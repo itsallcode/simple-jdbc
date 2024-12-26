@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.itsallcode.jdbc.dialect.H2Dialect;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.ColumnValue;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -136,7 +137,7 @@ class SimpleConnectionITest {
                 final Iterator<Row> iterator = resultSet.iterator();
                 assertAll(
                         () -> assertThat(iterator.hasNext()).isFalse(),
-                        () -> assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class));
+                        () -> assertThatThrownBy(iterator::next).isInstanceOf(NoSuchElementException.class));
             }
         }
     }
@@ -176,7 +177,7 @@ class SimpleConnectionITest {
                         () -> assertThat(firstRow.columnValues().get(1).type().scale()).isZero(),
 
                         () -> assertThat(iterator.hasNext()).isFalse(),
-                        () -> assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class));
+                        () -> assertThatThrownBy(iterator::next).isInstanceOf(NoSuchElementException.class));
             }
         }
     }
@@ -200,7 +201,7 @@ class SimpleConnectionITest {
                 final Iterator<Row> iterator = resultSet.iterator();
                 assertAll(
                         () -> assertThat(iterator).isNotNull(),
-                        () -> assertThatThrownBy(() -> resultSet.iterator()).isInstanceOf(IllegalStateException.class)
+                        () -> assertThatThrownBy(resultSet::iterator).isInstanceOf(IllegalStateException.class)
                                 .hasMessage("Only one iterator allowed per ResultSet"));
             }
         }
@@ -247,7 +248,7 @@ class SimpleConnectionITest {
                     .start();
 
             final List<List<Object>> result = connection.query("select * from test").stream()
-                    .map(row -> row.columnValues().stream().map(value -> value.value()).toList()).toList();
+                    .map(row -> row.columnValues().stream().map(ColumnValue::value).toList()).toList();
             assertAll(
                     () -> assertThat(result).hasSize(3),
                     () -> assertThat(result).isEqualTo(List.of(List.of(1, "a"), List.of(2, "b"), List.of(3, "c"))));
