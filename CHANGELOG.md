@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.10.0] - unreleased
 
 - [PR #38](https://github.com/itsallcode/simple-jdbc/pull/38): Add method `wrap()` to `SimpleConnection`
+- [PR #39](https://github.com/itsallcode/simple-jdbc/pull/39): Add convenience methods `executeStatement` and `query` with generic parameters to `DbOperations`
 
 ## [0.9.0] - 2024-12-23
 

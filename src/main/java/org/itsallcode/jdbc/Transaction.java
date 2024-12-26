@@ -62,12 +62,6 @@ public final class Transaction implements DbOperations {
     }
 
     @Override
-    public void executeStatement(final String sql) {
-        checkOperationAllowed();
-        connection.executeStatement(sql);
-    }
-
-    @Override
     public void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
         checkOperationAllowed();
         connection.executeStatement(sql, preparedStatementSetter);
@@ -83,12 +77,6 @@ public final class Transaction implements DbOperations {
     public void executeScript(final String sqlScript) {
         checkOperationAllowed();
         connection.executeScript(sqlScript);
-    }
-
-    @Override
-    public <T> SimpleResultSet<T> query(final String sql, final RowMapper<T> rowMapper) {
-        checkOperationAllowed();
-        return connection.query(sql, rowMapper);
     }
 
     @Override

@@ -59,12 +59,6 @@ public class SimpleConnection implements DbOperations {
     }
 
     @Override
-    public void executeStatement(final String sql) {
-        this.executeStatement(sql, stmt -> {
-        });
-    }
-
-    @Override
     public void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
         try (SimplePreparedStatement statement = prepareStatement(sql)) {
             statement.setValues(preparedStatementSetter);
@@ -75,12 +69,6 @@ public class SimpleConnection implements DbOperations {
     @Override
     public SimpleResultSet<Row> query(final String sql) {
         return query(sql, ContextRowMapper.generic(dialect));
-    }
-
-    @Override
-    public <T> SimpleResultSet<T> query(final String sql, final RowMapper<T> rowMapper) {
-        return query(sql, ps -> {
-        }, rowMapper);
     }
 
     @Override

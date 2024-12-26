@@ -16,8 +16,11 @@
  * <ul>
  * <li>... single statement:
  * {@link org.itsallcode.jdbc.DbOperations#executeStatement(String)}</li>
- * <li>... with a prepared statement:
+ * <li>... with a prepared statement and generic parameters:
+ * {@link org.itsallcode.jdbc.DbOperations#executeStatement(String, List)}</li>
+ * <li>... with a prepared statement and custom parameter setter:
  * {@link org.itsallcode.jdbc.DbOperations#executeStatement(String, org.itsallcode.jdbc.PreparedStatementSetter)}</li>
+ * 
  * <li>... semicolon separated SQL script:
  * {@link org.itsallcode.jdbc.DbOperations#executeScript(String)}</li>
  * </ul>
@@ -28,7 +31,9 @@
  * <li>...with a {@link org.itsallcode.jdbc.resultset.RowMapper}, returning
  * custom result types:
  * {@link org.itsallcode.jdbc.DbOperations#query(String, org.itsallcode.jdbc.resultset.RowMapper)}</li>
- * <li>...with a prepared statement:
+ * <li>...with a prepared statement and generic parameters:
+ * {@link org.itsallcode.jdbc.DbOperations#query(String, List, org.itsallcode.jdbc.resultset.RowMapper)}</li>
+ * <li>...with a prepared statement and custom parameter setter:
  * {@link org.itsallcode.jdbc.DbOperations#query(String, org.itsallcode.jdbc.PreparedStatementSetter, org.itsallcode.jdbc.resultset.RowMapper)}</li>
  * </ul>
  * </li>

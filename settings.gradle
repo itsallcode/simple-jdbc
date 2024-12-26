@@ -16,7 +16,7 @@ dependencyResolutionManagement {
             library('assertj', 'org.assertj:assertj-core:3.27.0')
             library('h2', 'com.h2database:h2:2.3.232')
             library('junitPioneer', 'org.junit-pioneer:junit-pioneer:2.2.0')
-            library('equalsverifier', 'nl.jqno.equalsverifier:equalsverifier:3.17.5')
+            library('equalsverifier', 'nl.jqno.equalsverifier:equalsverifier:3.18')
             library('tostringverifier', 'com.jparams:to-string-verifier:1.4.8')
             library('hamcrest', 'org.hamcrest:hamcrest:3.0')
             library('hamcrestResultSetMatcher', 'com.exasol:hamcrest-resultset-matcher:1.6.3')

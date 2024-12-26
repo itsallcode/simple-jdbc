@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.itsallcode.jdbc.dialect.H2Dialect;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.ColumnValue;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,6 +35,15 @@ class SimpleConnectionITest {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             assertDoesNotThrow(() -> connection.executeStatement("select count(*) from test"));
+        }
+    }
+
+    @Test
+    void executeStatementWithParameter() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeStatement("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b"));
+            assertThat(connection.query("select count(*) from test").toList().get(0).get(0).getValue()).isEqualTo(2L);
         }
     }
 
@@ -127,7 +137,7 @@ class SimpleConnectionITest {
                 final Iterator<Row> iterator = resultSet.iterator();
                 assertAll(
                         () -> assertThat(iterator.hasNext()).isFalse(),
-                        () -> assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class));
+                        () -> assertThatThrownBy(iterator::next).isInstanceOf(NoSuchElementException.class));
             }
         }
     }
@@ -167,8 +177,19 @@ class SimpleConnectionITest {
                         () -> assertThat(firstRow.columnValues().get(1).type().scale()).isZero(),
 
                         () -> assertThat(iterator.hasNext()).isFalse(),
-                        () -> assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class));
+                        () -> assertThatThrownBy(iterator::next).isInstanceOf(NoSuchElementException.class));
             }
+        }
+    }
+
+    @Test
+    void executeQueryWithParameter() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeStatement("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b"));
+            final List<String> result = connection.query("select * from test where id=?", List.of(2),
+                    (rs, idx) -> idx + "-" + rs.getString(2) + "-" + rs.getInt(1)).toList();
+            assertThat(result.get(0)).isEqualTo("0-b-2");
         }
     }
 
@@ -180,7 +201,7 @@ class SimpleConnectionITest {
                 final Iterator<Row> iterator = resultSet.iterator();
                 assertAll(
                         () -> assertThat(iterator).isNotNull(),
-                        () -> assertThatThrownBy(() -> resultSet.iterator()).isInstanceOf(IllegalStateException.class)
+                        () -> assertThatThrownBy(resultSet::iterator).isInstanceOf(IllegalStateException.class)
                                 .hasMessage("Only one iterator allowed per ResultSet"));
             }
         }
@@ -227,7 +248,7 @@ class SimpleConnectionITest {
                     .start();
 
             final List<List<Object>> result = connection.query("select * from test").stream()
-                    .map(row -> row.columnValues().stream().map(value -> value.value()).toList()).toList();
+                    .map(row -> row.columnValues().stream().map(ColumnValue::value).toList()).toList();
             assertAll(
                     () -> assertThat(result).hasSize(3),
                     () -> assertThat(result).isEqualTo(List.of(List.of(1, "a"), List.of(2, "b"), List.of(3, "c"))));

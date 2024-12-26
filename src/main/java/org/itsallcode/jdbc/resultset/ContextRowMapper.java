@@ -29,7 +29,7 @@ public interface ContextRowMapper<T> {
     T mapRow(Context context, ResultSet resultSet, int rowNum) throws SQLException;
 
     /**
-     * Create a {@link ContextRowMapper} that creates generic {@link Row} objects.
+     * Create a {@link RowMapper} that creates generic {@link Row} objects.
      * 
      * @param dialect DB dialect
      * @return a new row mapper
@@ -39,7 +39,7 @@ public interface ContextRowMapper<T> {
     }
 
     /**
-     * Create a {@link ContextRowMapper} that creates {@link List}s of simple column
+     * Create a {@link RowMapper} that creates {@link List}s of simple column
      * objects.
      * 
      * @param dialect DB dialect
