@@ -3,8 +3,7 @@ package org.itsallcode.jdbc;
 import static java.util.function.Predicate.not;
 
 import java.sql.PreparedStatement;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.batch.BatchInsertBuilder;
@@ -32,19 +31,33 @@ public interface DbOperations extends AutoCloseable {
     }
 
     /**
+     * Execute a single SQL statement.
+     * 
+     * @param sql SQL statement
+     */
+    void executeStatement(final String sql);
+
+    /**
+     * Execute a single SQL statement as a prepared statement with placeholders.
+     * <p>
+     * This will use {@link PreparedStatement#setObject(int, Object)} for setting
+     * parameters. If you need more control, use
+     * {@link #executeStatement(String, PreparedStatementSetter)}.
+     * 
+     * @param sql        SQL statement
+     * @param parameters parameters to set in the prepared statement
+     */
+    default void executeStatement(final String sql, final List<Object> parameters) {
+        this.executeStatement(sql, new GenericParameterSetter(parameters));
+    }
+
+    /**
      * Execute a single SQL statement as a prepared statement with placeholders.
      * 
      * @param sql                     SQL statement
      * @param preparedStatementSetter prepared statement setter
      */
     void executeStatement(final String sql, PreparedStatementSetter preparedStatementSetter);
-
-    /**
-     * Execute a single SQL statement.
-     * 
-     * @param sql SQL statement
-     */
-    void executeStatement(final String sql);
 
     /**
      * Execute a SQL query and return a {@link SimpleResultSet result set} with
@@ -65,6 +78,25 @@ public interface DbOperations extends AutoCloseable {
      * @return the result set
      */
     <T> SimpleResultSet<T> query(final String sql, final RowMapper<T> rowMapper);
+
+    /**
+     * Execute a SQL query, set parameters and return a {@link SimpleResultSet
+     * result set} with rows converted to a custom type {@link T}.
+     * <p>
+     * This will use {@link PreparedStatement#setObject(int, Object)} for setting
+     * parameters. If you need more control, use
+     * {@link #executeStatement(String, PreparedStatementSetter)}.
+     * 
+     * @param <T>        generic row type
+     * @param sql        SQL query
+     * @param parameters parameters to set in the prepared statement
+     * @param rowMapper  row mapper
+     * @return the result set
+     */
+    default <T> SimpleResultSet<T> query(final String sql, final List<Object> parameters,
+            final RowMapper<T> rowMapper) {
+        return this.query(sql, new GenericParameterSetter(parameters), rowMapper);
+    }
 
     /**
      * Execute a SQL query, set parameters and return a {@link SimpleResultSet

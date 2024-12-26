@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.resultset.RowMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,6 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class TransactionTest {
     @Mock
     SimpleConnection connectionMock;
+    @Mock
+    static PreparedStatementSetter preparedStatementSetterMock;
+    @Mock
+    static RowMapper<?> rowMapperMock;
 
     @Test
     void startDisablesAutoCommitWhenEnabledBefore() {
@@ -57,10 +63,12 @@ class TransactionTest {
         return Stream.of(
                 operation(tx -> tx.executeScript("script")),
                 operation(tx -> tx.executeStatement("sql")),
-                operation(tx -> tx.executeStatement("sql", null)),
+                operation(tx -> tx.executeStatement("sql", preparedStatementSetterMock)),
+                operation(tx -> tx.executeStatement("sql", List.of())),
                 operation(tx -> tx.query("sql")),
-                operation(tx -> tx.query("sql", null)),
-                operation(tx -> tx.query("sql", null, null)),
+                operation(tx -> tx.query("sql", rowMapperMock)),
+                operation(tx -> tx.query("sql", preparedStatementSetterMock, rowMapperMock)),
+                operation(tx -> tx.query("sql", List.of(), rowMapperMock)),
                 operation(tx -> tx.batchInsert()),
                 operation(tx -> tx.batchInsert(null)),
                 operation(tx -> tx.commit()),
@@ -69,6 +77,13 @@ class TransactionTest {
 
     static Arguments operation(final Consumer<Transaction> operation) {
         return Arguments.of(operation);
+    }
+
+    @ParameterizedTest
+    @MethodSource("operations")
+    void operationSucceedsForValidTransaction(final Consumer<Transaction> operation) {
+        final Transaction testee = testee();
+        assertDoesNotThrow(() -> operation.accept(testee));
     }
 
     @ParameterizedTest

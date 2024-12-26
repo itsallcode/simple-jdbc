@@ -38,6 +38,15 @@ class SimpleConnectionITest {
     }
 
     @Test
+    void executeStatementWithParameter() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeStatement("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b"));
+            assertThat(connection.query("select count(*) from test").toList().get(0).get(0).getValue()).isEqualTo(2L);
+        }
+    }
+
+    @Test
     void executeStatementFails() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             assertThatThrownBy(() -> connection.executeStatement("select count(*) from missing_table"))
@@ -169,6 +178,17 @@ class SimpleConnectionITest {
                         () -> assertThat(iterator.hasNext()).isFalse(),
                         () -> assertThatThrownBy(() -> iterator.next()).isInstanceOf(NoSuchElementException.class));
             }
+        }
+    }
+
+    @Test
+    void executeQueryWithParameter() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeStatement("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b"));
+            final List<String> result = connection.query("select * from test where id=?", List.of(2),
+                    (rs, idx) -> idx + "-" + rs.getString(2) + "-" + rs.getInt(1)).toList();
+            assertThat(result.get(0)).isEqualTo("0-b-2");
         }
     }
 
