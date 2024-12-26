@@ -129,6 +129,8 @@ public final class Transaction implements DbOperations {
      * Explicitly run {@link #commit()} before to commit your transaction.
      * <p>
      * No further operations are allowed on this transaction afterwards.
+     * <p>
+     * This <em>does not</em> close the connection, so you can continue using it.
      */
     @Override
     public void close() {

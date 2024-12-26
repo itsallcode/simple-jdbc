@@ -4,10 +4,12 @@
  * <ul>
  * <li>Create a {@link org.itsallcode.jdbc.SimpleConnection}
  * <ul>
- * <li>with a connection factory using {@link java.sql.DriverManager}, see
+ * <li>... with a connection factory using {@link java.sql.DriverManager}, see
  * {@link org.itsallcode.jdbc.DataSourceConnectionFactory}</li>
- * <li>with a {@link javax.sql.DataSource}, see
+ * <li>... with a {@link javax.sql.DataSource}, see
  * {@link org.itsallcode.jdbc.DataSourceConnectionFactory}</li>
+ * <li>... with an existing {@link java.sql.Connection}, see
+ * {@link org.itsallcode.jdbc.SimpleConnection#wrap(Connection, DbDialect)}</li>
  * </ul>
  * </li>
  * <li>Execute statements
