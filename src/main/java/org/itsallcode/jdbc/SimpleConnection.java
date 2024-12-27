@@ -28,6 +28,7 @@ public class SimpleConnection implements DbOperations {
     private final Context context;
     private final DbDialect dialect;
     private final ParamSetterProvider paramSetterProvider;
+    private Transaction transaction;
 
     SimpleConnection(final Connection connection, final Context context, final DbDialect dialect) {
         this.connection = Objects.requireNonNull(connection, "connection");
@@ -55,11 +56,24 @@ public class SimpleConnection implements DbOperations {
      * @return new transaction
      */
     public Transaction startTransaction() {
-        return Transaction.start(this);
+        checkOperationAllowed();
+        transaction = Transaction.start(this);
+        return transaction;
+    }
+
+    private void checkOperationAllowed() {
+        // if (transaction != null) {
+        // throw new IllegalStateException("Operation not allowed on connection when
+        // transaction is active");
+        // }
+        if (this.isClosed()) {
+            throw new IllegalStateException("Operation not allowed on closed connection");
+        }
     }
 
     @Override
     public void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
+        checkOperationAllowed();
         try (SimplePreparedStatement statement = prepareStatement(sql)) {
             statement.setValues(preparedStatementSetter);
             statement.execute();
@@ -68,12 +82,14 @@ public class SimpleConnection implements DbOperations {
 
     @Override
     public SimpleResultSet<Row> query(final String sql) {
+        checkOperationAllowed();
         return query(sql, ContextRowMapper.generic(dialect));
     }
 
     @Override
     public <T> SimpleResultSet<T> query(final String sql, final PreparedStatementSetter preparedStatementSetter,
             final RowMapper<T> rowMapper) {
+        checkOperationAllowed();
         LOG.finest(() -> "Executing query '" + sql + "'...");
         final SimplePreparedStatement statement = prepareStatement(sql);
         statement.setValues(preparedStatementSetter);
@@ -90,11 +106,13 @@ public class SimpleConnection implements DbOperations {
 
     @Override
     public BatchInsertBuilder batchInsert() {
+        checkOperationAllowed();
         return new BatchInsertBuilder(this::prepareStatement);
     }
 
     @Override
     public <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
+        checkOperationAllowed();
         return new RowBatchInsertBuilder<>(this::prepareStatement);
     }
 
@@ -157,6 +175,21 @@ public class SimpleConnection implements DbOperations {
             this.connection.commit();
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Failed to commit transaction", e);
+        }
+    }
+
+    /**
+     * Retrieves whether this {@link SimpleConnection} has been closed.
+     * 
+     * @return {@code true} if this this {@link SimpleConnection} is closed,
+     *         {@code false} if it is still open
+     * @see Connection#isClosed()
+     */
+    boolean isClosed() {
+        try {
+            return this.connection.isClosed();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Failed to get closed state", e);
         }
     }
 
