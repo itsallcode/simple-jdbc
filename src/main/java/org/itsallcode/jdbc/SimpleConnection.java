@@ -57,7 +57,7 @@ public class SimpleConnection implements DbOperations {
      */
     public Transaction startTransaction() {
         checkOperationAllowed();
-        transaction = Transaction.start(this);
+        transaction = Transaction.start(this.connection, this);
         return transaction;
     }
 
@@ -121,60 +121,6 @@ public class SimpleConnection implements DbOperations {
             return connection.prepareStatement(sql);
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error preparing statement '" + sql + "'", e);
-        }
-    }
-
-    /**
-     * Set the auto commit state.
-     * 
-     * @param autoCommit auto commit state
-     * @see Connection#setAutoCommit(boolean)
-     */
-    void setAutoCommit(final boolean autoCommit) {
-        try {
-            this.connection.setAutoCommit(autoCommit);
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to set autoCommit to " + autoCommit, e);
-        }
-    }
-
-    /**
-     * Get the current auto commit state.
-     * 
-     * @return auto commit state
-     * @see Connection#getAutoCommit()
-     */
-    boolean getAutoCommit() {
-        try {
-            return this.connection.getAutoCommit();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to get autoCommit", e);
-        }
-    }
-
-    /**
-     * Rollback the transaction.
-     * 
-     * @see Connection#rollback()
-     */
-    void rollback() {
-        try {
-            this.connection.rollback();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to rollback transaction", e);
-        }
-    }
-
-    /**
-     * Commit the transaction.
-     * 
-     * @see Connection#commit()
-     */
-    void commit() {
-        try {
-            this.connection.commit();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to commit transaction", e);
         }
     }
 

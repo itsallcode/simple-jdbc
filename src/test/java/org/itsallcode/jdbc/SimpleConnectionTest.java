@@ -1,6 +1,5 @@
 package org.itsallcode.jdbc;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -59,60 +58,6 @@ class SimpleConnectionTest {
         final SimpleConnection testee = SimpleConnection.wrap(connectionMock, new H2Dialect());
         testee.close();
         verify(connectionMock).close();
-    }
-
-    @Test
-    void setAutoCommit() throws SQLException {
-        testee().setAutoCommit(false);
-        verify(connectionMock).setAutoCommit(false);
-    }
-
-    @Test
-    void setAutoCommitFails() throws SQLException {
-        doThrow(new SQLException("expected")).when(connectionMock).setAutoCommit(false);
-        final SimpleConnection testee = testee();
-        assertThatThrownBy(() -> testee.setAutoCommit(false)).isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Failed to set autoCommit to false: expected");
-    }
-
-    @Test
-    void getAutoCommit() throws SQLException {
-        when(connectionMock.getAutoCommit()).thenReturn(true);
-        assertThat(testee().getAutoCommit()).isTrue();
-    }
-
-    @Test
-    void getAutoCommitFails() throws SQLException {
-        doThrow(new SQLException("expected")).when(connectionMock).getAutoCommit();
-        final SimpleConnection testee = testee();
-        assertThatThrownBy(() -> testee.getAutoCommit()).isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Failed to get autoCommit: expected");
-    }
-
-    @Test
-    void commit() throws SQLException {
-        testee().commit();
-        verify(connectionMock).commit();
-    }
-
-    @Test
-    void commitFails() throws SQLException {
-        doThrow(new SQLException("expected")).when(connectionMock).commit();
-        assertThatThrownBy(testee()::commit).isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Failed to commit transaction: expected");
-    }
-
-    @Test
-    void rollback() throws SQLException {
-        testee().rollback();
-        verify(connectionMock).rollback();
-    }
-
-    @Test
-    void rollbackFails() throws SQLException {
-        doThrow(new SQLException("expected")).when(connectionMock).rollback();
-        assertThatThrownBy(testee()::rollback).isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Failed to rollback transaction: expected");
     }
 
     static Stream<Arguments> operations() {
