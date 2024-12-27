@@ -38,7 +38,7 @@ public final class Transaction implements DbOperations {
 
     static Transaction start(final Connection rawConnection, final SimpleConnection connection) {
         boolean restoreAutoCommitRequired = false;
-        if (getAutoCommit(rawConnection)) {
+        if (isAutoCommitEnabled(rawConnection)) {
             setAutoCommit(rawConnection, false);
             restoreAutoCommitRequired = true;
         }
@@ -182,7 +182,7 @@ public final class Transaction implements DbOperations {
      * @return auto commit state
      * @see Connection#getAutoCommit()
      */
-    static boolean getAutoCommit(final Connection rawConnection) {
+    static boolean isAutoCommitEnabled(final Connection rawConnection) {
         try {
             return rawConnection.getAutoCommit();
         } catch (final SQLException e) {

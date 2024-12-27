@@ -182,15 +182,16 @@ class TransactionTest {
     }
 
     @Test
-    void getAutoCommit() throws SQLException {
+    void isAutoCommitEnabled() throws SQLException {
         when(rawConnectionMock.getAutoCommit()).thenReturn(true);
-        assertThat(Transaction.getAutoCommit(rawConnectionMock)).isTrue();
+        assertThat(Transaction.isAutoCommitEnabled(rawConnectionMock)).isTrue();
     }
 
     @Test
-    void getAutoCommitFails() throws SQLException {
+    void isAutoCommitEnabledFails() throws SQLException {
         doThrow(new SQLException("expected")).when(rawConnectionMock).getAutoCommit();
-        assertThatThrownBy(() -> Transaction.getAutoCommit(rawConnectionMock)).isInstanceOf(UncheckedSQLException.class)
+        assertThatThrownBy(() -> Transaction.isAutoCommitEnabled(rawConnectionMock))
+                .isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Failed to get autoCommit: expected");
     }
 
