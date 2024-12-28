@@ -1,8 +1,7 @@
 package org.itsallcode.jdbc.batch;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.itsallcode.jdbc.RowPreparedStatementSetter;
 import org.itsallcode.jdbc.SimplePreparedStatement;
@@ -32,7 +31,7 @@ class RowBatchInsertTest {
     }
 
     @Test
-    void addDoesNotFlushesAfterBatchSizeReached() {
+    void addFlushesAfterBatchSizeReached() {
         final RowBatchInsert<Row> testee = testee(2);
         when(stmtMock.executeBatch()).thenReturn(new int[0]);
 
@@ -45,6 +44,28 @@ class RowBatchInsertTest {
         inOrder.verify(stmtMock).setValues(any());
         inOrder.verify(stmtMock).addBatch();
         inOrder.verify(stmtMock).executeBatch();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void closeClosesStatement() {
+        final RowBatchInsert<Row> testee = testee(2);
+        testee.close();
+        verify(stmtMock).close();
+    }
+
+    @Test
+    void closeFlushes() {
+        final RowBatchInsert<Row> testee = testee(2);
+        when(stmtMock.executeBatch()).thenReturn(new int[0]);
+
+        testee.add(new Row());
+        testee.close();
+
+        final InOrder inOrder = inOrder(stmtMock);
+        inOrder.verify(stmtMock).addBatch();
+        inOrder.verify(stmtMock).executeBatch();
+        inOrder.verify(stmtMock).close();
         inOrder.verifyNoMoreInteractions();
     }
 
