@@ -254,4 +254,27 @@ class SimpleConnectionITest {
                     () -> assertThat(result).isEqualTo(List.of(List.of(1, "a"), List.of(2, "b"), List.of(3, "c"))));
         }
     }
+
+    @Test
+    void multipleTransactions() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            try (Transaction tx = connection.startTransaction()) {
+                tx.executeStatement("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b"));
+                assertThat(getRowCount(tx, "test")).isEqualTo(2);
+                tx.commit();
+            }
+            assertThat(getRowCount(connection, "test")).isEqualTo(2);
+            try (Transaction tx = connection.startTransaction()) {
+                tx.executeStatement("DELETE FROM TEST WHERE ID = ?", List.of(1));
+                assertThat(getRowCount(tx, "test")).isEqualTo(1);
+            }
+            assertThat(getRowCount(connection, "test")).isEqualTo(2);
+        }
+    }
+
+    private long getRowCount(final DbOperations dbOperations, final String tableName) {
+        return dbOperations.query("select count(*) from %s".formatted(tableName)).toList().get(0).get(0)
+                .getValue(Long.class);
+    }
 }

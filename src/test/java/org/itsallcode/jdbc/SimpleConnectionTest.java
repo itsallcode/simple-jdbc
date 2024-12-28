@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.dialect.H2Dialect;
 import org.itsallcode.jdbc.resultset.RowMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -83,8 +82,38 @@ class SimpleConnectionTest {
     @MethodSource("operations")
     void operationSucceedsForOpenConnection(final Consumer<SimpleConnection> operation) throws SQLException {
         final SimpleConnection testee = testee();
-        final PreparedStatement preparedStatementMock = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
-        lenient().when(connectionMock.prepareStatement(anyString())).thenReturn(preparedStatementMock);
+        lenient().when(connectionMock.prepareStatement(anyString()))
+                .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        assertDoesNotThrow(() -> operation.accept(testee));
+    }
+
+    @ParameterizedTest
+    @MethodSource("operations")
+    void operationSucceedsAfterTransactionIsClosed(final Consumer<SimpleConnection> operation) throws SQLException {
+        final SimpleConnection testee = testee();
+        lenient().when(connectionMock.prepareStatement(anyString()))
+                .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        testee.startTransaction().close();
+        assertDoesNotThrow(() -> operation.accept(testee));
+    }
+
+    @ParameterizedTest
+    @MethodSource("operations")
+    void operationSucceedsAfterTransactionIsCommitted(final Consumer<SimpleConnection> operation) throws SQLException {
+        final SimpleConnection testee = testee();
+        lenient().when(connectionMock.prepareStatement(anyString()))
+                .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        testee.startTransaction().commit();
+        assertDoesNotThrow(() -> operation.accept(testee));
+    }
+
+    @ParameterizedTest
+    @MethodSource("operations")
+    void operationSucceedsAfterTransactionIsRolledBack(final Consumer<SimpleConnection> operation) throws SQLException {
+        final SimpleConnection testee = testee();
+        lenient().when(connectionMock.prepareStatement(anyString()))
+                .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        testee.startTransaction().rollback();
         assertDoesNotThrow(() -> operation.accept(testee));
     }
 
@@ -100,7 +129,6 @@ class SimpleConnectionTest {
 
     @ParameterizedTest
     @MethodSource("operations")
-    @Disabled("Not implemented yet")
     void operationFailsWhenTransactionIsActive(final Consumer<SimpleConnection> operation) {
         final SimpleConnection testee = testee();
         testee.startTransaction();

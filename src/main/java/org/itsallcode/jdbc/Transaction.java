@@ -1,6 +1,7 @@
 package org.itsallcode.jdbc;
 
 import java.sql.Connection;
+import java.util.function.Consumer;
 
 import org.itsallcode.jdbc.batch.BatchInsertBuilder;
 import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
@@ -22,23 +23,27 @@ import org.itsallcode.jdbc.resultset.generic.Row;
 public final class Transaction implements DbOperations {
 
     private final ConnectionWrapper connection;
+    private final Consumer<Transaction> transactionFinishedCallback;
     private final boolean restoreAutoCommitRequired;
     private boolean closed;
     private boolean committed;
     private boolean rolledBack;
 
-    private Transaction(final ConnectionWrapper connection, final boolean restoreAutoCommitRequired) {
+    private Transaction(final ConnectionWrapper connection, final Consumer<Transaction> transactionFinishedCallback,
+            final boolean restoreAutoCommitRequired) {
         this.connection = connection;
+        this.transactionFinishedCallback = transactionFinishedCallback;
         this.restoreAutoCommitRequired = restoreAutoCommitRequired;
     }
 
-    static Transaction start(final ConnectionWrapper connection) {
+    static Transaction start(final ConnectionWrapper connection,
+            final Consumer<Transaction> transactionFinishedCallback) {
         boolean restoreAutoCommitRequired = false;
         if (connection.isAutoCommitEnabled()) {
             connection.setAutoCommit(false);
             restoreAutoCommitRequired = true;
         }
-        return new Transaction(connection, restoreAutoCommitRequired);
+        return new Transaction(connection, transactionFinishedCallback, restoreAutoCommitRequired);
     }
 
     /**
@@ -52,6 +57,7 @@ public final class Transaction implements DbOperations {
         checkOperationAllowed();
         this.connection.commit();
         this.committed = true;
+        this.transactionFinishedCallback.accept(this);
     }
 
     /**
@@ -65,6 +71,7 @@ public final class Transaction implements DbOperations {
         checkOperationAllowed();
         this.connection.rollback();
         this.rolledBack = true;
+        this.transactionFinishedCallback.accept(this);
     }
 
     @Override

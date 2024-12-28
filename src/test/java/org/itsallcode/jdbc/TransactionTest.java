@@ -3,6 +3,7 @@ package org.itsallcode.jdbc;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
 import java.sql.SQLException;
@@ -25,6 +26,8 @@ class TransactionTest {
     @Mock
     ConnectionWrapper connectionMock;
     @Mock
+    Consumer<Transaction> transactionFinishedCallbackMock;
+    @Mock
     static PreparedStatementSetter preparedStatementSetterMock;
     @Mock
     static RowMapper<?> rowMapperMock;
@@ -32,21 +35,21 @@ class TransactionTest {
     @Test
     void startDisablesAutoCommitWhenEnabledBefore() throws SQLException {
         when(connectionMock.isAutoCommitEnabled()).thenReturn(true);
-        Transaction.start(connectionMock);
+        startTransaction();
         verify(connectionMock).setAutoCommit(false);
     }
 
     @Test
     void startDoesNotDisableAutoCommitWhenAlreadyDisabled() throws SQLException {
         when(connectionMock.isAutoCommitEnabled()).thenReturn(false);
-        Transaction.start(connectionMock);
+        startTransaction();
         verify(connectionMock, never()).setAutoCommit(anyBoolean());
     }
 
     @Test
     void closeDoesNotRestoreAutoCommitWhenAlreadyDisabled() throws SQLException {
         when(connectionMock.isAutoCommitEnabled()).thenReturn(false);
-        Transaction.start(connectionMock).close();
+        startTransaction().close();
         verify(connectionMock, never()).setAutoCommit(anyBoolean());
     }
 
@@ -54,7 +57,7 @@ class TransactionTest {
     void closeRestoresAutoCommit() throws SQLException {
         when(connectionMock.isAutoCommitEnabled()).thenReturn(true);
         final InOrder inOrder = inOrder(connectionMock, connectionMock);
-        Transaction.start(connectionMock).close();
+        startTransaction().close();
         inOrder.verify(connectionMock).setAutoCommit(false);
         inOrder.verify(connectionMock).setAutoCommit(true);
         inOrder.verifyNoMoreInteractions();
@@ -83,14 +86,14 @@ class TransactionTest {
     @ParameterizedTest
     @MethodSource("operations")
     void operationSucceedsForValidTransaction(final Consumer<Transaction> operation) {
-        final Transaction testee = testee();
+        final Transaction testee = startTransaction();
         assertDoesNotThrow(() -> operation.accept(testee));
     }
 
     @ParameterizedTest
     @MethodSource("operations")
     void operationFailsAfterClose(final Consumer<Transaction> operation) {
-        final Transaction testee = testee();
+        final Transaction testee = startTransaction();
         testee.close();
         assertThatThrownBy(() -> operation.accept(testee))
                 .isInstanceOf(IllegalStateException.class)
@@ -100,7 +103,7 @@ class TransactionTest {
     @ParameterizedTest
     @MethodSource("operations")
     void operationFailsAfterCommit(final Consumer<Transaction> operation) {
-        final Transaction testee = testee();
+        final Transaction testee = startTransaction();
         testee.commit();
         assertThatThrownBy(() -> operation.accept(testee))
                 .isInstanceOf(IllegalStateException.class)
@@ -110,7 +113,7 @@ class TransactionTest {
     @ParameterizedTest
     @MethodSource("operations")
     void operationFailsAfterRollback(final Consumer<Transaction> operation) {
-        final Transaction testee = testee();
+        final Transaction testee = startTransaction();
         testee.rollback();
         assertThatThrownBy(() -> operation.accept(testee))
                 .isInstanceOf(IllegalStateException.class)
@@ -119,14 +122,21 @@ class TransactionTest {
 
     @Test
     void closingRollsBack() throws SQLException {
-        final Transaction testee = testee();
+        final Transaction testee = startTransaction();
         testee.close();
         verify(connectionMock).rollback();
     }
 
     @Test
+    void closingCallsTransactionFinishedCallback() throws SQLException {
+        final Transaction testee = startTransaction();
+        testee.close();
+        verify(transactionFinishedCallbackMock).accept(same(testee));
+    }
+
+    @Test
     void closingDoesNotCloseConnection() throws SQLException {
-        final Transaction testee = testee();
+        final Transaction testee = startTransaction();
         testee.close();
         verify(connectionMock, never()).close();
         verify(connectionMock, never()).close();
@@ -134,14 +144,14 @@ class TransactionTest {
 
     @Test
     void closingAlreadyClosedTransactionSucceeds() {
-        final Transaction testee = testee();
+        final Transaction testee = startTransaction();
         testee.close();
         assertDoesNotThrow(testee::close);
     }
 
     @Test
     void closingAlreadyClosedTransactionRollsBackOnlyOnce() throws SQLException {
-        final Transaction testee = testee();
+        final Transaction testee = startTransaction();
         testee.close();
         testee.close();
         verify(connectionMock, times(1)).rollback();
@@ -149,7 +159,7 @@ class TransactionTest {
 
     @Test
     void closingRolledBackTransactionDoesNotRollback() throws SQLException {
-        final Transaction testee = testee();
+        final Transaction testee = startTransaction();
         testee.rollback();
         testee.close();
         verify(connectionMock, times(1)).rollback();
@@ -157,7 +167,7 @@ class TransactionTest {
 
     @Test
     void closingCommittedTransactionDoesNotRollback() throws SQLException {
-        final Transaction testee = testee();
+        final Transaction testee = startTransaction();
         testee.commit();
         testee.close();
         verify(connectionMock, never()).rollback();
@@ -165,17 +175,31 @@ class TransactionTest {
 
     @Test
     void commit() throws SQLException {
-        testee().commit();
+        startTransaction().commit();
         verify(connectionMock).commit();
     }
 
     @Test
+    void commitCallsTransactionFinishedCallback() throws SQLException {
+        final Transaction testee = startTransaction();
+        testee.commit();
+        verify(transactionFinishedCallbackMock).accept(same(testee));
+    }
+
+    @Test
     void rollback() throws SQLException {
-        testee().rollback();
+        startTransaction().rollback();
         verify(connectionMock).rollback();
     }
 
-    private Transaction testee() {
-        return Transaction.start(connectionMock);
+    @Test
+    void rollbackCallsTransactionFinishedCallback() throws SQLException {
+        final Transaction testee = startTransaction();
+        testee.rollback();
+        verify(transactionFinishedCallbackMock).accept(same(testee));
+    }
+
+    private Transaction startTransaction() {
+        return Transaction.start(connectionMock, transactionFinishedCallbackMock);
     }
 }

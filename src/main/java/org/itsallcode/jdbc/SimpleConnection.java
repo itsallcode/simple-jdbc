@@ -1,7 +1,6 @@
 package org.itsallcode.jdbc;
 
 import java.sql.Connection;
-import java.util.logging.Logger;
 
 import org.itsallcode.jdbc.batch.BatchInsertBuilder;
 import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
@@ -20,7 +19,6 @@ import org.itsallcode.jdbc.resultset.generic.Row;
  * </ul>
  */
 public class SimpleConnection implements DbOperations {
-    private static final Logger LOG = Logger.getLogger(SimpleConnection.class.getName());
 
     private Transaction transaction;
 
@@ -50,15 +48,19 @@ public class SimpleConnection implements DbOperations {
      */
     public Transaction startTransaction() {
         checkOperationAllowed();
-        transaction = Transaction.start(this.connection);
+        transaction = Transaction.start(this.connection, tx -> {
+            if (this.transaction != tx) {
+                throw new IllegalStateException("Transaction not allowed to commit or rollback another transaction");
+            }
+            this.transaction = null;
+        });
         return transaction;
     }
 
     private void checkOperationAllowed() {
-        // if (transaction != null) {
-        // throw new IllegalStateException("Operation not allowed on connection when
-        // transaction is active");
-        // }
+        if (transaction != null) {
+            throw new IllegalStateException("Operation not allowed on connection when transaction is active");
+        }
         if (this.connection.isClosed()) {
             throw new IllegalStateException("Operation not allowed on closed connection");
         }
