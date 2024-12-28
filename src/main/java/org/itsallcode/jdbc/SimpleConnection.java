@@ -1,16 +1,14 @@
 package org.itsallcode.jdbc;
 
-import java.sql.*;
-import java.util.Objects;
+import java.sql.Connection;
 import java.util.logging.Logger;
 
 import org.itsallcode.jdbc.batch.BatchInsertBuilder;
 import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
 import org.itsallcode.jdbc.dialect.DbDialect;
-import org.itsallcode.jdbc.resultset.*;
+import org.itsallcode.jdbc.resultset.RowMapper;
+import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
-import org.itsallcode.jdbc.statement.ConvertingPreparedStatement;
-import org.itsallcode.jdbc.statement.ParamSetterProvider;
 
 /**
  * A simplified version of a JDBC {@link Connection}. Create new connections
@@ -24,17 +22,12 @@ import org.itsallcode.jdbc.statement.ParamSetterProvider;
 public class SimpleConnection implements DbOperations {
     private static final Logger LOG = Logger.getLogger(SimpleConnection.class.getName());
 
-    private final Connection connection;
-    private final Context context;
-    private final DbDialect dialect;
-    private final ParamSetterProvider paramSetterProvider;
     private Transaction transaction;
 
+    private final ConnectionWrapper connection;
+
     SimpleConnection(final Connection connection, final Context context, final DbDialect dialect) {
-        this.connection = Objects.requireNonNull(connection, "connection");
-        this.context = Objects.requireNonNull(context, "context");
-        this.dialect = Objects.requireNonNull(dialect, "dialect");
-        this.paramSetterProvider = new ParamSetterProvider(dialect);
+        this.connection = new ConnectionWrapper(connection, context, dialect);
     }
 
     /**
@@ -57,7 +50,7 @@ public class SimpleConnection implements DbOperations {
      */
     public Transaction startTransaction() {
         checkOperationAllowed();
-        transaction = Transaction.start(this.connection, this);
+        transaction = Transaction.start(this.connection);
         return transaction;
     }
 
@@ -66,77 +59,46 @@ public class SimpleConnection implements DbOperations {
         // throw new IllegalStateException("Operation not allowed on connection when
         // transaction is active");
         // }
-        if (this.isClosed()) {
+        if (this.connection.isClosed()) {
             throw new IllegalStateException("Operation not allowed on closed connection");
         }
     }
 
     @Override
+    public void executeScript(final String sqlScript) {
+        checkOperationAllowed();
+        connection.executeScript(sqlScript);
+    }
+
+    @Override
     public void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
         checkOperationAllowed();
-        try (SimplePreparedStatement statement = prepareStatement(sql)) {
-            statement.setValues(preparedStatementSetter);
-            statement.execute();
-        }
+        connection.executeStatement(sql, preparedStatementSetter);
     }
 
     @Override
     public SimpleResultSet<Row> query(final String sql) {
         checkOperationAllowed();
-        return query(sql, ContextRowMapper.generic(dialect));
+        return connection.query(sql);
     }
 
     @Override
     public <T> SimpleResultSet<T> query(final String sql, final PreparedStatementSetter preparedStatementSetter,
             final RowMapper<T> rowMapper) {
         checkOperationAllowed();
-        LOG.finest(() -> "Executing query '" + sql + "'...");
-        final SimplePreparedStatement statement = prepareStatement(sql);
-        statement.setValues(preparedStatementSetter);
-        return statement.executeQuery(ContextRowMapper.create(rowMapper));
-    }
-
-    SimplePreparedStatement prepareStatement(final String sql) {
-        return new SimplePreparedStatement(context, dialect, wrap(prepare(sql)), sql);
-    }
-
-    private PreparedStatement wrap(final PreparedStatement preparedStatement) {
-        return new ConvertingPreparedStatement(preparedStatement, paramSetterProvider);
+        return connection.query(sql, preparedStatementSetter, rowMapper);
     }
 
     @Override
     public BatchInsertBuilder batchInsert() {
         checkOperationAllowed();
-        return new BatchInsertBuilder(this::prepareStatement);
+        return connection.batchInsert();
     }
 
     @Override
     public <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
         checkOperationAllowed();
-        return new RowBatchInsertBuilder<>(this::prepareStatement);
-    }
-
-    private PreparedStatement prepare(final String sql) {
-        try {
-            return connection.prepareStatement(sql);
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error preparing statement '" + sql + "'", e);
-        }
-    }
-
-    /**
-     * Retrieves whether this {@link SimpleConnection} has been closed.
-     * 
-     * @return {@code true} if this this {@link SimpleConnection} is closed,
-     *         {@code false} if it is still open
-     * @see Connection#isClosed()
-     */
-    boolean isClosed() {
-        try {
-            return this.connection.isClosed();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to get closed state", e);
-        }
+        return connection.rowBatchInsert();
     }
 
     /**
@@ -146,10 +108,6 @@ public class SimpleConnection implements DbOperations {
      */
     @Override
     public void close() {
-        try {
-            connection.close();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error closing connection", e);
-        }
+        connection.close();
     }
 }

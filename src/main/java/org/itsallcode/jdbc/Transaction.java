@@ -1,7 +1,6 @@
 package org.itsallcode.jdbc;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import org.itsallcode.jdbc.batch.BatchInsertBuilder;
 import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
@@ -22,27 +21,24 @@ import org.itsallcode.jdbc.resultset.generic.Row;
  */
 public final class Transaction implements DbOperations {
 
-    private final SimpleConnection connection;
-    private final Connection rawConnection;
+    private final ConnectionWrapper connection;
     private final boolean restoreAutoCommitRequired;
     private boolean closed;
     private boolean committed;
     private boolean rolledBack;
 
-    private Transaction(final Connection rawConnection, final SimpleConnection connection,
-            final boolean restoreAutoCommitRequired) {
-        this.rawConnection = rawConnection;
+    private Transaction(final ConnectionWrapper connection, final boolean restoreAutoCommitRequired) {
         this.connection = connection;
         this.restoreAutoCommitRequired = restoreAutoCommitRequired;
     }
 
-    static Transaction start(final Connection rawConnection, final SimpleConnection connection) {
+    static Transaction start(final ConnectionWrapper connection) {
         boolean restoreAutoCommitRequired = false;
-        if (isAutoCommitEnabled(rawConnection)) {
-            setAutoCommit(rawConnection, false);
+        if (connection.isAutoCommitEnabled()) {
+            connection.setAutoCommit(false);
             restoreAutoCommitRequired = true;
         }
-        return new Transaction(rawConnection, connection, restoreAutoCommitRequired);
+        return new Transaction(connection, restoreAutoCommitRequired);
     }
 
     /**
@@ -54,16 +50,8 @@ public final class Transaction implements DbOperations {
      */
     public void commit() {
         checkOperationAllowed();
-        this.doCommit();
+        this.connection.commit();
         this.committed = true;
-    }
-
-    private void doCommit() {
-        try {
-            this.rawConnection.commit();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to commit transaction", e);
-        }
     }
 
     /**
@@ -75,16 +63,8 @@ public final class Transaction implements DbOperations {
      */
     public void rollback() {
         checkOperationAllowed();
-        this.doRollback();
+        this.connection.rollback();
         this.rolledBack = true;
-    }
-
-    private void doRollback() {
-        try {
-            this.rawConnection.rollback();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to rollback transaction", e);
-        }
     }
 
     @Override
@@ -121,7 +101,7 @@ public final class Transaction implements DbOperations {
     @Override
     public <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
         checkOperationAllowed();
-        return connection.batchInsert(rowType);
+        return connection.rowBatchInsert();
     }
 
     private void checkOperationAllowed() {
@@ -155,38 +135,8 @@ public final class Transaction implements DbOperations {
             this.rollback();
         }
         if (restoreAutoCommitRequired) {
-            setAutoCommit(rawConnection, true);
+            connection.setAutoCommit(true);
         }
         this.closed = true;
-    }
-
-    /**
-     * Set the auto commit state.
-     * 
-     * @param rawConnection raw connection
-     * @param autoCommit    auto commit state
-     * @see Connection#setAutoCommit(boolean)
-     */
-    static void setAutoCommit(final Connection rawConnection, final boolean autoCommit) {
-        try {
-            rawConnection.setAutoCommit(autoCommit);
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to set autoCommit to " + autoCommit, e);
-        }
-    }
-
-    /**
-     * Get the current auto commit state.
-     * 
-     * @param rawConnection raw connection
-     * @return auto commit state
-     * @see Connection#getAutoCommit()
-     */
-    static boolean isAutoCommitEnabled(final Connection rawConnection) {
-        try {
-            return rawConnection.getAutoCommit();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to get autoCommit", e);
-        }
     }
 }

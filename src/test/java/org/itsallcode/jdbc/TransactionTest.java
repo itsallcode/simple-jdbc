@@ -1,12 +1,10 @@
 package org.itsallcode.jdbc;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Consumer;
@@ -25,9 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class TransactionTest {
     @Mock
-    SimpleConnection connectionMock;
-    @Mock
-    Connection rawConnectionMock;
+    ConnectionWrapper connectionMock;
     @Mock
     static PreparedStatementSetter preparedStatementSetterMock;
     @Mock
@@ -35,32 +31,32 @@ class TransactionTest {
 
     @Test
     void startDisablesAutoCommitWhenEnabledBefore() throws SQLException {
-        when(rawConnectionMock.getAutoCommit()).thenReturn(true);
-        Transaction.start(rawConnectionMock, connectionMock);
-        verify(rawConnectionMock).setAutoCommit(false);
+        when(connectionMock.isAutoCommitEnabled()).thenReturn(true);
+        Transaction.start(connectionMock);
+        verify(connectionMock).setAutoCommit(false);
     }
 
     @Test
     void startDoesNotDisableAutoCommitWhenAlreadyDisabled() throws SQLException {
-        when(rawConnectionMock.getAutoCommit()).thenReturn(false);
-        Transaction.start(rawConnectionMock, connectionMock);
-        verify(rawConnectionMock, never()).setAutoCommit(anyBoolean());
+        when(connectionMock.isAutoCommitEnabled()).thenReturn(false);
+        Transaction.start(connectionMock);
+        verify(connectionMock, never()).setAutoCommit(anyBoolean());
     }
 
     @Test
     void closeDoesNotRestoreAutoCommitWhenAlreadyDisabled() throws SQLException {
-        when(rawConnectionMock.getAutoCommit()).thenReturn(false);
-        Transaction.start(rawConnectionMock, connectionMock).close();
-        verify(rawConnectionMock, never()).setAutoCommit(anyBoolean());
+        when(connectionMock.isAutoCommitEnabled()).thenReturn(false);
+        Transaction.start(connectionMock).close();
+        verify(connectionMock, never()).setAutoCommit(anyBoolean());
     }
 
     @Test
     void closeRestoresAutoCommit() throws SQLException {
-        when(rawConnectionMock.getAutoCommit()).thenReturn(true);
-        final InOrder inOrder = inOrder(rawConnectionMock, connectionMock);
-        Transaction.start(rawConnectionMock, connectionMock).close();
-        inOrder.verify(rawConnectionMock).setAutoCommit(false);
-        inOrder.verify(rawConnectionMock).setAutoCommit(true);
+        when(connectionMock.isAutoCommitEnabled()).thenReturn(true);
+        final InOrder inOrder = inOrder(connectionMock, connectionMock);
+        Transaction.start(connectionMock).close();
+        inOrder.verify(connectionMock).setAutoCommit(false);
+        inOrder.verify(connectionMock).setAutoCommit(true);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -125,7 +121,7 @@ class TransactionTest {
     void closingRollsBack() throws SQLException {
         final Transaction testee = testee();
         testee.close();
-        verify(rawConnectionMock).rollback();
+        verify(connectionMock).rollback();
     }
 
     @Test
@@ -133,7 +129,7 @@ class TransactionTest {
         final Transaction testee = testee();
         testee.close();
         verify(connectionMock, never()).close();
-        verify(rawConnectionMock, never()).close();
+        verify(connectionMock, never()).close();
     }
 
     @Test
@@ -148,7 +144,7 @@ class TransactionTest {
         final Transaction testee = testee();
         testee.close();
         testee.close();
-        verify(rawConnectionMock, times(1)).rollback();
+        verify(connectionMock, times(1)).rollback();
     }
 
     @Test
@@ -156,7 +152,7 @@ class TransactionTest {
         final Transaction testee = testee();
         testee.rollback();
         testee.close();
-        verify(rawConnectionMock, times(1)).rollback();
+        verify(connectionMock, times(1)).rollback();
     }
 
     @Test
@@ -164,64 +160,22 @@ class TransactionTest {
         final Transaction testee = testee();
         testee.commit();
         testee.close();
-        verify(rawConnectionMock, never()).rollback();
-    }
-
-    @Test
-    void setAutoCommit() throws SQLException {
-        Transaction.setAutoCommit(rawConnectionMock, false);
-        verify(rawConnectionMock).setAutoCommit(false);
-    }
-
-    @Test
-    void setAutoCommitFails() throws SQLException {
-        doThrow(new SQLException("expected")).when(rawConnectionMock).setAutoCommit(false);
-        assertThatThrownBy(() -> Transaction.setAutoCommit(rawConnectionMock, false))
-                .isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Failed to set autoCommit to false: expected");
-    }
-
-    @Test
-    void isAutoCommitEnabled() throws SQLException {
-        when(rawConnectionMock.getAutoCommit()).thenReturn(true);
-        assertThat(Transaction.isAutoCommitEnabled(rawConnectionMock)).isTrue();
-    }
-
-    @Test
-    void isAutoCommitEnabledFails() throws SQLException {
-        doThrow(new SQLException("expected")).when(rawConnectionMock).getAutoCommit();
-        assertThatThrownBy(() -> Transaction.isAutoCommitEnabled(rawConnectionMock))
-                .isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Failed to get autoCommit: expected");
+        verify(connectionMock, never()).rollback();
     }
 
     @Test
     void commit() throws SQLException {
         testee().commit();
-        verify(rawConnectionMock).commit();
-    }
-
-    @Test
-    void commitFails() throws SQLException {
-        doThrow(new SQLException("expected")).when(rawConnectionMock).commit();
-        assertThatThrownBy(testee()::commit).isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Failed to commit transaction: expected");
+        verify(connectionMock).commit();
     }
 
     @Test
     void rollback() throws SQLException {
         testee().rollback();
-        verify(rawConnectionMock).rollback();
-    }
-
-    @Test
-    void rollbackFails() throws SQLException {
-        doThrow(new SQLException("expected")).when(rawConnectionMock).rollback();
-        assertThatThrownBy(testee()::rollback).isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Failed to rollback transaction: expected");
+        verify(connectionMock).rollback();
     }
 
     private Transaction testee() {
-        return Transaction.start(rawConnectionMock, connectionMock);
+        return Transaction.start(connectionMock);
     }
 }
