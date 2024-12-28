@@ -1,5 +1,8 @@
 package org.itsallcode.jdbc;
 
+import java.sql.Connection;
+import java.util.function.Consumer;
+
 import org.itsallcode.jdbc.batch.BatchInsertBuilder;
 import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
 import org.itsallcode.jdbc.resultset.RowMapper;
@@ -19,46 +22,56 @@ import org.itsallcode.jdbc.resultset.generic.Row;
  */
 public final class Transaction implements DbOperations {
 
-    private final SimpleConnection connection;
+    private final ConnectionWrapper connection;
+    private final Consumer<Transaction> transactionFinishedCallback;
     private final boolean restoreAutoCommitRequired;
     private boolean closed;
     private boolean committed;
     private boolean rolledBack;
 
-    private Transaction(final SimpleConnection connection, final boolean restoreAutoCommitRequired) {
+    private Transaction(final ConnectionWrapper connection, final Consumer<Transaction> transactionFinishedCallback,
+            final boolean restoreAutoCommitRequired) {
         this.connection = connection;
+        this.transactionFinishedCallback = transactionFinishedCallback;
         this.restoreAutoCommitRequired = restoreAutoCommitRequired;
     }
 
-    static Transaction start(final SimpleConnection connection) {
+    static Transaction start(final ConnectionWrapper connection,
+            final Consumer<Transaction> transactionFinishedCallback) {
         boolean restoreAutoCommitRequired = false;
-        if (connection.getAutoCommit()) {
+        if (connection.isAutoCommitEnabled()) {
             connection.setAutoCommit(false);
             restoreAutoCommitRequired = true;
         }
-        return new Transaction(connection, restoreAutoCommitRequired);
+        return new Transaction(connection, transactionFinishedCallback, restoreAutoCommitRequired);
     }
 
     /**
      * Commit the transaction.
      * <p>
      * No further operations are allowed on this transaction afterwards.
+     * 
+     * @see Connection#commit()
      */
     public void commit() {
         checkOperationAllowed();
-        connection.commit();
+        this.connection.commit();
         this.committed = true;
+        this.transactionFinishedCallback.accept(this);
     }
 
     /**
      * Rollback the transaction.
      * <p>
      * No further operations are allowed on this transaction afterwards.
+     * 
+     * @see Connection#rollback()
      */
     public void rollback() {
         checkOperationAllowed();
-        connection.rollback();
+        this.connection.rollback();
         this.rolledBack = true;
+        this.transactionFinishedCallback.accept(this);
     }
 
     @Override
@@ -95,7 +108,7 @@ public final class Transaction implements DbOperations {
     @Override
     public <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
         checkOperationAllowed();
-        return connection.batchInsert(rowType);
+        return connection.rowBatchInsert();
     }
 
     private void checkOperationAllowed() {
