@@ -183,4 +183,19 @@ class ConnectionWrapperTest {
                 .isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error closing connection: expected");
     }
+
+    @Test
+    void isClosed() throws SQLException {
+        when(connectionMock.isClosed()).thenReturn(true);
+        assertThat(testee().isClosed()).isTrue();
+    }
+
+    @Test
+    void isClosedFails() throws SQLException {
+        doThrow(new SQLException("expected")).when(connectionMock).isClosed();
+        final ConnectionWrapper testee = testee();
+        assertThatThrownBy(testee::isClosed)
+                .isInstanceOf(UncheckedSQLException.class)
+                .hasMessage("Failed to get closed state: expected");
+    }
 }
