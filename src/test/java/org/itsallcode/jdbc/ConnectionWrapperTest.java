@@ -83,7 +83,7 @@ class ConnectionWrapperTest {
     }
 
     @Test
-    void executeScriptEmptyString() throws SQLException {
+    void executeScriptEmptyString() {
         testee().executeScript("");
         verifyNoInteractions(connectionMock);
     }
