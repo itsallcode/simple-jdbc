@@ -43,6 +43,9 @@ public class SimpleConnection implements DbOperations {
 
     /**
      * Start a new {@link Transaction} by disabling auto commit if necessary.
+     * <p>
+     * <em>Important:</em> The transaction must be committed or rolled back before
+     * the connection can be used again.
      * 
      * @return new transaction
      */

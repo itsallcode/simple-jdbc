@@ -89,6 +89,26 @@ class SimpleConnectionTest {
 
     @ParameterizedTest
     @MethodSource("operations")
+    void operationFailsAfterClose(final Consumer<SimpleConnection> operation) throws SQLException {
+        final SimpleConnection testee = testee();
+        when(connectionMock.isClosed()).thenReturn(true);
+        assertThatThrownBy(() -> operation.accept(testee))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Operation not allowed on closed connection");
+    }
+
+    @ParameterizedTest
+    @MethodSource("operations")
+    void operationFailsWhenTransactionIsActive(final Consumer<SimpleConnection> operation) {
+        final SimpleConnection testee = testee();
+        testee.startTransaction();
+        assertThatThrownBy(() -> operation.accept(testee))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Operation not allowed on connection when transaction is active");
+    }
+
+    @ParameterizedTest
+    @MethodSource("operations")
     void operationSucceedsAfterTransactionIsClosed(final Consumer<SimpleConnection> operation) throws SQLException {
         final SimpleConnection testee = testee();
         lenient().when(connectionMock.prepareStatement(anyString()))
@@ -115,26 +135,6 @@ class SimpleConnectionTest {
                 .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
         testee.startTransaction().rollback();
         assertDoesNotThrow(() -> operation.accept(testee));
-    }
-
-    @ParameterizedTest
-    @MethodSource("operations")
-    void operationFailsAfterClose(final Consumer<SimpleConnection> operation) throws SQLException {
-        final SimpleConnection testee = testee();
-        when(connectionMock.isClosed()).thenReturn(true);
-        assertThatThrownBy(() -> operation.accept(testee))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Operation not allowed on closed connection");
-    }
-
-    @ParameterizedTest
-    @MethodSource("operations")
-    void operationFailsWhenTransactionIsActive(final Consumer<SimpleConnection> operation) {
-        final SimpleConnection testee = testee();
-        testee.startTransaction();
-        assertThatThrownBy(() -> operation.accept(testee))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Operation not allowed on connection when transaction is active");
     }
 
     SimpleConnection testee() {
