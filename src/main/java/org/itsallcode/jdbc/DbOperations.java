@@ -1,9 +1,8 @@
 package org.itsallcode.jdbc;
 
-import static java.util.function.Predicate.not;
-
 import java.sql.PreparedStatement;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.batch.BatchInsertBuilder;
@@ -23,12 +22,7 @@ public interface DbOperations extends AutoCloseable {
      * 
      * @param sqlScript script to execute.
      */
-    default void executeScript(final String sqlScript) {
-        Arrays.stream(sqlScript.split(";"))
-                .map(String::trim)
-                .filter(not(String::isEmpty))
-                .forEach(this::executeStatement);
-    }
+    void executeScript(final String sqlScript);
 
     /**
      * Execute a single SQL statement.

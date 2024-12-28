@@ -1,8 +1,5 @@
 package org.itsallcode.jdbc;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
 import java.lang.reflect.*;
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -37,9 +34,7 @@ class BatchInsertPerformanceTest {
 
     private RowBatchInsertBuilder<NameRow> testee() {
         final PreparedStatement stmt = createNoopPreparedStatement();
-        when(connectionMock.prepareStatement(anyString()))
-                .thenReturn(new SimplePreparedStatement(null, null, stmt, "sql"));
-        return new RowBatchInsertBuilder<NameRow>(connectionMock::prepareStatement);
+        return new RowBatchInsertBuilder<NameRow>(sql -> new SimplePreparedStatement(null, null, stmt, "sql"));
     }
 
     private PreparedStatement createNoopPreparedStatement() {

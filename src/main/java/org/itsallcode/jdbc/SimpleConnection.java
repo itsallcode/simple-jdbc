@@ -1,16 +1,13 @@
 package org.itsallcode.jdbc;
 
-import java.sql.*;
-import java.util.Objects;
-import java.util.logging.Logger;
+import java.sql.Connection;
 
 import org.itsallcode.jdbc.batch.BatchInsertBuilder;
 import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
 import org.itsallcode.jdbc.dialect.DbDialect;
-import org.itsallcode.jdbc.resultset.*;
+import org.itsallcode.jdbc.resultset.RowMapper;
+import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
-import org.itsallcode.jdbc.statement.ConvertingPreparedStatement;
-import org.itsallcode.jdbc.statement.ParamSetterProvider;
 
 /**
  * A simplified version of a JDBC {@link Connection}. Create new connections
@@ -22,18 +19,13 @@ import org.itsallcode.jdbc.statement.ParamSetterProvider;
  * </ul>
  */
 public class SimpleConnection implements DbOperations {
-    private static final Logger LOG = Logger.getLogger(SimpleConnection.class.getName());
 
-    private final Connection connection;
-    private final Context context;
-    private final DbDialect dialect;
-    private final ParamSetterProvider paramSetterProvider;
+    private Transaction transaction;
+
+    private final ConnectionWrapper connection;
 
     SimpleConnection(final Connection connection, final Context context, final DbDialect dialect) {
-        this.connection = Objects.requireNonNull(connection, "connection");
-        this.context = Objects.requireNonNull(context, "context");
-        this.dialect = Objects.requireNonNull(dialect, "dialect");
-        this.paramSetterProvider = new ParamSetterProvider(dialect);
+        this.connection = new ConnectionWrapper(connection, context, dialect);
     }
 
     /**
@@ -51,113 +43,67 @@ public class SimpleConnection implements DbOperations {
 
     /**
      * Start a new {@link Transaction} by disabling auto commit if necessary.
+     * <p>
+     * <em>Important:</em> The transaction must be committed or rolled back before
+     * the connection can be used again.
      * 
      * @return new transaction
      */
     public Transaction startTransaction() {
-        return Transaction.start(this);
+        checkOperationAllowed();
+        transaction = Transaction.start(this.connection, tx -> {
+            if (this.transaction != tx) {
+                throw new IllegalStateException("Transaction not allowed to commit or rollback another transaction");
+            }
+            this.transaction = null;
+        });
+        return transaction;
     }
 
-    @Override
-    public void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
-        try (SimplePreparedStatement statement = prepareStatement(sql)) {
-            statement.setValues(preparedStatementSetter);
-            statement.execute();
+    private void checkOperationAllowed() {
+        if (transaction != null) {
+            throw new IllegalStateException("Operation not allowed on connection when transaction is active");
+        }
+        if (this.connection.isClosed()) {
+            throw new IllegalStateException("Operation not allowed on closed connection");
         }
     }
 
     @Override
+    public void executeScript(final String sqlScript) {
+        checkOperationAllowed();
+        connection.executeScript(sqlScript);
+    }
+
+    @Override
+    public void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
+        checkOperationAllowed();
+        connection.executeStatement(sql, preparedStatementSetter);
+    }
+
+    @Override
     public SimpleResultSet<Row> query(final String sql) {
-        return query(sql, ContextRowMapper.generic(dialect));
+        checkOperationAllowed();
+        return connection.query(sql);
     }
 
     @Override
     public <T> SimpleResultSet<T> query(final String sql, final PreparedStatementSetter preparedStatementSetter,
             final RowMapper<T> rowMapper) {
-        LOG.finest(() -> "Executing query '" + sql + "'...");
-        final SimplePreparedStatement statement = prepareStatement(sql);
-        statement.setValues(preparedStatementSetter);
-        return statement.executeQuery(ContextRowMapper.create(rowMapper));
-    }
-
-    SimplePreparedStatement prepareStatement(final String sql) {
-        return new SimplePreparedStatement(context, dialect, wrap(prepare(sql)), sql);
-    }
-
-    private PreparedStatement wrap(final PreparedStatement preparedStatement) {
-        return new ConvertingPreparedStatement(preparedStatement, paramSetterProvider);
+        checkOperationAllowed();
+        return connection.query(sql, preparedStatementSetter, rowMapper);
     }
 
     @Override
     public BatchInsertBuilder batchInsert() {
-        return new BatchInsertBuilder(this::prepareStatement);
+        checkOperationAllowed();
+        return connection.batchInsert();
     }
 
     @Override
     public <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
-        return new RowBatchInsertBuilder<>(this::prepareStatement);
-    }
-
-    private PreparedStatement prepare(final String sql) {
-        try {
-            return connection.prepareStatement(sql);
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error preparing statement '" + sql + "'", e);
-        }
-    }
-
-    /**
-     * Set the auto commit state.
-     * 
-     * @param autoCommit auto commit state
-     * @see Connection#setAutoCommit(boolean)
-     */
-    void setAutoCommit(final boolean autoCommit) {
-        try {
-            this.connection.setAutoCommit(autoCommit);
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to set autoCommit to " + autoCommit, e);
-        }
-    }
-
-    /**
-     * Get the current auto commit state.
-     * 
-     * @return auto commit state
-     * @see Connection#getAutoCommit()
-     */
-    boolean getAutoCommit() {
-        try {
-            return this.connection.getAutoCommit();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to get autoCommit", e);
-        }
-    }
-
-    /**
-     * Rollback the transaction.
-     * 
-     * @see Connection#rollback()
-     */
-    void rollback() {
-        try {
-            this.connection.rollback();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to rollback transaction", e);
-        }
-    }
-
-    /**
-     * Commit the transaction.
-     * 
-     * @see Connection#commit()
-     */
-    void commit() {
-        try {
-            this.connection.commit();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to commit transaction", e);
-        }
+        checkOperationAllowed();
+        return connection.rowBatchInsert();
     }
 
     /**
@@ -167,10 +113,6 @@ public class SimpleConnection implements DbOperations {
      */
     @Override
     public void close() {
-        try {
-            connection.close();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error closing connection", e);
-        }
+        connection.close();
     }
 }
