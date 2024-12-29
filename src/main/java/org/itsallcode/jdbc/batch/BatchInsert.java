@@ -30,6 +30,9 @@ public class BatchInsert implements AutoCloseable {
 
     /**
      * Add a new row to the batch.
+     * <p>
+     * <em>Important:</em> This method automatically calls
+     * {@link PreparedStatement#addBatch()}. No need to call it separately.
      * 
      * @param preparedStatementSetter prepared statement setter that is used for
      *                                setting row values of the
@@ -37,6 +40,31 @@ public class BatchInsert implements AutoCloseable {
      */
     public void add(final PreparedStatementSetter preparedStatementSetter) {
         statement.setValues(preparedStatementSetter);
+        addBatch();
+    }
+
+    /**
+     * Get the {@link PreparedStatement} that is used for the batch insert. Use this
+     * to set values on the {@link PreparedStatement} before calling
+     * {@link #addBatch()}.
+     * <p>
+     * Use this method if you want to set values on the {@link PreparedStatement}
+     * directly and you need more control. Prefer using
+     * {@link #add(PreparedStatementSetter)} if possible.
+     * 
+     * @return the {@link PreparedStatement} used for the batch insert
+     */
+    public PreparedStatement getStatement() {
+        return statement.getStatement();
+    }
+
+    /**
+     * Add a new row to the batch. Only call this method if you have set all values
+     * on the {@link PreparedStatement} retrieved from {@link #statement}.
+     * <p>
+     * Don't call this if you use {@link #add(PreparedStatementSetter)}.
+     */
+    public void addBatch() {
         statement.addBatch();
         currentBatchSize++;
         rows++;

@@ -67,7 +67,7 @@ public record SimpleParameterMetaData(List<Parameter> parameters) {
         /** Parameter will allow {@code NULL} values. */
         NULLABLE(ParameterMetaData.parameterNullable),
         /** Parameter nullability status is unknown. */
-        UNKNWON(ParameterMetaData.parameterNullableUnknown);
+        UNKNOWN(ParameterMetaData.parameterNullableUnknown);
 
         private final int mode;
 
