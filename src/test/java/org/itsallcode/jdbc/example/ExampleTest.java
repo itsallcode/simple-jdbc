@@ -112,7 +112,7 @@ class ExampleTest {
     }
 
     @Test
-    void exampleRawBatchInsert() {
+    void exampleRawBatchInsert() throws SQLException {
         final ConnectionFactory connectionFactory = ConnectionFactory
                 .create(Context.builder().build());
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
@@ -122,12 +122,12 @@ class ExampleTest {
                         .into("NAMES", List.of("ID", "NAME"))
                         .maxBatchSize(100)
                         .build()) {
+                    final PreparedStatement statement = batch.getStatement();
                     for (int i = 0; i < 5; i++) {
                         final int id = i + 1;
-                        batch.add(ps -> {
-                            ps.setInt(1, id);
-                            ps.setString(2, "name" + id);
-                        });
+                        statement.setInt(1, id);
+                        statement.setString(2, "name" + id);
+                        batch.addBatch();
                     }
                 }
                 transaction.commit();
