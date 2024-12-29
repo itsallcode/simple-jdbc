@@ -129,6 +129,11 @@ class SimplePreparedStatementTest {
                 .hasMessage("Error getting parameter metadata: expected");
     }
 
+    @Test
+    void getStatement() {
+        assertThat(testee().getStatement()).isSameAs(statementMock);
+    }
+
     SimplePreparedStatement testee() {
         return new SimplePreparedStatement(null, null, statementMock, SQL_QUERY);
     }

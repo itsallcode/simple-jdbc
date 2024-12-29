@@ -100,4 +100,13 @@ public class SimplePreparedStatement implements AutoCloseable {
             throw new UncheckedSQLException("Error getting parameter metadata", e);
         }
     }
+
+    /**
+     * Get the underlying {@link PreparedStatement}.
+     * 
+     * @return the underlying {@link PreparedStatement}
+     */
+    public PreparedStatement getStatement() {
+        return statement;
+    }
 }

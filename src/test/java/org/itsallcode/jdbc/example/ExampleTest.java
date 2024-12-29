@@ -111,6 +111,38 @@ class ExampleTest {
         }
     }
 
+    @Test
+    void exampleRawBatchInsert() {
+        final ConnectionFactory connectionFactory = ConnectionFactory
+                .create(Context.builder().build());
+        try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
+            try (Transaction transaction = connection.startTransaction()) {
+                transaction.executeScript(readResource("/schema.sql"));
+                try (BatchInsert batch = transaction.batchInsert()
+                        .into("NAMES", List.of("ID", "NAME"))
+                        .maxBatchSize(100)
+                        .build()) {
+                    for (int i = 0; i < 5; i++) {
+                        final int id = i + 1;
+                        batch.add(ps -> {
+                            ps.setInt(1, id);
+                            ps.setString(2, "name" + id);
+                        });
+                    }
+                }
+                transaction.commit();
+            }
+
+            try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
+                final List<Row> result = rs.stream().toList();
+                assertEquals(5, result.size());
+                final Row firstRow = result.get(0);
+                assertEquals(1, firstRow.get(0).value());
+                assertEquals("name1", firstRow.get(1).value());
+            }
+        }
+    }
+
     private String readResource(final String resourceName) {
         final URL resource = getClass().getResource(resourceName);
         if (resource == null) {
