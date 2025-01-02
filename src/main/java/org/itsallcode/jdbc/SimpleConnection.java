@@ -107,6 +107,17 @@ public class SimpleConnection implements DbOperations {
     }
 
     /**
+     * Get the original wrapped connection.
+     * <p>
+     * Use this in case of missing features in {@link SimpleConnection}.
+     * 
+     * @return original wrapped connection
+     */
+    public Connection getOriginalConnection() {
+        return connection.getOriginalConnection();
+    }
+
+    /**
      * Close the underlying {@link Connection}.
      * 
      * @see Connection#close()

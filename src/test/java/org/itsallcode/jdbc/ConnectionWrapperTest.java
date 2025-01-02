@@ -198,4 +198,9 @@ class ConnectionWrapperTest {
                 .isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Failed to get closed state: expected");
     }
+
+    @Test
+    void getOriginalConnection() {
+        assertThat(testee().getOriginalConnection()).isSameAs(connectionMock);
+    }
 }
