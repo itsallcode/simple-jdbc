@@ -130,6 +130,10 @@ class ConnectionWrapper implements AutoCloseable {
         }
     }
 
+    Connection getOriginalConnection() {
+        return connection;
+    }
+
     @Override
     public void close() {
         try {

@@ -1,5 +1,6 @@
 package org.itsallcode.jdbc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -135,6 +136,11 @@ class SimpleConnectionTest {
                 .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
         testee.startTransaction().rollback();
         assertDoesNotThrow(() -> operation.accept(testee));
+    }
+
+    @Test
+    void getOriginalConnection() {
+        assertThat(testee().getOriginalConnection()).isSameAs(connectionMock);
     }
 
     SimpleConnection testee() {
