@@ -6,6 +6,7 @@ import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
  * A generic {@link DbDialect} without any special handling.
  */
 public final class GenericDialect implements DbDialect {
+    /** Singleton instance of the generic DB dialect. */
     public static final DbDialect INSTANCE = new GenericDialect();
 
     private GenericDialect() {
