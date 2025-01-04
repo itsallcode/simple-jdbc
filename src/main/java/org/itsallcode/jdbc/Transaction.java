@@ -111,6 +111,11 @@ public final class Transaction implements DbOperations {
         return connection.rowBatchInsert();
     }
 
+    public Connection getOriginalConnection() {
+        checkOperationAllowed();
+        return connection.getOriginalConnection();
+    }
+
     private void checkOperationAllowed() {
         if (this.closed) {
             throw new IllegalStateException("Operation not allowed on closed transaction");
