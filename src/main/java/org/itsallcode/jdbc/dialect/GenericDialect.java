@@ -5,11 +5,11 @@ import org.itsallcode.jdbc.resultset.generic.ColumnMetaData;
 /**
  * A generic {@link DbDialect} without any special handling.
  */
-public class GenericDialect implements DbDialect {
-    /**
-     * Create a new instance.
-     */
-    public GenericDialect() {
+public final class GenericDialect implements DbDialect {
+    public static final DbDialect INSTANCE = new GenericDialect();
+
+    private GenericDialect() {
+        // Nothing to do
     }
 
     @Override
