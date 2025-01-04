@@ -143,7 +143,7 @@ public interface DbOperations extends AutoCloseable {
      * 
      * @return original wrapped connection
      */
-    public Connection getOriginalConnection();
+    Connection getOriginalConnection();
 
     @Override
     void close();
