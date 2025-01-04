@@ -106,14 +106,8 @@ public class SimpleConnection implements DbOperations {
         return connection.rowBatchInsert();
     }
 
-    /**
-     * Get the original wrapped connection.
-     * <p>
-     * Use this in case of missing features in {@link SimpleConnection}.
-     * 
-     * @return original wrapped connection
-     */
     public Connection getOriginalConnection() {
+        checkOperationAllowed();
         return connection.getOriginalConnection();
     }
 

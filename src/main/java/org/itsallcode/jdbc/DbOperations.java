@@ -1,5 +1,6 @@
 package org.itsallcode.jdbc;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Iterator;
 import java.util.List;
@@ -134,6 +135,15 @@ public interface DbOperations extends AutoCloseable {
      * @return row-based batch insert builder
      */
     <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType);
+
+    /**
+     * Get the original wrapped connection.
+     * <p>
+     * Use this in case of missing features in {@link DbOperations}.
+     * 
+     * @return original wrapped connection
+     */
+    public Connection getOriginalConnection();
 
     @Override
     void close();

@@ -1,11 +1,13 @@
 package org.itsallcode.jdbc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -74,6 +76,7 @@ class TransactionTest {
                 operation(tx -> tx.query("sql", List.of(), rowMapperMock)),
                 operation(tx -> tx.batchInsert()),
                 operation(tx -> tx.batchInsert(null)),
+                operation(tx -> tx.getOriginalConnection()),
                 operation(tx -> tx.commit()),
                 operation(tx -> tx.rollback()));
     }
@@ -196,6 +199,13 @@ class TransactionTest {
         final Transaction testee = startTransaction();
         testee.rollback();
         verify(transactionFinishedCallbackMock).accept(same(testee));
+    }
+
+    @Test
+    void getOriginalConnection() {
+        final Connection jdbcConnectionMock = mock(Connection.class);
+        when(connectionMock.getOriginalConnection()).thenReturn(jdbcConnectionMock);
+        assertThat(startTransaction().getOriginalConnection()).isSameAs(jdbcConnectionMock);
     }
 
     private Transaction startTransaction() {

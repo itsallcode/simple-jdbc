@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [PR #40](https://github.com/itsallcode/simple-jdbc/pull/40): Verify that operation on `SimpleConnection` are allowed
 - [PR #41](https://github.com/itsallcode/simple-jdbc/pull/41): Allow direct access to `PreparedStatement` for batch insert
 - [PR #42](https://github.com/itsallcode/simple-jdbc/pull/42): Allow direct access to `Connection`
+- [PR #43](https://github.com/itsallcode/simple-jdbc/pull/43): Allow direct access to `Connection` from `DbOperations`
 
 ## [0.9.0] - 2024-12-23
 
