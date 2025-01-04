@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [PR #41](https://github.com/itsallcode/simple-jdbc/pull/41): Allow direct access to `PreparedStatement` for batch insert
 - [PR #42](https://github.com/itsallcode/simple-jdbc/pull/42): Allow direct access to `Connection`
 - [PR #43](https://github.com/itsallcode/simple-jdbc/pull/43): Allow direct access to `Connection` from `DbOperations`
+- [PR #44](https://github.com/itsallcode/simple-jdbc/pull/44): Add `GenericDialect` for unsupported databases
 
 ## [0.9.0] - 2024-12-23
 
