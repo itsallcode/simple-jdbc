@@ -6,8 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.batch.BatchInsertBuilder;
-import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
+import org.itsallcode.jdbc.batch.*;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -117,6 +116,14 @@ public interface DbOperations extends AutoCloseable {
      */
     <T> SimpleResultSet<T> query(final String sql, final PreparedStatementSetter preparedStatementSetter,
             final RowMapper<T> rowMapper);
+
+    /**
+     * Create a batch statement builder for executing multiple statements in a
+     * batch.
+     * 
+     * @return batch statement builder
+     */
+    StatementBatchBuilder batch();
 
     /**
      * Create a batch insert builder for inserting rows by directly setting values

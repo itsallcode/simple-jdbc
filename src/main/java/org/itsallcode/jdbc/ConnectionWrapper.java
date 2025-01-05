@@ -72,7 +72,7 @@ class ConnectionWrapper implements AutoCloseable {
                 new ConvertingPreparedStatement(prepare(sql), paramSetterProvider), sql);
     }
 
-    private SimpleStatement createSimpleStatement() {
+    SimpleStatement createSimpleStatement() {
         return new SimpleStatement(context, dialect, createStatement());
     }
 

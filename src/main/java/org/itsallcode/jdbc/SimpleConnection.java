@@ -2,8 +2,7 @@ package org.itsallcode.jdbc;
 
 import java.sql.Connection;
 
-import org.itsallcode.jdbc.batch.BatchInsertBuilder;
-import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
+import org.itsallcode.jdbc.batch.*;
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
@@ -92,6 +91,12 @@ public class SimpleConnection implements DbOperations {
             final RowMapper<T> rowMapper) {
         checkOperationAllowed();
         return connection.query(sql, preparedStatementSetter, rowMapper);
+    }
+
+    @Override
+    public StatementBatchBuilder batch() {
+        checkOperationAllowed();
+        return new StatementBatchBuilder(connection::createSimpleStatement);
     }
 
     @Override

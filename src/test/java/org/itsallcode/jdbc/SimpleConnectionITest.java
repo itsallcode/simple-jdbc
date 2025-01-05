@@ -9,6 +9,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.batch.StatementBatch;
 import org.itsallcode.jdbc.dialect.H2Dialect;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
@@ -253,6 +254,25 @@ class SimpleConnectionITest {
             assertAll(
                     () -> assertThat(result).hasSize(3),
                     () -> assertThat(result).isEqualTo(List.of(List.of(1, "a"), List.of(2, "b"), List.of(3, "c"))));
+        }
+    }
+
+    @Test
+    void batchStatement() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            try (StatementBatch batch = connection.batch().maxBatchSize(3).build()) {
+                batch.addBatch("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+                batch.addBatch("INSERT INTO TEST VALUES (1, 'a')");
+                batch.addBatch("INSERT INTO TEST VALUES (2, 'b')");
+                batch.addBatch("INSERT INTO TEST VALUES (3, 'c')");
+                batch.addBatch("INSERT INTO TEST VALUES (4, 'd')");
+            }
+
+            final List<Row> result = connection.query("select count(*) from test").stream().toList();
+            assertAll(
+                    () -> assertThat(result).hasSize(1),
+                    () -> assertThat(result.get(0).columnValues()).hasSize(1),
+                    () -> assertThat(result.get(0).get(0).value()).isEqualTo(4L));
         }
     }
 

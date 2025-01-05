@@ -72,6 +72,7 @@ class SimpleConnectionTest {
                 operation(con -> con.query("sql", preparedStatementSetterMock, rowMapperMock)),
                 operation(con -> con.query("sql", List.of(), rowMapperMock)),
                 operation(con -> con.getOriginalConnection()),
+                operation(con -> con.batch()),
                 operation(con -> con.batchInsert()),
                 operation(con -> con.batchInsert(null)));
     }

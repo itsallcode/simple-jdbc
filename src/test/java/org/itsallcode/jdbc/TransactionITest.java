@@ -1,11 +1,14 @@
 package org.itsallcode.jdbc;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.batch.StatementBatch;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
 
@@ -106,6 +109,28 @@ class TransactionITest {
                         (final ResultSet rs, final int rowNum) -> rs.getString("name")).toList();
                 assertEquals(List.of("test"), resultSet);
             }
+        }
+    }
+
+    @Test
+    void batchStatement() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            try (Transaction tx = connection.startTransaction()) {
+                try (StatementBatch batch = tx.batch().maxBatchSize(3).build()) {
+                    batch.addBatch("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+                    batch.addBatch("INSERT INTO TEST VALUES (1, 'a')");
+                    batch.addBatch("INSERT INTO TEST VALUES (2, 'b')");
+                    batch.addBatch("INSERT INTO TEST VALUES (3, 'c')");
+                    batch.addBatch("INSERT INTO TEST VALUES (4, 'd')");
+                }
+                tx.commit();
+            }
+
+            final List<Row> result = connection.query("select count(*) from test").stream().toList();
+            assertAll(
+                    () -> assertThat(result).hasSize(1),
+                    () -> assertThat(result.get(0).columnValues()).hasSize(1),
+                    () -> assertThat(result.get(0).get(0).value()).isEqualTo(4L));
         }
     }
 

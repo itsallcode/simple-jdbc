@@ -20,6 +20,8 @@
  * {@link org.itsallcode.jdbc.DbOperations#executeUpdate(String, List)}</li>
  * <li>... with a prepared statement and custom parameter setter:
  * {@link org.itsallcode.jdbc.DbOperations#executeUpdate(String, org.itsallcode.jdbc.PreparedStatementSetter)}</li>
+ * <li>... multiple statements in a batch:
+ * {@link org.itsallcode.jdbc.DbOperations#batch()}</li>
  * 
  * <li>... semicolon separated SQL script:
  * {@link org.itsallcode.jdbc.DbOperations#executeScript(String)}</li>
