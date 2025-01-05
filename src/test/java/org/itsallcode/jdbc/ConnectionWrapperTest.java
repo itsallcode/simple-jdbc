@@ -2,12 +2,11 @@ package org.itsallcode.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.sql.*;
 
-import org.itsallcode.jdbc.dialect.H2Dialect;
+import org.itsallcode.jdbc.dialect.GenericDialect;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,22 +26,22 @@ class ConnectionWrapperTest {
     PreparedStatement preparedStatementMock;
 
     ConnectionWrapper testee() {
-        return new ConnectionWrapper(connectionMock, Context.builder().build(), new H2Dialect());
+        return new ConnectionWrapper(connectionMock, Context.builder().build(), GenericDialect.INSTANCE);
     }
 
     @Test
     void executeStatementPrepareFails() throws SQLException {
-        when(connectionMock.prepareStatement("sql")).thenThrow(new SQLException("expected"));
+        when(connectionMock.createStatement()).thenThrow(new SQLException("expected"));
         final ConnectionWrapper testee = testee();
         assertThatThrownBy(() -> testee.executeUpdate("sql"))
                 .isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Error preparing statement 'sql': expected");
+                .hasMessage("Error creating statement: expected");
     }
 
     @Test
     void executeStatementExecuteFails() throws SQLException {
-        when(connectionMock.prepareStatement("sql")).thenReturn(preparedStatementMock);
-        when(preparedStatementMock.executeUpdate()).thenThrow(new SQLException("expected"));
+        when(connectionMock.createStatement()).thenReturn(statementMock);
+        when(statementMock.executeUpdate("sql")).thenThrow(new SQLException("expected"));
         final ConnectionWrapper testee = testee();
         assertThatThrownBy(() -> testee.executeUpdate("sql"))
                 .isInstanceOf(UncheckedSQLException.class)
@@ -51,8 +50,8 @@ class ConnectionWrapperTest {
 
     @Test
     void executeStatementCloseFails() throws SQLException {
-        when(connectionMock.prepareStatement("sql")).thenReturn(preparedStatementMock);
-        doThrow(new SQLException("expected")).when(preparedStatementMock).close();
+        when(connectionMock.createStatement()).thenReturn(statementMock);
+        doThrow(new SQLException("expected")).when(statementMock).close();
         final ConnectionWrapper testee = testee();
         assertThatThrownBy(() -> testee.executeUpdate("sql"))
                 .isInstanceOf(UncheckedSQLException.class)
@@ -61,12 +60,12 @@ class ConnectionWrapperTest {
 
     @Test
     void executeStatement() throws SQLException {
-        when(connectionMock.prepareStatement("sql")).thenReturn(preparedStatementMock);
+        when(connectionMock.createStatement()).thenReturn(statementMock);
         testee().executeUpdate("sql");
-        final InOrder inOrder = inOrder(connectionMock, preparedStatementMock);
-        inOrder.verify(connectionMock).prepareStatement("sql");
-        inOrder.verify(preparedStatementMock).executeUpdate();
-        inOrder.verify(preparedStatementMock).close();
+        final InOrder inOrder = inOrder(connectionMock, statementMock);
+        inOrder.verify(connectionMock).createStatement();
+        inOrder.verify(statementMock).executeUpdate("sql");
+        inOrder.verify(statementMock).close();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -84,9 +83,10 @@ class ConnectionWrapperTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test
-    void executeScriptEmptyString() {
-        testee().executeScript("");
+    @ParameterizedTest
+    @ValueSource(strings = { "", " ", "\n", "\t", " \n\t", ";" })
+    void executeScriptEmptyString(final String script) {
+        testee().executeScript(script);
         verifyNoInteractions(connectionMock);
     }
 
@@ -95,20 +95,24 @@ class ConnectionWrapperTest {
             "sql script;", "sql script;\n", "sql script\n;", "sql script;;", "sql script;;", ";sql script",
             " ; ; sql script" })
     void executeScriptWithoutTrailingSemicolon(final String script) throws SQLException {
-        when(connectionMock.prepareStatement("sql script")).thenReturn(preparedStatementMock);
+        when(connectionMock.createStatement()).thenReturn(statementMock);
         testee().executeScript(script);
-        verify(connectionMock).prepareStatement("sql script");
+        verify(statementMock).addBatch("sql script");
+        verify(statementMock).executeBatch();
         verifyNoMoreInteractions(connectionMock);
     }
 
     @Test
     void executeScriptRunsMultipleCommands() throws SQLException {
-        when(connectionMock.prepareStatement(anyString())).thenReturn(preparedStatementMock);
+        when(connectionMock.createStatement()).thenReturn(statementMock);
         testee().executeScript("script 1; script 2; script 3");
-        verify(connectionMock).prepareStatement("script 1");
-        verify(connectionMock).prepareStatement("script 2");
-        verify(connectionMock).prepareStatement("script 3");
-        verifyNoMoreInteractions(connectionMock);
+        final InOrder inOrder = inOrder(connectionMock, statementMock);
+        inOrder.verify(statementMock).addBatch("script 1");
+        inOrder.verify(statementMock).addBatch("script 2");
+        inOrder.verify(statementMock).addBatch("script 3");
+        inOrder.verify(statementMock).executeBatch();
+        inOrder.verify(statementMock).close();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test

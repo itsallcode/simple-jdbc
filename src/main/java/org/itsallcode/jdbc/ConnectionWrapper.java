@@ -3,12 +3,10 @@ package org.itsallcode.jdbc;
 import static java.util.function.Predicate.not;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 
-import org.itsallcode.jdbc.batch.BatchInsertBuilder;
-import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
+import org.itsallcode.jdbc.batch.*;
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -34,10 +32,10 @@ class ConnectionWrapper implements AutoCloseable {
         this.paramSetterProvider = new ParamSetterProvider(dialect);
     }
 
-    void executeUpdate(final String sql) {
-        // TODO
-        this.executeUpdate(sql, ps -> {
-        });
+    int executeUpdate(final String sql) {
+        try (SimpleStatement statement = createSimpleStatement()) {
+            return statement.executeUpdate(sql);
+        }
     }
 
     int executeUpdate(final String sql, final PreparedStatementSetter preparedStatementSetter) {
@@ -48,10 +46,16 @@ class ConnectionWrapper implements AutoCloseable {
     }
 
     void executeScript(final String sqlScript) {
-        Arrays.stream(sqlScript.split(";"))
+        final List<String> statements = Arrays.stream(sqlScript.split(";"))
                 .map(String::trim)
                 .filter(not(String::isEmpty))
-                .forEach(this::executeUpdate);
+                .toList();
+        if (statements.isEmpty()) {
+            return;
+        }
+        try (StatementBatch batch = this.batch().build()) {
+            statements.forEach(batch::addBatch);
+        }
     }
 
     SimpleResultSet<Row> query(final String sql) {
@@ -72,7 +76,11 @@ class ConnectionWrapper implements AutoCloseable {
                 new ConvertingPreparedStatement(prepare(sql), paramSetterProvider), sql);
     }
 
-    SimpleStatement createSimpleStatement() {
+    StatementBatchBuilder batch() {
+        return new StatementBatchBuilder(this::createSimpleStatement);
+    }
+
+    private SimpleStatement createSimpleStatement() {
         return new SimpleStatement(context, dialect, createStatement());
     }
 

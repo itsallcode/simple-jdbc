@@ -69,6 +69,12 @@ public class SimpleConnection implements DbOperations {
     }
 
     @Override
+    public int executeUpdate(final String sql) {
+        checkOperationAllowed();
+        return connection.executeUpdate(sql);
+    }
+
+    @Override
     public void executeScript(final String sqlScript) {
         checkOperationAllowed();
         connection.executeScript(sqlScript);
@@ -96,7 +102,7 @@ public class SimpleConnection implements DbOperations {
     @Override
     public StatementBatchBuilder batch() {
         checkOperationAllowed();
-        return new StatementBatchBuilder(connection::createSimpleStatement);
+        return connection.batch();
     }
 
     @Override

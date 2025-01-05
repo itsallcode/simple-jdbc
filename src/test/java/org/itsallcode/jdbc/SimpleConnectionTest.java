@@ -87,6 +87,7 @@ class SimpleConnectionTest {
         final SimpleConnection testee = testee();
         lenient().when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        lenient().when(connectionMock.createStatement()).thenReturn(mock(Statement.class, RETURNS_DEEP_STUBS));
         assertDoesNotThrow(() -> operation.accept(testee));
     }
 
@@ -116,6 +117,7 @@ class SimpleConnectionTest {
         final SimpleConnection testee = testee();
         lenient().when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        lenient().when(connectionMock.createStatement()).thenReturn(mock(Statement.class, RETURNS_DEEP_STUBS));
         testee.startTransaction().close();
         assertDoesNotThrow(() -> operation.accept(testee));
     }
@@ -126,6 +128,7 @@ class SimpleConnectionTest {
         final SimpleConnection testee = testee();
         lenient().when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        lenient().when(connectionMock.createStatement()).thenReturn(mock(Statement.class, RETURNS_DEEP_STUBS));
         testee.startTransaction().commit();
         assertDoesNotThrow(() -> operation.accept(testee));
     }
@@ -136,6 +139,7 @@ class SimpleConnectionTest {
         final SimpleConnection testee = testee();
         lenient().when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        lenient().when(connectionMock.createStatement()).thenReturn(mock(Statement.class, RETURNS_DEEP_STUBS));
         testee.startTransaction().rollback();
         assertDoesNotThrow(() -> operation.accept(testee));
     }

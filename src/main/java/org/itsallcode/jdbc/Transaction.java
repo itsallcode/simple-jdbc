@@ -74,6 +74,12 @@ public final class Transaction implements DbOperations {
     }
 
     @Override
+    public int executeUpdate(final String sql) {
+        checkOperationAllowed();
+        return connection.executeUpdate(sql);
+    }
+
+    @Override
     public int executeUpdate(final String sql, final PreparedStatementSetter preparedStatementSetter) {
         checkOperationAllowed();
         return connection.executeUpdate(sql, preparedStatementSetter);
@@ -101,7 +107,7 @@ public final class Transaction implements DbOperations {
     @Override
     public StatementBatchBuilder batch() {
         checkOperationAllowed();
-        return new StatementBatchBuilder(connection::createSimpleStatement);
+        return connection.batch();
     }
 
     @Override

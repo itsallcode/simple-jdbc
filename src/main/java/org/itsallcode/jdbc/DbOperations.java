@@ -31,10 +31,7 @@ public interface DbOperations extends AutoCloseable {
      * @return either the row count for SQL Data Manipulation Language (DML)
      *         statements or 0 for SQL statements that return nothing
      */
-    default int executeUpdate(final String sql) {
-        return this.executeUpdate(sql, stmt -> {
-        });
-    }
+    int executeUpdate(final String sql);
 
     /**
      * Execute a single SQL statement as a prepared statement with placeholders.
