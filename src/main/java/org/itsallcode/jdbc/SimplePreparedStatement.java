@@ -1,6 +1,7 @@
 package org.itsallcode.jdbc;
 
 import java.sql.*;
+import java.util.Objects;
 
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.*;
@@ -16,10 +17,10 @@ public class SimplePreparedStatement implements AutoCloseable {
 
     SimplePreparedStatement(final Context context, final DbDialect dialect, final PreparedStatement statement,
             final String sql) {
-        this.context = context;
-        this.dialect = dialect;
-        this.statement = statement;
-        this.sql = sql;
+        this.context = Objects.requireNonNull(context, "context");
+        this.dialect = Objects.requireNonNull(dialect, "dialect");
+        this.statement = Objects.requireNonNull(statement, "statement");
+        this.sql = Objects.requireNonNull(sql, "sql");
     }
 
     <T> SimpleResultSet<T> executeQuery(final ContextRowMapper<T> rowMapper) {

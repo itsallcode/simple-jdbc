@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import java.sql.*;
 
+import org.itsallcode.jdbc.dialect.GenericDialect;
 import org.itsallcode.jdbc.resultset.ContextRowMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -135,7 +136,8 @@ class SimplePreparedStatementTest {
     }
 
     SimplePreparedStatement testee() {
-        return new SimplePreparedStatement(null, null, statementMock, SQL_QUERY);
+        return new SimplePreparedStatement(Context.builder().build(), GenericDialect.INSTANCE, statementMock,
+                SQL_QUERY);
     }
 
     record RowType() {
