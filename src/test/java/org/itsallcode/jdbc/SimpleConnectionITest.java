@@ -76,7 +76,7 @@ class SimpleConnectionITest {
             assertThatThrownBy(
                     () -> connection.query("select count(*) from missing_table"))
                     .isInstanceOf(UncheckedSQLException.class).hasMessage(
-                            "Error preparing statement 'select count(*) from missing_table': Table \"MISSING_TABLE\" not found (this database is empty); SQL statement:\n"
+                            "Error executing query 'select count(*) from missing_table': Table \"MISSING_TABLE\" not found (this database is empty); SQL statement:\n"
                                     + "select count(*) from missing_table [42104-232]");
         }
     }

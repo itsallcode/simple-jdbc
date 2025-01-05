@@ -34,10 +34,10 @@ class SimpleConnectionTest {
 
     @Test
     void queryPrepareStatementFails() throws SQLException {
-        when(connectionMock.prepareStatement(SQL_STATEMENT)).thenThrow(new SQLException("expected"));
+        when(connectionMock.createStatement()).thenThrow(new SQLException("expected"));
         final SimpleConnection testee = testee();
         assertThatThrownBy(() -> testee.query(SQL_STATEMENT)).isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Error preparing statement 'query': expected");
+                .hasMessage("Error creating statement: expected");
     }
 
     @Test

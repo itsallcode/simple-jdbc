@@ -34,29 +34,11 @@ public class SimpleStatement implements AutoCloseable {
         }
     }
 
-    @Deprecated
-    boolean execute(final String sql) {
-        try {
-            return statement.execute(sql);
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error executing statement '" + sql + "'", e);
-        }
-    }
-
     int executeUpdate(final String sql) {
         try {
             return statement.executeUpdate(sql);
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error executing statement '" + sql + "'", e);
-        }
-    }
-
-    @Deprecated
-    int getUpdateCount() {
-        try {
-            return statement.getUpdateCount();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error getting update count", e);
         }
     }
 
