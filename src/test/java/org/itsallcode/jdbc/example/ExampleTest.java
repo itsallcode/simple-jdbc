@@ -30,7 +30,7 @@ class ExampleTest {
                 .create(Context.builder().build());
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             connection.executeScript(readResource("/schema.sql"));
-            connection.executeStatement("insert into names (id, name) values (1, 'a'), (2, 'b'), (3, 'c')");
+            connection.executeUpdate("insert into names (id, name) values (1, 'a'), (2, 'b'), (3, 'c')");
 
             try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
                 final List<Row> result = rs.stream().toList();
@@ -46,7 +46,7 @@ class ExampleTest {
                 .create(Context.builder().build());
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             connection.executeScript(readResource("/schema.sql"));
-            connection.executeStatement("insert into names (id, name) values (1, 'a'), (2, 'b'), (3, 'c')");
+            connection.executeUpdate("insert into names (id, name) values (1, 'a'), (2, 'b'), (3, 'c')");
 
             try (SimpleResultSet<Name> result = connection.query("select id, name from names where id = ?",
                     ps -> ps.setInt(1, 2),

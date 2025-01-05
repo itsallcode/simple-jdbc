@@ -34,15 +34,16 @@ class ConnectionWrapper implements AutoCloseable {
         this.paramSetterProvider = new ParamSetterProvider(dialect);
     }
 
-    void executeStatement(final String sql) {
-        this.executeStatement(sql, ps -> {
+    void executeUpdate(final String sql) {
+        // TODO
+        this.executeUpdate(sql, ps -> {
         });
     }
 
-    void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
+    int executeUpdate(final String sql, final PreparedStatementSetter preparedStatementSetter) {
         try (SimplePreparedStatement statement = prepareStatement(sql)) {
             statement.setValues(preparedStatementSetter);
-            statement.execute();
+            return statement.executeUpdate();
         }
     }
 
@@ -50,7 +51,7 @@ class ConnectionWrapper implements AutoCloseable {
         Arrays.stream(sqlScript.split(";"))
                 .map(String::trim)
                 .filter(not(String::isEmpty))
-                .forEach(this::executeStatement);
+                .forEach(this::executeUpdate);
     }
 
     SimpleResultSet<Row> query(final String sql) {
@@ -66,12 +67,13 @@ class ConnectionWrapper implements AutoCloseable {
         return statement.executeQuery(ContextRowMapper.create(rowMapper));
     }
 
-    SimplePreparedStatement prepareStatement(final String sql) {
-        return new SimplePreparedStatement(context, dialect, wrap(prepare(sql)), sql);
+    private SimplePreparedStatement prepareStatement(final String sql) {
+        return new SimplePreparedStatement(context, dialect,
+                new ConvertingPreparedStatement(prepare(sql), paramSetterProvider), sql);
     }
 
-    private PreparedStatement wrap(final PreparedStatement preparedStatement) {
-        return new ConvertingPreparedStatement(preparedStatement, paramSetterProvider);
+    private SimpleStatement createSimpleStatement() {
+        return new SimpleStatement(context, dialect, createStatement());
     }
 
     BatchInsertBuilder batchInsert() {
@@ -87,6 +89,14 @@ class ConnectionWrapper implements AutoCloseable {
             return connection.prepareStatement(sql);
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error preparing statement '" + sql + "'", e);
+        }
+    }
+
+    private Statement createStatement() {
+        try {
+            return connection.createStatement();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Error creating statement", e);
         }
     }
 

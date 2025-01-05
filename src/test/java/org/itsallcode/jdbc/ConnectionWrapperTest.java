@@ -22,6 +22,8 @@ class ConnectionWrapperTest {
     @Mock
     Connection connectionMock;
     @Mock
+    Statement statementMock;
+    @Mock
     PreparedStatement preparedStatementMock;
 
     ConnectionWrapper testee() {
@@ -32,7 +34,7 @@ class ConnectionWrapperTest {
     void executeStatementPrepareFails() throws SQLException {
         when(connectionMock.prepareStatement("sql")).thenThrow(new SQLException("expected"));
         final ConnectionWrapper testee = testee();
-        assertThatThrownBy(() -> testee.executeStatement("sql"))
+        assertThatThrownBy(() -> testee.executeUpdate("sql"))
                 .isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error preparing statement 'sql': expected");
     }
@@ -40,9 +42,9 @@ class ConnectionWrapperTest {
     @Test
     void executeStatementExecuteFails() throws SQLException {
         when(connectionMock.prepareStatement("sql")).thenReturn(preparedStatementMock);
-        when(preparedStatementMock.execute()).thenThrow(new SQLException("expected"));
+        when(preparedStatementMock.executeUpdate()).thenThrow(new SQLException("expected"));
         final ConnectionWrapper testee = testee();
-        assertThatThrownBy(() -> testee.executeStatement("sql"))
+        assertThatThrownBy(() -> testee.executeUpdate("sql"))
                 .isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error executing statement 'sql': expected");
     }
@@ -52,7 +54,7 @@ class ConnectionWrapperTest {
         when(connectionMock.prepareStatement("sql")).thenReturn(preparedStatementMock);
         doThrow(new SQLException("expected")).when(preparedStatementMock).close();
         final ConnectionWrapper testee = testee();
-        assertThatThrownBy(() -> testee.executeStatement("sql"))
+        assertThatThrownBy(() -> testee.executeUpdate("sql"))
                 .isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error closing statement: expected");
     }
@@ -60,10 +62,10 @@ class ConnectionWrapperTest {
     @Test
     void executeStatement() throws SQLException {
         when(connectionMock.prepareStatement("sql")).thenReturn(preparedStatementMock);
-        testee().executeStatement("sql");
+        testee().executeUpdate("sql");
         final InOrder inOrder = inOrder(connectionMock, preparedStatementMock);
         inOrder.verify(connectionMock).prepareStatement("sql");
-        inOrder.verify(preparedStatementMock).execute();
+        inOrder.verify(preparedStatementMock).executeUpdate();
         inOrder.verify(preparedStatementMock).close();
         inOrder.verifyNoMoreInteractions();
     }
@@ -71,13 +73,13 @@ class ConnectionWrapperTest {
     @Test
     void executeStatementWithPreparedStatementSetter() throws SQLException {
         when(connectionMock.prepareStatement("sql")).thenReturn(preparedStatementMock);
-        testee().executeStatement("sql", ps -> {
+        testee().executeUpdate("sql", ps -> {
             ps.setString(1, "one");
         });
         final InOrder inOrder = inOrder(connectionMock, preparedStatementMock);
         inOrder.verify(connectionMock).prepareStatement("sql");
         inOrder.verify(preparedStatementMock).setString(1, "one");
-        inOrder.verify(preparedStatementMock).execute();
+        inOrder.verify(preparedStatementMock).executeUpdate();
         inOrder.verify(preparedStatementMock).close();
         inOrder.verifyNoMoreInteractions();
     }

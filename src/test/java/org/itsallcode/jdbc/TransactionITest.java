@@ -13,9 +13,9 @@ class TransactionITest {
     @Test
     void commit() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeUpdate("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             try (Transaction tx = connection.startTransaction()) {
-                tx.executeStatement("insert into test (id, name) values (1, 'test')");
+                tx.executeUpdate("insert into test (id, name) values (1, 'test')");
                 final List<Row> resultSet = tx.query("select count(*) as result from test").toList();
                 assertEquals(1L, resultSet.get(0).get(0).getValue(Long.class));
                 tx.commit();
@@ -28,9 +28,9 @@ class TransactionITest {
     @Test
     void explicitRollback() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeUpdate("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             try (Transaction tx = connection.startTransaction()) {
-                tx.executeStatement("insert into test (id, name) values (1, 'test')");
+                tx.executeUpdate("insert into test (id, name) values (1, 'test')");
                 final List<Row> resultSet = tx.query("select count(*) as result from test").toList();
                 assertEquals(1L, resultSet.get(0).get(0).getValue(Long.class));
                 tx.rollback();
@@ -43,9 +43,9 @@ class TransactionITest {
     @Test
     void implicitRollback() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeUpdate("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             try (Transaction tx = connection.startTransaction()) {
-                tx.executeStatement("insert into test (id, name) values (1, 'test')");
+                tx.executeUpdate("insert into test (id, name) values (1, 'test')");
                 final List<Row> resultSet = tx.query("select count(*) as result from test").toList();
                 assertEquals(1L, resultSet.get(0).get(0).getValue(Long.class));
             }
@@ -57,9 +57,9 @@ class TransactionITest {
     @Test
     void executeStatementWithParamSetter() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeUpdate("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             try (Transaction tx = connection.startTransaction()) {
-                tx.executeStatement("insert into test (id, name) values (?, ?)", stmt -> {
+                tx.executeUpdate("insert into test (id, name) values (?, ?)", stmt -> {
                     stmt.setInt(1, 1);
                     stmt.setString(2, "a");
                 });
@@ -85,9 +85,9 @@ class TransactionITest {
     @Test
     void queryWithRowMapper() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeUpdate("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             try (Transaction tx = connection.startTransaction()) {
-                tx.executeStatement("insert into test (id, name) values (1, 'test')");
+                tx.executeUpdate("insert into test (id, name) values (1, 'test')");
                 final List<String> resultSet = tx.query("select * from test",
                         (final ResultSet rs, final int rowNum) -> rs.getString("name")).toList();
                 assertEquals(List.of("test"), resultSet);
@@ -98,9 +98,9 @@ class TransactionITest {
     @Test
     void queryWithParamSetter() {
         try (final SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeUpdate("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             try (final Transaction tx = connection.startTransaction()) {
-                tx.executeStatement("insert into test (id, name) values (1, 'test')");
+                tx.executeUpdate("insert into test (id, name) values (1, 'test')");
                 final List<String> resultSet = tx.query("select * from test where id = ?",
                         stmt -> stmt.setInt(1, 1),
                         (final ResultSet rs, final int rowNum) -> rs.getString("name")).toList();

@@ -76,9 +76,9 @@ public class SimpleConnection implements DbOperations {
     }
 
     @Override
-    public void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
+    public int executeUpdate(final String sql, final PreparedStatementSetter preparedStatementSetter) {
         checkOperationAllowed();
-        connection.executeStatement(sql, preparedStatementSetter);
+        return connection.executeUpdate(sql, preparedStatementSetter);
     }
 
     @Override

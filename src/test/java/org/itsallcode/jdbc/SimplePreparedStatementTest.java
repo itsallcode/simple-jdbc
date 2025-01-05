@@ -49,16 +49,16 @@ class SimplePreparedStatementTest {
 
     @Test
     void executeStatement() throws SQLException {
-        when(statementMock.execute()).thenReturn(true);
-        assertThat(testee().execute()).isTrue();
-        verify(statementMock).execute();
+        when(statementMock.executeUpdate()).thenReturn(2);
+        assertThat(testee().executeUpdate()).isEqualTo(2);
+        verify(statementMock).executeUpdate();
     }
 
     @Test
     void executeStatementFails() throws SQLException {
-        when(statementMock.execute()).thenThrow(new SQLException("expected"));
+        when(statementMock.executeUpdate()).thenThrow(new SQLException("expected"));
         final SimplePreparedStatement testee = testee();
-        assertThatThrownBy(testee::execute).isInstanceOf(UncheckedSQLException.class)
+        assertThatThrownBy(testee::executeUpdate).isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error executing statement 'query': expected");
     }
 

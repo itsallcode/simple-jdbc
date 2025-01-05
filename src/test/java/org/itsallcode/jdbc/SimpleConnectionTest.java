@@ -64,9 +64,9 @@ class SimpleConnectionTest {
         return Stream.of(
                 operation(con -> con.startTransaction()),
                 operation(con -> con.executeScript("script")),
-                operation(con -> con.executeStatement("sql")),
-                operation(con -> con.executeStatement("sql", preparedStatementSetterMock)),
-                operation(con -> con.executeStatement("sql", List.of())),
+                operation(con -> con.executeUpdate("sql")),
+                operation(con -> con.executeUpdate("sql", preparedStatementSetterMock)),
+                operation(con -> con.executeUpdate("sql", List.of())),
                 operation(con -> con.query("sql")),
                 operation(con -> con.query("sql", rowMapperMock)),
                 operation(con -> con.query("sql", preparedStatementSetterMock, rowMapperMock)),

@@ -29,9 +29,11 @@ public interface DbOperations extends AutoCloseable {
      * Execute a single SQL statement.
      * 
      * @param sql SQL statement
+     * @return either the row count for SQL Data Manipulation Language (DML)
+     *         statements or 0 for SQL statements that return nothing
      */
-    default void executeStatement(final String sql) {
-        this.executeStatement(sql, stmt -> {
+    default int executeUpdate(final String sql) {
+        return this.executeUpdate(sql, stmt -> {
         });
     }
 
@@ -44,9 +46,11 @@ public interface DbOperations extends AutoCloseable {
      * 
      * @param sql        SQL statement
      * @param parameters parameters to set in the prepared statement
+     * @return either the row count for SQL Data Manipulation Language (DML)
+     *         statements or 0 for SQL statements that return nothing
      */
-    default void executeStatement(final String sql, final List<Object> parameters) {
-        this.executeStatement(sql, new GenericParameterSetter(parameters));
+    default int executeUpdate(final String sql, final List<Object> parameters) {
+        return this.executeUpdate(sql, new GenericParameterSetter(parameters));
     }
 
     /**
@@ -54,8 +58,10 @@ public interface DbOperations extends AutoCloseable {
      * 
      * @param sql                     SQL statement
      * @param preparedStatementSetter prepared statement setter
+     * @return either the row count for SQL Data Manipulation Language (DML)
+     *         statements or 0 for SQL statements that return nothing
      */
-    void executeStatement(final String sql, PreparedStatementSetter preparedStatementSetter);
+    int executeUpdate(final String sql, PreparedStatementSetter preparedStatementSetter);
 
     /**
      * Execute a SQL query and return a {@link SimpleResultSet result set} with
