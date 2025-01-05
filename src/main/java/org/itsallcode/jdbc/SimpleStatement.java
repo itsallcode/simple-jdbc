@@ -76,6 +76,7 @@ public class SimpleStatement implements AutoCloseable {
     /**
      * Add the SQL statement to the batch.
      * 
+     * @param sql SQL statement
      * @see Statement#addBatch(String)
      */
     public void addBatch(final String sql) {

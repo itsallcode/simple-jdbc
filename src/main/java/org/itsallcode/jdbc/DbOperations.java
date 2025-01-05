@@ -42,7 +42,7 @@ public interface DbOperations extends AutoCloseable {
      * <p>
      * This will use {@link PreparedStatement#setObject(int, Object)} for setting
      * parameters. If you need more control, use
-     * {@link #executeStatement(String, PreparedStatementSetter)}.
+     * {@link #executeUpdate(String, PreparedStatementSetter)}.
      * 
      * @param sql        SQL statement
      * @param parameters parameters to set in the prepared statement
@@ -92,7 +92,7 @@ public interface DbOperations extends AutoCloseable {
      * <p>
      * This will use {@link PreparedStatement#setObject(int, Object)} for setting
      * parameters. If you need more control, use
-     * {@link #executeStatement(String, PreparedStatementSetter)}.
+     * {@link #executeUpdate(String, PreparedStatementSetter)}.
      * 
      * @param <T>        generic row type
      * @param sql        SQL query
