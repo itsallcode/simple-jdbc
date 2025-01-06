@@ -91,7 +91,7 @@ class SimpleStatementTest {
     }
 
     @Test
-    void getStatement() throws SQLException {
+    void getStatement() {
         assertThat(testee().getStatement()).isSameAs(stmtMock);
     }
 
