@@ -39,7 +39,8 @@ class SimpleStatementTest {
     @Test
     void executeQueryFails() throws SQLException {
         when(stmtMock.executeQuery("sql")).thenThrow(new SQLException("expected"));
-        assertThatThrownBy(() -> testee().executeQuery("sql", rowMapperMock))
+        final SimpleStatement testee = testee();
+        assertThatThrownBy(() -> testee.executeQuery("sql", rowMapperMock))
                 .isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error executing query 'sql': expected");
     }
@@ -53,7 +54,8 @@ class SimpleStatementTest {
     @Test
     void executeUpdateFails() throws SQLException {
         when(stmtMock.executeUpdate("sql")).thenThrow(new SQLException("expected"));
-        assertThatThrownBy(() -> testee().executeUpdate("sql"))
+        final SimpleStatement testee = testee();
+        assertThatThrownBy(() -> testee.executeUpdate("sql"))
                 .isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error executing statement 'sql': expected");
     }
@@ -67,7 +69,8 @@ class SimpleStatementTest {
     @Test
     void addBatchFails() throws SQLException {
         doThrow(new SQLException("expected")).when(stmtMock).addBatch("sql");
-        assertThatThrownBy(() -> testee().addBatch("sql"))
+        final SimpleStatement testee = testee();
+        assertThatThrownBy(() -> testee.addBatch("sql"))
                 .isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error adding batch: expected");
     }
@@ -81,7 +84,8 @@ class SimpleStatementTest {
     @Test
     void executeBatchFails() throws SQLException {
         when(stmtMock.executeBatch()).thenThrow(new SQLException("expected"));
-        assertThatThrownBy(() -> testee().executeBatch())
+        final SimpleStatement testee = testee();
+        assertThatThrownBy(testee::executeBatch)
                 .isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error executing batch: expected");
     }
@@ -100,7 +104,8 @@ class SimpleStatementTest {
     @Test
     void closeFails() throws SQLException {
         doThrow(new SQLException("expected")).when(stmtMock).close();
-        assertThatThrownBy(testee()::close).isInstanceOf(UncheckedSQLException.class)
+        final SimpleStatement testee = testee();
+        assertThatThrownBy(testee::close).isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error closing statement: expected");
     }
 }

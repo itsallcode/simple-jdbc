@@ -16,31 +16,6 @@ class StatementBatchTest {
     SimpleStatement stmtMock;
 
     @Test
-    void addDoesNotFlush() {
-        final StatementBatch testee = testee(2);
-        testee.addBatch("stmt1");
-
-        final InOrder inOrder = inOrder(stmtMock);
-        inOrder.verify(stmtMock).addBatch("stmt1");
-        inOrder.verifyNoMoreInteractions();
-    }
-
-    @Test
-    void addFlushesAfterBatchSizeReached() {
-        final StatementBatch testee = testee(2);
-        when(stmtMock.executeBatch()).thenReturn(new int[0]);
-
-        testee.addBatch("stmt1");
-        testee.addBatch("stmt2");
-
-        final InOrder inOrder = inOrder(stmtMock);
-        inOrder.verify(stmtMock).addBatch("stmt1");
-        inOrder.verify(stmtMock).addBatch("stmt2");
-        inOrder.verify(stmtMock).executeBatch();
-        inOrder.verifyNoMoreInteractions();
-    }
-
-    @Test
     void addBatchDoesNotFlush() {
         final StatementBatch testee = testee(2);
         testee.addBatch("stmt1");
