@@ -37,6 +37,14 @@ class SimpleStatementTest {
     }
 
     @Test
+    void closingResultSetClosesStatement() throws SQLException {
+        when(stmtMock.executeQuery("sql")).thenReturn(resultSetMock);
+        when(resultSetMock.getMetaData()).thenReturn(metaDataMock);
+        testee().executeQuery("sql", rowMapperMock).close();
+        verify(stmtMock).close();
+    }
+
+    @Test
     void executeQueryFails() throws SQLException {
         when(stmtMock.executeQuery("sql")).thenThrow(new SQLException("expected"));
         final SimpleStatement testee = testee();

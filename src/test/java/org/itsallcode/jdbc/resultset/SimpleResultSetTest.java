@@ -5,8 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import org.itsallcode.jdbc.UncheckedSQLException;
 import org.junit.jupiter.api.Test;
@@ -18,12 +17,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class SimpleResultSetTest {
 
     @Mock
-    private ResultSet resultSetMock;
+    ResultSet resultSetMock;
     @Mock
-    private ContextRowMapper<TestingRowType> rowMapper;
+    ContextRowMapper<TestingRowType> rowMapper;
+    @Mock
+    Statement statementMock;
 
     SimpleResultSet<TestingRowType> testee() {
-        return new SimpleResultSet<>(null, resultSetMock, rowMapper);
+        return new SimpleResultSet<>(null, resultSetMock, rowMapper, statementMock);
     }
 
     @Test
@@ -70,15 +71,42 @@ class SimpleResultSetTest {
     }
 
     @Test
+    void closeClosesStatement() throws SQLException {
+        testee().close();
+        verify(statementMock).close();
+    }
+
+    @Test
+    void closingStatementFails() throws SQLException {
+        doThrow(new SQLException("expected")).when(statementMock).close();
+        final SimpleResultSet<TestingRowType> testee = testee();
+        assertThatThrownBy(testee::close)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Error closing statement: expected");
+    }
+
+    @Test
     void streamClosesResultSet() throws SQLException {
         testee().stream().close();
         verify(resultSetMock).close();
     }
 
     @Test
+    void streamClosesStatement() throws SQLException {
+        testee().stream().close();
+        verify(statementMock).close();
+    }
+
+    @Test
     void toListClosesResultSet() throws SQLException {
         testee().toList();
         verify(resultSetMock).close();
+    }
+
+    @Test
+    void toListClosesStatement() throws SQLException {
+        testee().toList();
+        verify(statementMock).close();
     }
 
     private void simulateRowMapper() throws SQLException {

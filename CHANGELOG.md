@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [PR #43](https://github.com/itsallcode/simple-jdbc/pull/43): Allow direct access to `Connection` from `DbOperations`
 - [PR #44](https://github.com/itsallcode/simple-jdbc/pull/44): Add `GenericDialect` for unsupported databases
 - [PR #45](https://github.com/itsallcode/simple-jdbc/pull/45): Rename `executeStatement()` to `executeUpdate()` and return row count (**Breaking change**)
+- [PR #46](https://github.com/itsallcode/simple-jdbc/pull/46): Close `Statement` / `PreparedStatement` when closing the result set.
 
 ## [0.9.0] - 2024-12-23
 
