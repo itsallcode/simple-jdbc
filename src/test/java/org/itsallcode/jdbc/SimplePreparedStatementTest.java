@@ -40,6 +40,15 @@ class SimplePreparedStatementTest {
     }
 
     @Test
+    void closingResultSetClosesStatement() throws SQLException {
+        when(statementMock.executeQuery()).thenReturn(resultSetMock);
+        when(resultSetMock.getMetaData()).thenReturn(metaDataMock);
+        testee().executeQuery(rowMapperMock).close();
+
+        verify(statementMock).close();
+    }
+
+    @Test
     void executeQueryFails() throws SQLException {
         when(statementMock.executeQuery()).thenThrow(new SQLException("expected"));
         final SimplePreparedStatement testee = testee();

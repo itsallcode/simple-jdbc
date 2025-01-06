@@ -19,6 +19,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
     private final ResultSet resultSet;
     private final ContextRowMapper<T> rowMapper;
     private final Context context;
+    private final AutoCloseable statement;
     private Iterator<T> iterator;
 
     /**
@@ -27,11 +28,15 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
      * @param context   database context
      * @param resultSet the underlying result set
      * @param rowMapper a row mapper for converting each row
+     * @param statement the statement that created the result set. This will be
+     *                  closed when the result set is closed.
      */
-    public SimpleResultSet(final Context context, final ResultSet resultSet, final ContextRowMapper<T> rowMapper) {
+    public SimpleResultSet(final Context context, final ResultSet resultSet, final ContextRowMapper<T> rowMapper,
+            final AutoCloseable statement) {
         this.context = context;
         this.resultSet = resultSet;
         this.rowMapper = rowMapper;
+        this.statement = statement;
     }
 
     /**
@@ -71,7 +76,7 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
     }
 
     /**
-     * Close the underlying {@link ResultSet}.
+     * Close the underlying {@link ResultSet} and the statement that created it.
      * 
      * @throws UncheckedSQLException if closing fails.
      */
@@ -81,6 +86,11 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
             resultSet.close();
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error closing resultset", e);
+        }
+        try {
+            statement.close();
+        } catch (final Exception e) {
+            throw new IllegalStateException("Error closing statement: " + e.getMessage(), e);
         }
     }
 

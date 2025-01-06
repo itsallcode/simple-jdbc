@@ -61,7 +61,6 @@ class ConnectionWrapper implements AutoCloseable {
     SimpleResultSet<Row> query(final String sql) {
         LOG.finest(() -> "Executing query '" + sql + "'...");
         final SimpleStatement statement = createSimpleStatement();
-        // TODO: close statement when resultset is closed
         return statement.executeQuery(sql, ContextRowMapper.create(ContextRowMapper.generic(dialect)));
     }
 
@@ -70,7 +69,6 @@ class ConnectionWrapper implements AutoCloseable {
         LOG.finest(() -> "Executing query '" + sql + "'...");
         final SimplePreparedStatement statement = prepareStatement(sql);
         statement.setValues(preparedStatementSetter);
-        // TODO: close statement when resultset is closed
         return statement.executeQuery(ContextRowMapper.create(rowMapper));
     }
 
