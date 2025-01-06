@@ -9,6 +9,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.batch.StatementBatch;
 import org.itsallcode.jdbc.dialect.H2Dialect;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
@@ -25,24 +26,25 @@ class SimpleConnectionITest {
     void wrap() throws SQLException {
         try (Connection existingConnection = DriverManager.getConnection(H2TestFixture.H2_MEM_JDBC_URL);
                 SimpleConnection connection = SimpleConnection.wrap(existingConnection, new H2Dialect())) {
-            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            assertDoesNotThrow(() -> connection.executeStatement("select count(*) from test"));
+            assertThat(connection.executeUpdate("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))")).isZero();
+            assertDoesNotThrow(() -> connection.query("select count(*) from test"));
         }
     }
 
     @Test
     void executeStatement() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            assertDoesNotThrow(() -> connection.executeStatement("select count(*) from test"));
+            assertThat(connection.executeUpdate("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))")).isZero();
+            assertDoesNotThrow(() -> connection.query("select count(*) from test"));
         }
     }
 
     @Test
     void executeStatementWithParameter() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.executeStatement("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b"));
+            connection.executeUpdate("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            assertThat(connection.executeUpdate("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b")))
+                    .isEqualTo(2);
             assertThat(connection.query("select count(*) from test").toList().get(0).get(0).getValue()).isEqualTo(2L);
         }
     }
@@ -50,10 +52,10 @@ class SimpleConnectionITest {
     @Test
     void executeStatementFails() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            assertThatThrownBy(() -> connection.executeStatement("select count(*) from missing_table"))
+            assertThatThrownBy(() -> connection.executeUpdate("select count(*) from missing_table"))
                     .isInstanceOf(UncheckedSQLException.class)
                     .hasMessage(
-                            "Error preparing statement 'select count(*) from missing_table': Table \"MISSING_TABLE\" not found (this database is empty); SQL statement:\n"
+                            "Error executing statement 'select count(*) from missing_table': Table \"MISSING_TABLE\" not found (this database is empty); SQL statement:\n"
                                     + "select count(*) from missing_table [42104-232]")
                     .hasCauseInstanceOf(SQLException.class);
         }
@@ -64,7 +66,7 @@ class SimpleConnectionITest {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255));"
                     + "insert into test (id, name) values (1, 'test');");
-            assertDoesNotThrow(() -> connection.executeStatement("select count(*) from test"));
+            assertDoesNotThrow(() -> connection.query("select count(*) from test"));
         }
     }
 
@@ -74,7 +76,7 @@ class SimpleConnectionITest {
             assertThatThrownBy(
                     () -> connection.query("select count(*) from missing_table"))
                     .isInstanceOf(UncheckedSQLException.class).hasMessage(
-                            "Error preparing statement 'select count(*) from missing_table': Table \"MISSING_TABLE\" not found (this database is empty); SQL statement:\n"
+                            "Error executing query 'select count(*) from missing_table': Table \"MISSING_TABLE\" not found (this database is empty); SQL statement:\n"
                                     + "select count(*) from missing_table [42104-232]");
         }
     }
@@ -185,8 +187,8 @@ class SimpleConnectionITest {
     @Test
     void executeQueryWithParameter() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            connection.executeStatement("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.executeStatement("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b"));
+            connection.executeUpdate("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.executeUpdate("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b"));
             final List<String> result = connection.query("select * from test where id=?", List.of(2),
                     (rs, idx) -> idx + "-" + rs.getString(2) + "-" + rs.getInt(1)).toList();
             assertThat(result.get(0)).isEqualTo("0-b-2");
@@ -256,17 +258,36 @@ class SimpleConnectionITest {
     }
 
     @Test
+    void batchStatement() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            try (StatementBatch batch = connection.batch().maxBatchSize(3).build()) {
+                batch.addBatch("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+                batch.addBatch("INSERT INTO TEST VALUES (1, 'a')");
+                batch.addBatch("INSERT INTO TEST VALUES (2, 'b')");
+                batch.addBatch("INSERT INTO TEST VALUES (3, 'c')");
+                batch.addBatch("INSERT INTO TEST VALUES (4, 'd')");
+            }
+
+            final List<Row> result = connection.query("select count(*) from test").stream().toList();
+            assertAll(
+                    () -> assertThat(result).hasSize(1),
+                    () -> assertThat(result.get(0).columnValues()).hasSize(1),
+                    () -> assertThat(result.get(0).get(0).value()).isEqualTo(4L));
+        }
+    }
+
+    @Test
     void multipleTransactions() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             try (Transaction tx = connection.startTransaction()) {
-                tx.executeStatement("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b"));
+                tx.executeUpdate("INSERT INTO TEST VALUES (?,?), (?,?)", List.of(1, "a", 2, "b"));
                 assertThat(getRowCount(tx, "test")).isEqualTo(2);
                 tx.commit();
             }
             assertThat(getRowCount(connection, "test")).isEqualTo(2);
             try (Transaction tx = connection.startTransaction()) {
-                tx.executeStatement("DELETE FROM TEST WHERE ID = ?", List.of(1));
+                tx.executeUpdate("DELETE FROM TEST WHERE ID = ?", List.of(1));
                 assertThat(getRowCount(tx, "test")).isEqualTo(1);
             }
             assertThat(getRowCount(connection, "test")).isEqualTo(2);

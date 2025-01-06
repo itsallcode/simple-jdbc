@@ -67,13 +67,14 @@ class TransactionTest {
     static Stream<Arguments> operations() {
         return Stream.of(
                 operation(tx -> tx.executeScript("script")),
-                operation(tx -> tx.executeStatement("sql")),
-                operation(tx -> tx.executeStatement("sql", preparedStatementSetterMock)),
-                operation(tx -> tx.executeStatement("sql", List.of())),
+                operation(tx -> tx.executeUpdate("sql")),
+                operation(tx -> tx.executeUpdate("sql", preparedStatementSetterMock)),
+                operation(tx -> tx.executeUpdate("sql", List.of())),
                 operation(tx -> tx.query("sql")),
                 operation(tx -> tx.query("sql", rowMapperMock)),
                 operation(tx -> tx.query("sql", preparedStatementSetterMock, rowMapperMock)),
                 operation(tx -> tx.query("sql", List.of(), rowMapperMock)),
+                operation(tx -> tx.batch()),
                 operation(tx -> tx.batchInsert()),
                 operation(tx -> tx.batchInsert(null)),
                 operation(tx -> tx.getOriginalConnection()),

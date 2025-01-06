@@ -1,5 +1,7 @@
 package org.itsallcode.jdbc.example;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.*;
@@ -12,6 +14,7 @@ import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.*;
 import org.itsallcode.jdbc.batch.BatchInsert;
+import org.itsallcode.jdbc.batch.StatementBatch;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
@@ -30,7 +33,7 @@ class ExampleTest {
                 .create(Context.builder().build());
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             connection.executeScript(readResource("/schema.sql"));
-            connection.executeStatement("insert into names (id, name) values (1, 'a'), (2, 'b'), (3, 'c')");
+            connection.executeUpdate("insert into names (id, name) values (1, 'a'), (2, 'b'), (3, 'c')");
 
             try (SimpleResultSet<Row> rs = connection.query("select * from names order by id")) {
                 final List<Row> result = rs.stream().toList();
@@ -46,7 +49,7 @@ class ExampleTest {
                 .create(Context.builder().build());
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             connection.executeScript(readResource("/schema.sql"));
-            connection.executeStatement("insert into names (id, name) values (1, 'a'), (2, 'b'), (3, 'c')");
+            connection.executeUpdate("insert into names (id, name) values (1, 'a'), (2, 'b'), (3, 'c')");
 
             try (SimpleResultSet<Name> result = connection.query("select id, name from names where id = ?",
                     ps -> ps.setInt(1, 2),
@@ -55,6 +58,27 @@ class ExampleTest {
                 assertEquals(1, names.size());
                 assertEquals(new Name(2, "b"), names.get(0));
             }
+        }
+    }
+
+    @Test
+    void exampleBatchStatement() {
+        final ConnectionFactory connectionFactory = ConnectionFactory
+                .create(Context.builder().build());
+        try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
+            try (StatementBatch batch = connection.batch().maxBatchSize(3).build()) {
+                batch.addBatch("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+                batch.addBatch("INSERT INTO TEST VALUES (1, 'a')");
+                batch.addBatch("INSERT INTO TEST VALUES (2, 'b')");
+                batch.addBatch("INSERT INTO TEST VALUES (3, 'c')");
+                batch.addBatch("INSERT INTO TEST VALUES (4, 'd')");
+            }
+
+            final List<Row> result = connection.query("select count(*) from test").stream().toList();
+            assertAll(
+                    () -> assertThat(result).hasSize(1),
+                    () -> assertThat(result.get(0).columnValues()).hasSize(1),
+                    () -> assertThat(result.get(0).get(0).value()).isEqualTo(4L));
         }
     }
 

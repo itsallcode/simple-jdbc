@@ -34,10 +34,10 @@ class SimpleConnectionTest {
 
     @Test
     void queryPrepareStatementFails() throws SQLException {
-        when(connectionMock.prepareStatement(SQL_STATEMENT)).thenThrow(new SQLException("expected"));
+        when(connectionMock.createStatement()).thenThrow(new SQLException("expected"));
         final SimpleConnection testee = testee();
         assertThatThrownBy(() -> testee.query(SQL_STATEMENT)).isInstanceOf(UncheckedSQLException.class)
-                .hasMessage("Error preparing statement 'query': expected");
+                .hasMessage("Error creating statement: expected");
     }
 
     @Test
@@ -64,14 +64,15 @@ class SimpleConnectionTest {
         return Stream.of(
                 operation(con -> con.startTransaction()),
                 operation(con -> con.executeScript("script")),
-                operation(con -> con.executeStatement("sql")),
-                operation(con -> con.executeStatement("sql", preparedStatementSetterMock)),
-                operation(con -> con.executeStatement("sql", List.of())),
+                operation(con -> con.executeUpdate("sql")),
+                operation(con -> con.executeUpdate("sql", preparedStatementSetterMock)),
+                operation(con -> con.executeUpdate("sql", List.of())),
                 operation(con -> con.query("sql")),
                 operation(con -> con.query("sql", rowMapperMock)),
                 operation(con -> con.query("sql", preparedStatementSetterMock, rowMapperMock)),
                 operation(con -> con.query("sql", List.of(), rowMapperMock)),
                 operation(con -> con.getOriginalConnection()),
+                operation(con -> con.batch()),
                 operation(con -> con.batchInsert()),
                 operation(con -> con.batchInsert(null)));
     }
@@ -86,6 +87,7 @@ class SimpleConnectionTest {
         final SimpleConnection testee = testee();
         lenient().when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        lenient().when(connectionMock.createStatement()).thenReturn(mock(Statement.class, RETURNS_DEEP_STUBS));
         assertDoesNotThrow(() -> operation.accept(testee));
     }
 
@@ -115,6 +117,7 @@ class SimpleConnectionTest {
         final SimpleConnection testee = testee();
         lenient().when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        lenient().when(connectionMock.createStatement()).thenReturn(mock(Statement.class, RETURNS_DEEP_STUBS));
         testee.startTransaction().close();
         assertDoesNotThrow(() -> operation.accept(testee));
     }
@@ -125,6 +128,7 @@ class SimpleConnectionTest {
         final SimpleConnection testee = testee();
         lenient().when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        lenient().when(connectionMock.createStatement()).thenReturn(mock(Statement.class, RETURNS_DEEP_STUBS));
         testee.startTransaction().commit();
         assertDoesNotThrow(() -> operation.accept(testee));
     }
@@ -135,6 +139,7 @@ class SimpleConnectionTest {
         final SimpleConnection testee = testee();
         lenient().when(connectionMock.prepareStatement(anyString()))
                 .thenReturn(mock(PreparedStatement.class, RETURNS_DEEP_STUBS));
+        lenient().when(connectionMock.createStatement()).thenReturn(mock(Statement.class, RETURNS_DEEP_STUBS));
         testee.startTransaction().rollback();
         assertDoesNotThrow(() -> operation.accept(testee));
     }

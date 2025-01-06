@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.batch.*;
+import org.itsallcode.jdbc.dialect.GenericDialect;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,15 +36,16 @@ class BatchInsertPerformanceTest {
     }
 
     private RowBatchInsertBuilder<NameRow> rowTestee() {
-        final PreparedStatement stmt = createNoopPreparedStatement();
-        return new RowBatchInsertBuilder<NameRow>(sql -> new SimplePreparedStatement(null, null, stmt, "sql"))
-                .maxBatchSize(MAX_BATCH_SIZE);
+        return new RowBatchInsertBuilder<NameRow>(this::prepareStatement).maxBatchSize(MAX_BATCH_SIZE);
     }
 
     private BatchInsertBuilder testee() {
+        return new BatchInsertBuilder(this::prepareStatement).maxBatchSize(MAX_BATCH_SIZE);
+    }
+
+    private SimplePreparedStatement prepareStatement(final String sql) {
         final PreparedStatement stmt = createNoopPreparedStatement();
-        return new BatchInsertBuilder(sql -> new SimplePreparedStatement(null, null, stmt, "sql"))
-                .maxBatchSize(MAX_BATCH_SIZE);
+        return new SimplePreparedStatement(Context.builder().build(), GenericDialect.INSTANCE, stmt, sql);
     }
 
     private PreparedStatement createNoopPreparedStatement() {

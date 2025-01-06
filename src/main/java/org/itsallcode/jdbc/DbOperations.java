@@ -6,8 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.batch.BatchInsertBuilder;
-import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
+import org.itsallcode.jdbc.batch.*;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -29,24 +28,25 @@ public interface DbOperations extends AutoCloseable {
      * Execute a single SQL statement.
      * 
      * @param sql SQL statement
+     * @return either the row count for SQL Data Manipulation Language (DML)
+     *         statements or 0 for SQL statements that return nothing
      */
-    default void executeStatement(final String sql) {
-        this.executeStatement(sql, stmt -> {
-        });
-    }
+    int executeUpdate(final String sql);
 
     /**
      * Execute a single SQL statement as a prepared statement with placeholders.
      * <p>
      * This will use {@link PreparedStatement#setObject(int, Object)} for setting
      * parameters. If you need more control, use
-     * {@link #executeStatement(String, PreparedStatementSetter)}.
+     * {@link #executeUpdate(String, PreparedStatementSetter)}.
      * 
      * @param sql        SQL statement
      * @param parameters parameters to set in the prepared statement
+     * @return either the row count for SQL Data Manipulation Language (DML)
+     *         statements or 0 for SQL statements that return nothing
      */
-    default void executeStatement(final String sql, final List<Object> parameters) {
-        this.executeStatement(sql, new GenericParameterSetter(parameters));
+    default int executeUpdate(final String sql, final List<Object> parameters) {
+        return this.executeUpdate(sql, new GenericParameterSetter(parameters));
     }
 
     /**
@@ -54,8 +54,10 @@ public interface DbOperations extends AutoCloseable {
      * 
      * @param sql                     SQL statement
      * @param preparedStatementSetter prepared statement setter
+     * @return either the row count for SQL Data Manipulation Language (DML)
+     *         statements or 0 for SQL statements that return nothing
      */
-    void executeStatement(final String sql, PreparedStatementSetter preparedStatementSetter);
+    int executeUpdate(final String sql, PreparedStatementSetter preparedStatementSetter);
 
     /**
      * Execute a SQL query and return a {@link SimpleResultSet result set} with
@@ -86,7 +88,7 @@ public interface DbOperations extends AutoCloseable {
      * <p>
      * This will use {@link PreparedStatement#setObject(int, Object)} for setting
      * parameters. If you need more control, use
-     * {@link #executeStatement(String, PreparedStatementSetter)}.
+     * {@link #executeUpdate(String, PreparedStatementSetter)}.
      * 
      * @param <T>        generic row type
      * @param sql        SQL query
@@ -111,6 +113,14 @@ public interface DbOperations extends AutoCloseable {
      */
     <T> SimpleResultSet<T> query(final String sql, final PreparedStatementSetter preparedStatementSetter,
             final RowMapper<T> rowMapper);
+
+    /**
+     * Create a batch statement builder for executing multiple statements in a
+     * batch.
+     * 
+     * @return batch statement builder
+     */
+    StatementBatchBuilder batch();
 
     /**
      * Create a batch insert builder for inserting rows by directly setting values

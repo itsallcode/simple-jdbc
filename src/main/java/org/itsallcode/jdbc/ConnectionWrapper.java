@@ -3,12 +3,10 @@ package org.itsallcode.jdbc;
 import static java.util.function.Predicate.not;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 
-import org.itsallcode.jdbc.batch.BatchInsertBuilder;
-import org.itsallcode.jdbc.batch.RowBatchInsertBuilder;
+import org.itsallcode.jdbc.batch.*;
 import org.itsallcode.jdbc.dialect.DbDialect;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -34,28 +32,37 @@ class ConnectionWrapper implements AutoCloseable {
         this.paramSetterProvider = new ParamSetterProvider(dialect);
     }
 
-    void executeStatement(final String sql) {
-        this.executeStatement(sql, ps -> {
-        });
+    int executeUpdate(final String sql) {
+        try (SimpleStatement statement = createSimpleStatement()) {
+            return statement.executeUpdate(sql);
+        }
     }
 
-    void executeStatement(final String sql, final PreparedStatementSetter preparedStatementSetter) {
+    int executeUpdate(final String sql, final PreparedStatementSetter preparedStatementSetter) {
         try (SimplePreparedStatement statement = prepareStatement(sql)) {
             statement.setValues(preparedStatementSetter);
-            statement.execute();
+            return statement.executeUpdate();
         }
     }
 
     void executeScript(final String sqlScript) {
-        Arrays.stream(sqlScript.split(";"))
+        final List<String> statements = Arrays.stream(sqlScript.split(";"))
                 .map(String::trim)
                 .filter(not(String::isEmpty))
-                .forEach(this::executeStatement);
+                .toList();
+        if (statements.isEmpty()) {
+            return;
+        }
+        try (StatementBatch batch = this.batch().build()) {
+            statements.forEach(batch::addBatch);
+        }
     }
 
     SimpleResultSet<Row> query(final String sql) {
-        return this.query(sql, ps -> {
-        }, ContextRowMapper.generic(dialect));
+        LOG.finest(() -> "Executing query '" + sql + "'...");
+        final SimpleStatement statement = createSimpleStatement();
+        // TODO: close statement when resultset is closed
+        return statement.executeQuery(sql, ContextRowMapper.create(ContextRowMapper.generic(dialect)));
     }
 
     <T> SimpleResultSet<T> query(final String sql, final PreparedStatementSetter preparedStatementSetter,
@@ -63,15 +70,21 @@ class ConnectionWrapper implements AutoCloseable {
         LOG.finest(() -> "Executing query '" + sql + "'...");
         final SimplePreparedStatement statement = prepareStatement(sql);
         statement.setValues(preparedStatementSetter);
+        // TODO: close statement when resultset is closed
         return statement.executeQuery(ContextRowMapper.create(rowMapper));
     }
 
-    SimplePreparedStatement prepareStatement(final String sql) {
-        return new SimplePreparedStatement(context, dialect, wrap(prepare(sql)), sql);
+    private SimplePreparedStatement prepareStatement(final String sql) {
+        return new SimplePreparedStatement(context, dialect,
+                new ConvertingPreparedStatement(prepare(sql), paramSetterProvider), sql);
     }
 
-    private PreparedStatement wrap(final PreparedStatement preparedStatement) {
-        return new ConvertingPreparedStatement(preparedStatement, paramSetterProvider);
+    StatementBatchBuilder batch() {
+        return new StatementBatchBuilder(this::createSimpleStatement);
+    }
+
+    private SimpleStatement createSimpleStatement() {
+        return new SimpleStatement(context, dialect, createStatement());
     }
 
     BatchInsertBuilder batchInsert() {
@@ -87,6 +100,14 @@ class ConnectionWrapper implements AutoCloseable {
             return connection.prepareStatement(sql);
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error preparing statement '" + sql + "'", e);
+        }
+    }
+
+    private Statement createStatement() {
+        try {
+            return connection.createStatement();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Error creating statement", e);
         }
     }
 

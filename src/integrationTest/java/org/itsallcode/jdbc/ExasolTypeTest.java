@@ -180,8 +180,8 @@ class ExasolTypeTest {
     void batchInsert() {
         final LocalDate date = LocalDate.parse("2024-10-20");
         try (final SimpleConnection connection = connect()) {
-            connection.executeStatement("create schema test");
-            connection.executeStatement("create table tab(col date)");
+            connection.executeUpdate("create schema test");
+            connection.executeUpdate("create table tab(col date)");
             connection.batchInsert(LocalDate.class).into("TAB", List.of("COL"))
                     .mapping((row, stmt) -> stmt.setObject(1, row)).rows(Stream.of(date)).start();
             try (SimpleResultSet<LocalDate> resultSet = connection.query("select * from tab",

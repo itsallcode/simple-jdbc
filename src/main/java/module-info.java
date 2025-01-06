@@ -15,11 +15,13 @@
  * <li>Execute statements
  * <ul>
  * <li>... single statement:
- * {@link org.itsallcode.jdbc.DbOperations#executeStatement(String)}</li>
+ * {@link org.itsallcode.jdbc.DbOperations#executeUpdate(String)}</li>
  * <li>... with a prepared statement and generic parameters:
- * {@link org.itsallcode.jdbc.DbOperations#executeStatement(String, List)}</li>
+ * {@link org.itsallcode.jdbc.DbOperations#executeUpdate(String, List)}</li>
  * <li>... with a prepared statement and custom parameter setter:
- * {@link org.itsallcode.jdbc.DbOperations#executeStatement(String, org.itsallcode.jdbc.PreparedStatementSetter)}</li>
+ * {@link org.itsallcode.jdbc.DbOperations#executeUpdate(String, org.itsallcode.jdbc.PreparedStatementSetter)}</li>
+ * <li>... multiple statements in a batch:
+ * {@link org.itsallcode.jdbc.DbOperations#batch()}</li>
  * 
  * <li>... semicolon separated SQL script:
  * {@link org.itsallcode.jdbc.DbOperations#executeScript(String)}</li>

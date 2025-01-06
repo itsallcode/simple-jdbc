@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import java.sql.*;
 
+import org.itsallcode.jdbc.dialect.GenericDialect;
 import org.itsallcode.jdbc.resultset.ContextRowMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,16 +49,16 @@ class SimplePreparedStatementTest {
 
     @Test
     void executeStatement() throws SQLException {
-        when(statementMock.execute()).thenReturn(true);
-        assertThat(testee().execute()).isTrue();
-        verify(statementMock).execute();
+        when(statementMock.executeUpdate()).thenReturn(2);
+        assertThat(testee().executeUpdate()).isEqualTo(2);
+        verify(statementMock).executeUpdate();
     }
 
     @Test
     void executeStatementFails() throws SQLException {
-        when(statementMock.execute()).thenThrow(new SQLException("expected"));
+        when(statementMock.executeUpdate()).thenThrow(new SQLException("expected"));
         final SimplePreparedStatement testee = testee();
-        assertThatThrownBy(testee::execute).isInstanceOf(UncheckedSQLException.class)
+        assertThatThrownBy(testee::executeUpdate).isInstanceOf(UncheckedSQLException.class)
                 .hasMessage("Error executing statement 'query': expected");
     }
 
@@ -135,7 +136,8 @@ class SimplePreparedStatementTest {
     }
 
     SimplePreparedStatement testee() {
-        return new SimplePreparedStatement(null, null, statementMock, SQL_QUERY);
+        return new SimplePreparedStatement(Context.builder().build(), GenericDialect.INSTANCE, statementMock,
+                SQL_QUERY);
     }
 
     record RowType() {
