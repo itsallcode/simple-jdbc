@@ -5,8 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import java.sql.*;
+import java.util.List;
+import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.batch.BatchInsert;
 import org.itsallcode.jdbc.dialect.GenericDialect;
+import org.itsallcode.jdbc.resultset.ContextRowMapper;
+import org.itsallcode.jdbc.resultset.SimpleResultSet;
+import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -80,6 +86,73 @@ class ConnectionWrapperTest {
         inOrder.verify(preparedStatementMock).setString(1, "one");
         inOrder.verify(preparedStatementMock).executeUpdate();
         inOrder.verify(preparedStatementMock).close();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void queryWithPreparedStatementSetterAndRowMapper() throws SQLException {
+        when(connectionMock.prepareStatement("sql")).thenReturn(preparedStatementMock);
+        when(preparedStatementMock.executeQuery()).thenReturn(mock(ResultSet.class, RETURNS_DEEP_STUBS));
+        final SimpleResultSet<Row> result = testee().query("sql", ps -> {
+            ps.setString(1, "one");
+        }, ContextRowMapper.generic(GenericDialect.INSTANCE));
+        assertThat(result).isNotNull();
+        final InOrder inOrder = inOrder(connectionMock, preparedStatementMock);
+        inOrder.verify(connectionMock).prepareStatement("sql");
+        inOrder.verify(preparedStatementMock).setString(1, "one");
+        inOrder.verify(preparedStatementMock).executeQuery();
+        inOrder.verify(preparedStatementMock, never()).close();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void preparedStatementFails() throws SQLException {
+        when(connectionMock.prepareStatement("sql")).thenThrow(new SQLException("expected"));
+        final ConnectionWrapper testee = testee();
+        assertThatThrownBy(() -> testee.executeUpdate("sql", ps -> {
+            ps.setString(1, "one");
+        })).isInstanceOf(UncheckedSQLException.class)
+                .hasMessage("Error preparing statement 'sql': expected");
+    }
+
+    @Test
+    void query() throws SQLException {
+        when(connectionMock.createStatement()).thenReturn(statementMock);
+        when(statementMock.executeQuery("sql")).thenReturn(mock(ResultSet.class, RETURNS_DEEP_STUBS));
+        final SimpleResultSet<Row> result = testee().query("sql");
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void batchInsert() throws SQLException {
+        when(connectionMock.prepareStatement("insert into \"tab\" (\"c1\",\"c2\") values (?,?)"))
+                .thenReturn(preparedStatementMock);
+        final BatchInsert batch = testee().batchInsert().into("tab", List.of("c1", "c2")).maxBatchSize(4).build();
+        batch.add(ps -> {
+            ps.setString(1, "one");
+        });
+        batch.close();
+        final InOrder inOrder = inOrder(connectionMock, preparedStatementMock);
+        inOrder.verify(connectionMock).prepareStatement("insert into \"tab\" (\"c1\",\"c2\") values (?,?)");
+        inOrder.verify(preparedStatementMock).setString(1, "one");
+        inOrder.verify(preparedStatementMock).addBatch();
+        inOrder.verify(preparedStatementMock).executeBatch();
+        inOrder.verify(preparedStatementMock).close();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void rowBatchInsert() throws SQLException {
+        when(connectionMock.prepareStatement("insert into \"tab\" (\"c1\",\"c2\") values (?,?)"))
+                .thenReturn(preparedStatementMock);
+        testee().rowBatchInsert().into("tab", List.of("c1", "c2")).mapping(row -> new Object[] { row })
+                .rows(Stream.of("one")).maxBatchSize(4).start();
+        final InOrder inOrder = inOrder(connectionMock, preparedStatementMock);
+        inOrder.verify(connectionMock).prepareStatement("insert into \"tab\" (\"c1\",\"c2\") values (?,?)");
+        inOrder.verify(preparedStatementMock).setObject(1, "one");
+        inOrder.verify(preparedStatementMock).addBatch();
+        inOrder.verify(preparedStatementMock).executeBatch();
+        inOrder.verify(preparedStatementMock, times(2)).close(); // TODO: why twice?
         inOrder.verifyNoMoreInteractions();
     }
 
