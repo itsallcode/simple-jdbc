@@ -42,15 +42,6 @@ public class SimpleStatement implements AutoCloseable {
         }
     }
 
-    @Override
-    public void close() {
-        try {
-            statement.close();
-        } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error closing statement", e);
-        }
-    }
-
     /**
      * Execute the batch statement.
      * 
@@ -86,5 +77,14 @@ public class SimpleStatement implements AutoCloseable {
      */
     public Statement getStatement() {
         return statement;
+    }
+
+    @Override
+    public void close() {
+        try {
+            statement.close();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Error closing statement", e);
+        }
     }
 }

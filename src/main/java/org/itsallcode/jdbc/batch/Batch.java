@@ -60,7 +60,7 @@ class Batch implements AutoCloseable {
         try {
             resource.close();
         } catch (final Exception e) {
-            throw new IllegalStateException("Failed to close resource", e);
+            throw new IllegalStateException("Failed to close resource: " + e.getMessage(), e);
         }
     }
 }
