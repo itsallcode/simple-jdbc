@@ -33,6 +33,18 @@ public class PreparedStatementBatchBuilder {
     }
 
     /**
+     * Define the SQL statement to be used for the batch job, e.g. {@code INSERT} or
+     * {@code UPDATE}.
+     * 
+     * @param sql SQL statement
+     * @return {@code this} for fluent programming
+     */
+    public PreparedStatementBatchBuilder sql(final String sql) {
+        this.sql = sql;
+        return this;
+    }
+
+    /**
      * Define table and column names used for generating the {@code INSERT}
      * statement.
      * 

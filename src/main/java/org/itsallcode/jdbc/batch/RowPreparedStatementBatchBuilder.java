@@ -13,7 +13,8 @@ import org.itsallcode.jdbc.identifier.Identifier;
  * {@link Iterable} of row objects using e.g. {@code INSERT} or {@code UPDATE}
  * statements.
  * <p>
- * Create a new instance using {@link DbOperations#batchInsert(Class)}.
+ * Create a new instance using
+ * {@link DbOperations#preparedStatementBatch(Class)}.
  * 
  * @param <T> row type
  */
@@ -33,6 +34,18 @@ public class RowPreparedStatementBatchBuilder<T> {
 
     RowPreparedStatementBatchBuilder(final PreparedStatementBatchBuilder baseBuilder) {
         this.baseBuilder = baseBuilder;
+    }
+
+    /**
+     * Define the SQL statement to be used for the batch job, e.g. {@code INSERT} or
+     * {@code UPDATE}.
+     * 
+     * @param sql SQL statement
+     * @return {@code this} for fluent programming
+     */
+    public RowPreparedStatementBatchBuilder<T> sql(final String sql) {
+        this.baseBuilder.sql(sql);
+        return this;
     }
 
     /**
