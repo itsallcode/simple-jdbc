@@ -105,21 +105,21 @@ public final class Transaction implements DbOperations {
     }
 
     @Override
-    public StatementBatchBuilder batch() {
+    public StatementBatchBuilder statementBatch() {
         checkOperationAllowed();
-        return connection.batch();
+        return connection.statementBatch();
     }
 
     @Override
-    public PreparedStatementBatchBuilder batchInsert() {
+    public PreparedStatementBatchBuilder preparedStatementBatch() {
         checkOperationAllowed();
-        return connection.batchInsert();
+        return connection.preparedStatementBatch();
     }
 
     @Override
-    public <T> RowPreparedStatementBatchBuilder<T> batchInsert(final Class<T> rowType) {
+    public <T> RowPreparedStatementBatchBuilder<T> preparedStatementBatch(final Class<T> rowType) {
         checkOperationAllowed();
-        return connection.rowBatchInsert();
+        return connection.rowPreparedStatementBatch();
     }
 
     public Connection getOriginalConnection() {

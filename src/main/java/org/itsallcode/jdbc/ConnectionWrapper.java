@@ -53,7 +53,7 @@ class ConnectionWrapper implements AutoCloseable {
         if (statements.isEmpty()) {
             return;
         }
-        try (StatementBatch batch = this.batch().build()) {
+        try (StatementBatch batch = this.statementBatch().build()) {
             statements.forEach(batch::addBatch);
         }
     }
@@ -77,7 +77,7 @@ class ConnectionWrapper implements AutoCloseable {
                 new ConvertingPreparedStatement(prepare(sql), paramSetterProvider), sql);
     }
 
-    StatementBatchBuilder batch() {
+    StatementBatchBuilder statementBatch() {
         return new StatementBatchBuilder(this::createSimpleStatement);
     }
 
@@ -85,11 +85,11 @@ class ConnectionWrapper implements AutoCloseable {
         return new SimpleStatement(context, dialect, createStatement());
     }
 
-    PreparedStatementBatchBuilder batchInsert() {
+    PreparedStatementBatchBuilder preparedStatementBatch() {
         return new PreparedStatementBatchBuilder(this::prepareStatement);
     }
 
-    <T> RowPreparedStatementBatchBuilder<T> rowBatchInsert() {
+    <T> RowPreparedStatementBatchBuilder<T> rowPreparedStatementBatch() {
         return new RowPreparedStatementBatchBuilder<>(this::prepareStatement);
     }
 

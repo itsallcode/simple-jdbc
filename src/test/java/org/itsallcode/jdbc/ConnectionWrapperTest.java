@@ -127,7 +127,8 @@ class ConnectionWrapperTest {
     void batchInsert() throws SQLException {
         when(connectionMock.prepareStatement("insert into \"tab\" (\"c1\",\"c2\") values (?,?)"))
                 .thenReturn(preparedStatementMock);
-        final PreparedStatementBatch batch = testee().batchInsert().into("tab", List.of("c1", "c2")).maxBatchSize(4)
+        final PreparedStatementBatch batch = testee().preparedStatementBatch().into("tab", List.of("c1", "c2"))
+                .maxBatchSize(4)
                 .build();
         batch.add(ps -> {
             ps.setString(1, "one");
@@ -146,7 +147,7 @@ class ConnectionWrapperTest {
     void rowBatchInsert() throws SQLException {
         when(connectionMock.prepareStatement("insert into \"tab\" (\"c1\",\"c2\") values (?,?)"))
                 .thenReturn(preparedStatementMock);
-        testee().rowBatchInsert().into("tab", List.of("c1", "c2")).mapping(row -> new Object[] { row })
+        testee().rowPreparedStatementBatch().into("tab", List.of("c1", "c2")).mapping(row -> new Object[] { row })
                 .rows(Stream.of("one")).maxBatchSize(4).start();
         final InOrder inOrder = inOrder(connectionMock, preparedStatementMock);
         inOrder.verify(connectionMock).prepareStatement("insert into \"tab\" (\"c1\",\"c2\") values (?,?)");

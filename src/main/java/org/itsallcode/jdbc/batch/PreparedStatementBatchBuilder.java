@@ -13,7 +13,7 @@ import org.itsallcode.jdbc.identifier.Identifier;
 
 /**
  * Builder for {@link PreparedStatementBatch}. Create a new builder instance
- * using {@link SimpleConnection#batchInsert()}.
+ * using {@link SimpleConnection#preparedStatementBatch()}.
  */
 public class PreparedStatementBatchBuilder {
     private static final Logger LOG = Logger.getLogger(PreparedStatementBatchBuilder.class.getName());

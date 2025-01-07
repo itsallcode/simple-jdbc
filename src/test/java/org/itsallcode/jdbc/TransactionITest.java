@@ -116,7 +116,7 @@ class TransactionITest {
     void batchStatement() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             try (Transaction tx = connection.startTransaction()) {
-                try (StatementBatch batch = tx.batch().maxBatchSize(3).build()) {
+                try (StatementBatch batch = tx.statementBatch().maxBatchSize(3).build()) {
                     batch.addBatch("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
                     batch.addBatch("INSERT INTO TEST VALUES (1, 'a')");
                     batch.addBatch("INSERT INTO TEST VALUES (2, 'b')");
@@ -139,7 +139,7 @@ class TransactionITest {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
             try (Transaction tx = connection.startTransaction()) {
-                tx.batchInsert(String.class).into("TEST", List.of("ID", "NAME"))
+                tx.preparedStatementBatch(String.class).into("TEST", List.of("ID", "NAME"))
                         .mapping(row -> new Object[] { row.length(), row })
                         .rows(Stream.of("a", "ab", "abc")).start();
                 final List<Row> resultSet = tx.query("select count(*) as result from test")

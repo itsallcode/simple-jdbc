@@ -7,7 +7,7 @@ import org.itsallcode.jdbc.*;
 
 /**
  * Direct batch insert using {@link PreparedStatement}. Create a new instance
- * using {@link SimpleConnection#batchInsert()}.
+ * using {@link SimpleConnection#preparedStatementBatch()}.
  */
 public class PreparedStatementBatch implements AutoCloseable {
     private final Batch batch;
