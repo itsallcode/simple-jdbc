@@ -9,12 +9,16 @@ import org.itsallcode.jdbc.*;
 import org.itsallcode.jdbc.identifier.Identifier;
 
 /**
- * Builder for batch inserts.
+ * Builder for {@link PreparedStatement} batch jobs for a {@link Stream} or
+ * {@link Iterable} of row objects using e.g. {@code INSERT} or {@code UPDATE}
+ * statements.
+ * <p>
+ * Create a new instance using {@link DbOperations#batchInsert(Class)}.
  * 
  * @param <T> row type
  */
-public class RowBatchInsertBuilder<T> {
-    private final BatchInsertBuilder baseBuilder;
+public class RowPreparedStatementBatchBuilder<T> {
+    private final PreparedStatementBatchBuilder baseBuilder;
     private RowPreparedStatementSetter<T> mapper;
     private Iterator<T> rows;
 
@@ -23,11 +27,11 @@ public class RowBatchInsertBuilder<T> {
      * 
      * @param statementFactory factory for creating {@link SimplePreparedStatement}
      */
-    public RowBatchInsertBuilder(final Function<String, SimplePreparedStatement> statementFactory) {
-        this(new BatchInsertBuilder(statementFactory));
+    public RowPreparedStatementBatchBuilder(final Function<String, SimplePreparedStatement> statementFactory) {
+        this(new PreparedStatementBatchBuilder(statementFactory));
     }
 
-    RowBatchInsertBuilder(final BatchInsertBuilder baseBuilder) {
+    RowPreparedStatementBatchBuilder(final PreparedStatementBatchBuilder baseBuilder) {
         this.baseBuilder = baseBuilder;
     }
 
@@ -40,7 +44,7 @@ public class RowBatchInsertBuilder<T> {
      * @return {@code this} for fluent programming
      */
     @SuppressWarnings("java:S3242") // Using List instead of Collection to preserve column order
-    public RowBatchInsertBuilder<T> into(final Identifier tableName, final List<Identifier> columnNames) {
+    public RowPreparedStatementBatchBuilder<T> into(final Identifier tableName, final List<Identifier> columnNames) {
         this.baseBuilder.into(tableName, columnNames);
         return this;
     }
@@ -54,7 +58,7 @@ public class RowBatchInsertBuilder<T> {
      * @return {@code this} for fluent programming
      */
     @SuppressWarnings("java:S3242") // Using List instead of Collection to preserve column order
-    public RowBatchInsertBuilder<T> into(final String tableName, final List<String> columnNames) {
+    public RowPreparedStatementBatchBuilder<T> into(final String tableName, final List<String> columnNames) {
         return into(Identifier.simple(tableName), columnNames.stream().map(Identifier::simple).toList());
     }
 
@@ -64,7 +68,7 @@ public class RowBatchInsertBuilder<T> {
      * @param rows rows to insert
      * @return {@code this} for fluent programming
      */
-    public RowBatchInsertBuilder<T> rows(final Stream<T> rows) {
+    public RowPreparedStatementBatchBuilder<T> rows(final Stream<T> rows) {
         return rows(rows.iterator());
     }
 
@@ -74,7 +78,7 @@ public class RowBatchInsertBuilder<T> {
      * @param rows rows to insert
      * @return {@code this} for fluent programming
      */
-    public RowBatchInsertBuilder<T> rows(final Iterator<T> rows) {
+    public RowPreparedStatementBatchBuilder<T> rows(final Iterator<T> rows) {
         this.rows = rows;
         return this;
     }
@@ -85,7 +89,7 @@ public class RowBatchInsertBuilder<T> {
      * @param rowMapper row mapper
      * @return {@code this} for fluent programming
      */
-    public RowBatchInsertBuilder<T> mapping(final ParamConverter<T> rowMapper) {
+    public RowPreparedStatementBatchBuilder<T> mapping(final ParamConverter<T> rowMapper) {
         final RowPreparedStatementSetter<Object[]> setter = new ObjectArrayPreparedStatementSetter();
         return mapping(
                 (final T row, final PreparedStatement preparedStatement) -> setter.setValues(rowMapper.map(row),
@@ -99,19 +103,19 @@ public class RowBatchInsertBuilder<T> {
      * @param preparedStatementSetter prepared statement setter
      * @return {@code this} for fluent programming
      */
-    public RowBatchInsertBuilder<T> mapping(final RowPreparedStatementSetter<T> preparedStatementSetter) {
+    public RowPreparedStatementBatchBuilder<T> mapping(final RowPreparedStatementSetter<T> preparedStatementSetter) {
         this.mapper = preparedStatementSetter;
         return this;
     }
 
     /**
      * Define maximum batch size, using
-     * {@link BatchInsertBuilder#DEFAULT_MAX_BATCH_SIZE} as default.
+     * {@link PreparedStatementBatchBuilder#DEFAULT_MAX_BATCH_SIZE} as default.
      * 
      * @param maxBatchSize maximum batch size
      * @return {@code this} for fluent programming
      */
-    public RowBatchInsertBuilder<T> maxBatchSize(final int maxBatchSize) {
+    public RowPreparedStatementBatchBuilder<T> maxBatchSize(final int maxBatchSize) {
         this.baseBuilder.maxBatchSize(maxBatchSize);
         return this;
     }
@@ -122,8 +126,9 @@ public class RowBatchInsertBuilder<T> {
     public void start() {
         Objects.requireNonNull(this.mapper, "mapper");
         Objects.requireNonNull(this.rows, "rows");
-        try (BatchInsert batchInsert = baseBuilder.build();
-                RowBatchInsert<T> rowBatchInsert = new RowBatchInsert<>(batchInsert, this.mapper)) {
+        try (PreparedStatementBatch batchInsert = baseBuilder.build();
+                RowPreparedStatementBatch<T> rowBatchInsert = new RowPreparedStatementBatch<>(batchInsert,
+                        this.mapper)) {
             while (rows.hasNext()) {
                 rowBatchInsert.add(rows.next());
             }

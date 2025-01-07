@@ -3,17 +3,19 @@ package org.itsallcode.jdbc.batch;
 import org.itsallcode.jdbc.RowPreparedStatementSetter;
 import org.itsallcode.jdbc.SimplePreparedStatement;
 
-class RowBatchInsert<T> implements AutoCloseable {
+class RowPreparedStatementBatch<T> implements AutoCloseable {
 
-    private final BatchInsert batchInsert;
+    private final PreparedStatementBatch batchInsert;
     private final RowPreparedStatementSetter<T> preparedStatementSetter;
 
-    RowBatchInsert(final SimplePreparedStatement statement, final RowPreparedStatementSetter<T> preparedStatementSetter,
+    RowPreparedStatementBatch(final SimplePreparedStatement statement,
+            final RowPreparedStatementSetter<T> preparedStatementSetter,
             final int maxBatchSize) {
-        this(new BatchInsert(statement, maxBatchSize), preparedStatementSetter);
+        this(new PreparedStatementBatch(statement, maxBatchSize), preparedStatementSetter);
     }
 
-    RowBatchInsert(final BatchInsert batchInsert, final RowPreparedStatementSetter<T> preparedStatementSetter) {
+    RowPreparedStatementBatch(final PreparedStatementBatch batchInsert,
+            final RowPreparedStatementSetter<T> preparedStatementSetter) {
         this.batchInsert = batchInsert;
         this.preparedStatementSetter = preparedStatementSetter;
     }

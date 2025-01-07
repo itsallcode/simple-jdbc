@@ -85,12 +85,12 @@ class ConnectionWrapper implements AutoCloseable {
         return new SimpleStatement(context, dialect, createStatement());
     }
 
-    BatchInsertBuilder batchInsert() {
-        return new BatchInsertBuilder(this::prepareStatement);
+    PreparedStatementBatchBuilder batchInsert() {
+        return new PreparedStatementBatchBuilder(this::prepareStatement);
     }
 
-    <T> RowBatchInsertBuilder<T> rowBatchInsert() {
-        return new RowBatchInsertBuilder<>(this::prepareStatement);
+    <T> RowPreparedStatementBatchBuilder<T> rowBatchInsert() {
+        return new RowPreparedStatementBatchBuilder<>(this::prepareStatement);
     }
 
     private PreparedStatement prepare(final String sql) {

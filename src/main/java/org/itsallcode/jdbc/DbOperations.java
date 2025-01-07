@@ -131,7 +131,7 @@ public interface DbOperations extends AutoCloseable {
      * 
      * @return batch insert builder
      */
-    BatchInsertBuilder batchInsert();
+    PreparedStatementBatchBuilder batchInsert();
 
     /**
      * Create a row-based batch insert builder for inserting rows from an
@@ -144,7 +144,7 @@ public interface DbOperations extends AutoCloseable {
      * @param <T>     row type
      * @return row-based batch insert builder
      */
-    <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType);
+    <T> RowPreparedStatementBatchBuilder<T> batchInsert(final Class<T> rowType);
 
     /**
      * Get the original wrapped connection.

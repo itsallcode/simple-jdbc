@@ -9,11 +9,11 @@ import org.itsallcode.jdbc.*;
  * Direct batch insert using {@link PreparedStatement}. Create a new instance
  * using {@link SimpleConnection#batchInsert()}.
  */
-public class BatchInsert implements AutoCloseable {
+public class PreparedStatementBatch implements AutoCloseable {
     private final Batch batch;
     private final SimplePreparedStatement statement;
 
-    BatchInsert(final SimplePreparedStatement statement, final int maxBatchSize) {
+    PreparedStatementBatch(final SimplePreparedStatement statement, final int maxBatchSize) {
         this.statement = Objects.requireNonNull(statement, "statement");
         this.batch = new Batch(maxBatchSize, statement, statement::executeBatch);
     }

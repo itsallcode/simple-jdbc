@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.*;
-import org.itsallcode.jdbc.batch.BatchInsert;
+import org.itsallcode.jdbc.batch.PreparedStatementBatch;
 import org.itsallcode.jdbc.batch.StatementBatch;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -110,7 +110,7 @@ class ExampleTest {
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             try (Transaction transaction = connection.startTransaction()) {
                 transaction.executeScript(readResource("/schema.sql"));
-                try (BatchInsert batch = transaction.batchInsert()
+                try (PreparedStatementBatch batch = transaction.batchInsert()
                         .into("NAMES", List.of("ID", "NAME"))
                         .maxBatchSize(100)
                         .build()) {
@@ -142,7 +142,7 @@ class ExampleTest {
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             try (Transaction transaction = connection.startTransaction()) {
                 transaction.executeScript(readResource("/schema.sql"));
-                try (BatchInsert batch = transaction.batchInsert()
+                try (PreparedStatementBatch batch = transaction.batchInsert()
                         .into("NAMES", List.of("ID", "NAME"))
                         .maxBatchSize(100)
                         .build()) {

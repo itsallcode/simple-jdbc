@@ -111,13 +111,13 @@ public final class Transaction implements DbOperations {
     }
 
     @Override
-    public BatchInsertBuilder batchInsert() {
+    public PreparedStatementBatchBuilder batchInsert() {
         checkOperationAllowed();
         return connection.batchInsert();
     }
 
     @Override
-    public <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType) {
+    public <T> RowPreparedStatementBatchBuilder<T> batchInsert(final Class<T> rowType) {
         checkOperationAllowed();
         return connection.rowBatchInsert();
     }

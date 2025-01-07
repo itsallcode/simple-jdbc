@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.itsallcode.jdbc.batch.BatchInsert;
+import org.itsallcode.jdbc.batch.PreparedStatementBatch;
 import org.itsallcode.jdbc.dialect.GenericDialect;
 import org.itsallcode.jdbc.resultset.ContextRowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
@@ -127,7 +127,8 @@ class ConnectionWrapperTest {
     void batchInsert() throws SQLException {
         when(connectionMock.prepareStatement("insert into \"tab\" (\"c1\",\"c2\") values (?,?)"))
                 .thenReturn(preparedStatementMock);
-        final BatchInsert batch = testee().batchInsert().into("tab", List.of("c1", "c2")).maxBatchSize(4).build();
+        final PreparedStatementBatch batch = testee().batchInsert().into("tab", List.of("c1", "c2")).maxBatchSize(4)
+                .build();
         batch.add(ps -> {
             ps.setString(1, "one");
         });

@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class BatchInsertTest {
+class PreparedStatementBatchTest {
 
     @Mock
     SimplePreparedStatement stmtMock;
@@ -24,7 +24,7 @@ class BatchInsertTest {
 
     @Test
     void addDoesNotFlush() {
-        final BatchInsert testee = testee(2);
+        final PreparedStatementBatch testee = testee(2);
         testee.add(stmtSetterMock);
 
         final InOrder inOrder = inOrder(stmtMock);
@@ -35,7 +35,7 @@ class BatchInsertTest {
 
     @Test
     void addFlushesAfterBatchSizeReached() {
-        final BatchInsert testee = testee(2);
+        final PreparedStatementBatch testee = testee(2);
         when(stmtMock.executeBatch()).thenReturn(new int[0]);
 
         testee.add(stmtSetterMock);
@@ -52,7 +52,7 @@ class BatchInsertTest {
 
     @Test
     void addBatchDoesNotFlush() {
-        final BatchInsert testee = testee(2);
+        final PreparedStatementBatch testee = testee(2);
         testee.addBatch();
 
         final InOrder inOrder = inOrder(stmtMock);
@@ -62,7 +62,7 @@ class BatchInsertTest {
 
     @Test
     void addBatchFlushesAfterBatchSizeReached() {
-        final BatchInsert testee = testee(2);
+        final PreparedStatementBatch testee = testee(2);
         when(stmtMock.executeBatch()).thenReturn(new int[0]);
 
         testee.addBatch();
@@ -76,14 +76,14 @@ class BatchInsertTest {
 
     @Test
     void closeClosesStatement() {
-        final BatchInsert testee = testee(2);
+        final PreparedStatementBatch testee = testee(2);
         testee.close();
         verify(stmtMock).close();
     }
 
     @Test
     void closeFlushes() {
-        final BatchInsert testee = testee(2);
+        final PreparedStatementBatch testee = testee(2);
         when(stmtMock.executeBatch()).thenReturn(new int[0]);
 
         testee.add(stmtSetterMock);
@@ -98,13 +98,13 @@ class BatchInsertTest {
 
     @Test
     void getStatement() {
-        final BatchInsert testee = testee(2);
+        final PreparedStatementBatch testee = testee(2);
         final PreparedStatement preparedStmtMock = mock(PreparedStatement.class);
         when(stmtMock.getStatement()).thenReturn(preparedStmtMock);
         assertThat(testee.getStatement()).isSameAs(preparedStmtMock);
     }
 
-    BatchInsert testee(final int maxBatchSize) {
-        return new BatchInsert(stmtMock, maxBatchSize);
+    PreparedStatementBatch testee(final int maxBatchSize) {
+        return new PreparedStatementBatch(stmtMock, maxBatchSize);
     }
 }
