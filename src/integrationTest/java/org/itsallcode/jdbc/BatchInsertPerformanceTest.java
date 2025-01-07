@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class BatchInsertPerformanceTest {
     private static final int ROW_COUNT = 10_000_000;
-    private static final int MAX_BATCH_SIZE = BatchInsertBuilder.DEFAULT_MAX_BATCH_SIZE;
+    private static final int MAX_BATCH_SIZE = PreparedStatementBatchBuilder.DEFAULT_MAX_BATCH_SIZE;
     @Mock
     SimpleConnection connectionMock;
     @Mock
@@ -35,12 +35,12 @@ class BatchInsertPerformanceTest {
                 }).rows(generateStream(ROW_COUNT)).start();
     }
 
-    private RowBatchInsertBuilder<NameRow> rowTestee() {
-        return new RowBatchInsertBuilder<NameRow>(this::prepareStatement).maxBatchSize(MAX_BATCH_SIZE);
+    private RowPreparedStatementBatchBuilder<NameRow> rowTestee() {
+        return new RowPreparedStatementBatchBuilder<NameRow>(this::prepareStatement).maxBatchSize(MAX_BATCH_SIZE);
     }
 
-    private BatchInsertBuilder testee() {
-        return new BatchInsertBuilder(this::prepareStatement).maxBatchSize(MAX_BATCH_SIZE);
+    private PreparedStatementBatchBuilder testee() {
+        return new PreparedStatementBatchBuilder(this::prepareStatement).maxBatchSize(MAX_BATCH_SIZE);
     }
 
     private SimplePreparedStatement prepareStatement(final String sql) {
@@ -75,7 +75,7 @@ class BatchInsertPerformanceTest {
     @Test
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
     void directAdd() {
-        try (BatchInsert batch = testee().into("TEST", List.of("ID", "NAME")).build()) {
+        try (PreparedStatementBatch batch = testee().into("TEST", List.of("ID", "NAME")).build()) {
             for (int i = 0; i < ROW_COUNT; i++) {
                 final int row = i;
                 batch.add(ps -> {
@@ -89,7 +89,7 @@ class BatchInsertPerformanceTest {
     @Test
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
     void directAddBatch() throws SQLException {
-        try (BatchInsert batch = testee().into("TEST", List.of("ID", "NAME")).build()) {
+        try (PreparedStatementBatch batch = testee().into("TEST", List.of("ID", "NAME")).build()) {
             final PreparedStatement statement = batch.getStatement();
             for (int i = 0; i < ROW_COUNT; i++) {
                 statement.setInt(1, i);

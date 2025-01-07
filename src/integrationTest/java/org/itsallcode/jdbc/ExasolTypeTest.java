@@ -182,7 +182,7 @@ class ExasolTypeTest {
         try (final SimpleConnection connection = connect()) {
             connection.executeUpdate("create schema test");
             connection.executeUpdate("create table tab(col date)");
-            connection.batchInsert(LocalDate.class).into("TAB", List.of("COL"))
+            connection.preparedStatementBatch(LocalDate.class).into("TAB", List.of("COL"))
                     .mapping((row, stmt) -> stmt.setObject(1, row)).rows(Stream.of(date)).start();
             try (SimpleResultSet<LocalDate> resultSet = connection.query("select * from tab",
                     (rs, rowNum) -> rs.getObject(1, LocalDate.class))) {

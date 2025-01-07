@@ -74,9 +74,9 @@ class TransactionTest {
                 operation(tx -> tx.query("sql", rowMapperMock)),
                 operation(tx -> tx.query("sql", preparedStatementSetterMock, rowMapperMock)),
                 operation(tx -> tx.query("sql", List.of(), rowMapperMock)),
-                operation(tx -> tx.batch()),
-                operation(tx -> tx.batchInsert()),
-                operation(tx -> tx.batchInsert(null)),
+                operation(tx -> tx.statementBatch()),
+                operation(tx -> tx.preparedStatementBatch()),
+                operation(tx -> tx.preparedStatementBatch(null)),
                 operation(tx -> tx.getOriginalConnection()),
                 operation(tx -> tx.commit()),
                 operation(tx -> tx.rollback()));

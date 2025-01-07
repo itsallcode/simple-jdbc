@@ -12,11 +12,11 @@ import org.itsallcode.jdbc.SimplePreparedStatement;
 import org.itsallcode.jdbc.identifier.Identifier;
 
 /**
- * Builder for {@link BatchInsert}. Create a new builder instance using
- * {@link SimpleConnection#batchInsert()}.
+ * Builder for {@link PreparedStatementBatch}. Create a new builder instance
+ * using {@link SimpleConnection#preparedStatementBatch()}.
  */
-public class BatchInsertBuilder {
-    private static final Logger LOG = Logger.getLogger(BatchInsertBuilder.class.getName());
+public class PreparedStatementBatchBuilder {
+    private static final Logger LOG = Logger.getLogger(PreparedStatementBatchBuilder.class.getName());
     /** Default maximum batch size. */
     public static final int DEFAULT_MAX_BATCH_SIZE = 200_000;
     private final Function<String, SimplePreparedStatement> statementFactory;
@@ -28,8 +28,20 @@ public class BatchInsertBuilder {
      * 
      * @param statementFactory factory for creating {@link SimplePreparedStatement}.
      */
-    public BatchInsertBuilder(final Function<String, SimplePreparedStatement> statementFactory) {
+    public PreparedStatementBatchBuilder(final Function<String, SimplePreparedStatement> statementFactory) {
         this.statementFactory = statementFactory;
+    }
+
+    /**
+     * Define the SQL statement to be used for the batch job, e.g. {@code INSERT} or
+     * {@code UPDATE}.
+     * 
+     * @param sql SQL statement
+     * @return {@code this} for fluent programming
+     */
+    public PreparedStatementBatchBuilder sql(final String sql) {
+        this.sql = sql;
+        return this;
     }
 
     /**
@@ -41,7 +53,7 @@ public class BatchInsertBuilder {
      * @return {@code this} for fluent programming
      */
     @SuppressWarnings("java:S3242") // Using List instead of Collection to preserve column order
-    public BatchInsertBuilder into(final Identifier tableName, final List<Identifier> columnNames) {
+    public PreparedStatementBatchBuilder into(final Identifier tableName, final List<Identifier> columnNames) {
         this.sql = createInsertStatement(tableName, columnNames);
         return this;
     }
@@ -55,7 +67,7 @@ public class BatchInsertBuilder {
      * @return {@code this} for fluent programming
      */
     @SuppressWarnings("java:S3242") // Using List instead of Collection to preserve column order
-    public BatchInsertBuilder into(final String tableName, final List<String> columnNames) {
+    public PreparedStatementBatchBuilder into(final String tableName, final List<String> columnNames) {
         return into(Identifier.simple(tableName), columnNames.stream().map(Identifier::simple).toList());
     }
 
@@ -65,7 +77,7 @@ public class BatchInsertBuilder {
      * @param maxBatchSize maximum batch size
      * @return {@code this} for fluent programming
      */
-    public BatchInsertBuilder maxBatchSize(final int maxBatchSize) {
+    public PreparedStatementBatchBuilder maxBatchSize(final int maxBatchSize) {
         this.maxBatchSize = maxBatchSize;
         return this;
     }
@@ -81,10 +93,10 @@ public class BatchInsertBuilder {
      * 
      * @return the batch inserter
      */
-    public BatchInsert build() {
+    public PreparedStatementBatch build() {
         Objects.requireNonNull(this.sql, "sql");
         LOG.finest(() -> "Running insert statement '" + sql + "'...");
         final SimplePreparedStatement statement = statementFactory.apply(sql);
-        return new BatchInsert(statement, this.maxBatchSize);
+        return new PreparedStatementBatch(statement, this.maxBatchSize);
     }
 }

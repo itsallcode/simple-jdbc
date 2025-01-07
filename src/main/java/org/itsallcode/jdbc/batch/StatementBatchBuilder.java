@@ -9,7 +9,7 @@ import org.itsallcode.jdbc.SimpleStatement;
  */
 public class StatementBatchBuilder {
     private final Supplier<SimpleStatement> statementFactory;
-    private int maxBatchSize = BatchInsertBuilder.DEFAULT_MAX_BATCH_SIZE;
+    private int maxBatchSize = PreparedStatementBatchBuilder.DEFAULT_MAX_BATCH_SIZE;
 
     /**
      * Create a new instance.
@@ -22,7 +22,7 @@ public class StatementBatchBuilder {
 
     /**
      * Define maximum batch size, using
-     * {@link BatchInsertBuilder#DEFAULT_MAX_BATCH_SIZE} as default.
+     * {@link PreparedStatementBatchBuilder#DEFAULT_MAX_BATCH_SIZE} as default.
      * 
      * @param maxBatchSize maximum batch size
      * @return {@code this} for fluent programming

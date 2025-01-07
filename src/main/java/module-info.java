@@ -21,7 +21,7 @@
  * <li>... with a prepared statement and custom parameter setter:
  * {@link org.itsallcode.jdbc.DbOperations#executeUpdate(String, org.itsallcode.jdbc.PreparedStatementSetter)}</li>
  * <li>... multiple statements in a batch:
- * {@link org.itsallcode.jdbc.DbOperations#batch()}</li>
+ * {@link org.itsallcode.jdbc.DbOperations#statementBatch()}</li>
  * 
  * <li>... semicolon separated SQL script:
  * {@link org.itsallcode.jdbc.DbOperations#executeScript(String)}</li>
@@ -57,9 +57,9 @@
  * <ul>
  * <li>... using a {@link java.util.stream.Stream} or {@link java.util.Iterator}
  * of row objects:
- * {@link org.itsallcode.jdbc.SimpleConnection#batchInsert(java.lang.Class)}</li>
+ * {@link org.itsallcode.jdbc.SimpleConnection#preparedStatementBatch(java.lang.Class)}</li>
  * <li>... directly setting values of a {@link java.sql.PreparedStatement}:
- * {@link org.itsallcode.jdbc.SimpleConnection#batchInsert()}</li>
+ * {@link org.itsallcode.jdbc.SimpleConnection#preparedStatementBatch()}</li>
  * </ul>
  * </li>
  * <li>Simplified Exception Handling: converts checked exception

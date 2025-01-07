@@ -120,31 +120,31 @@ public interface DbOperations extends AutoCloseable {
      * 
      * @return batch statement builder
      */
-    StatementBatchBuilder batch();
+    StatementBatchBuilder statementBatch();
 
     /**
-     * Create a batch insert builder for inserting rows by directly setting values
-     * of a {@link PreparedStatement}.
+     * Create a prepared statement batch builder for inserting or updating rows by
+     * directly setting values of a {@link PreparedStatement}.
      * <p>
      * If you want to insert rows from an {@link Iterator} or a {@link Stream}, use
-     * {@link #batchInsert(Class)}.
+     * {@link #preparedStatementBatch(Class)}.
      * 
      * @return batch insert builder
      */
-    BatchInsertBuilder batchInsert();
+    PreparedStatementBatchBuilder preparedStatementBatch();
 
     /**
-     * Create a row-based batch insert builder for inserting rows from an
-     * {@link Iterator} or a {@link Stream}.
+     * Create a row-based prepared statement batch builder for inserting or updating
+     * rows from an {@link Iterator} or a {@link Stream}.
      * <p>
      * If you want to insert rows by directly setting values of a
-     * {@link PreparedStatement}, use {@link #batchInsert()}.
+     * {@link PreparedStatement}, use {@link #preparedStatementBatch()}.
      * 
      * @param rowType row type
      * @param <T>     row type
      * @return row-based batch insert builder
      */
-    <T> RowBatchInsertBuilder<T> batchInsert(final Class<T> rowType);
+    <T> RowPreparedStatementBatchBuilder<T> preparedStatementBatch(final Class<T> rowType);
 
     /**
      * Get the original wrapped connection.

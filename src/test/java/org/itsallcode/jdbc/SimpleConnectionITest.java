@@ -9,6 +9,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
 
+import org.itsallcode.jdbc.batch.PreparedStatementBatch;
 import org.itsallcode.jdbc.batch.StatementBatch;
 import org.itsallcode.jdbc.dialect.H2Dialect;
 import org.itsallcode.jdbc.resultset.RowMapper;
@@ -213,7 +214,7 @@ class SimpleConnectionITest {
     void batchInsertEmptyInput() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.batchInsert(Object[].class).into("TEST", List.of("ID", "NAME"))
+            connection.preparedStatementBatch(Object[].class).into("TEST", List.of("ID", "NAME"))
                     .mapping(ParamConverter.identity())
                     .rows(Stream.empty()).start();
 
@@ -226,7 +227,7 @@ class SimpleConnectionITest {
     void batchInsert() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.batchInsert(Object[].class).into("TEST", List.of("ID", "NAME"))
+            connection.preparedStatementBatch(Object[].class).into("TEST", List.of("ID", "NAME"))
                     .mapping(ParamConverter.identity()).rows(
                             Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }))
                     .start();
@@ -243,7 +244,7 @@ class SimpleConnectionITest {
     void insert() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
             connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
-            connection.batchInsert(Object[].class).into("TEST", List.of("ID", "NAME"))
+            connection.preparedStatementBatch(Object[].class).into("TEST", List.of("ID", "NAME"))
                     .mapping(ParamConverter.identity())
                     .rows(
                             Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }))
@@ -258,9 +259,67 @@ class SimpleConnectionITest {
     }
 
     @Test
+    void batchUpdate() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.preparedStatementBatch(Object[].class).into("TEST", List.of("ID", "NAME"))
+                    .mapping(ParamConverter.identity())
+                    .rows(
+                            Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }))
+                    .start();
+
+            connection.preparedStatementBatch(Object[].class).sql("UPDATE TEST SET NAME = ? WHERE ID = ?")
+                    .mapping(ParamConverter.identity())
+                    .rows(
+                            Stream.of(new Object[] { "a1", 1 }, new Object[] { "b2", 2 }, new Object[] { "c3", 3 }))
+                    .start();
+
+            final List<List<Object>> result = connection.query("select * from test").stream()
+                    .map(row -> row.columnValues().stream().map(ColumnValue::value).toList()).toList();
+            assertAll(
+                    () -> assertThat(result).hasSize(3),
+                    () -> assertThat(result).isEqualTo(List.of(List.of(1, "a1"), List.of(2, "b2"), List.of(3, "c3"))));
+        }
+    }
+
+    @Test
+    void directBatchUpdate() {
+        try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
+            connection.executeScript("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
+            connection.preparedStatementBatch(Object[].class).into("TEST", List.of("ID", "NAME"))
+                    .mapping(ParamConverter.identity())
+                    .rows(
+                            Stream.of(new Object[] { 1, "a" }, new Object[] { 2, "b" }, new Object[] { 3, "c" }))
+                    .start();
+
+            try (PreparedStatementBatch batch = connection.preparedStatementBatch()
+                    .sql("UPDATE TEST SET NAME = ? WHERE ID = ?").build()) {
+                batch.add(ps -> {
+                    ps.setString(1, "a1");
+                    ps.setInt(2, 1);
+                });
+                batch.add(ps -> {
+                    ps.setString(1, "b2");
+                    ps.setInt(2, 2);
+                });
+                batch.add(ps -> {
+                    ps.setString(1, "c3");
+                    ps.setInt(2, 3);
+                });
+            }
+
+            final List<List<Object>> result = connection.query("select * from test").stream()
+                    .map(row -> row.columnValues().stream().map(ColumnValue::value).toList()).toList();
+            assertAll(
+                    () -> assertThat(result).hasSize(3),
+                    () -> assertThat(result).isEqualTo(List.of(List.of(1, "a1"), List.of(2, "b2"), List.of(3, "c3"))));
+        }
+    }
+
+    @Test
     void batchStatement() {
         try (SimpleConnection connection = H2TestFixture.createMemConnection()) {
-            try (StatementBatch batch = connection.batch().maxBatchSize(3).build()) {
+            try (StatementBatch batch = connection.statementBatch().maxBatchSize(3).build()) {
                 batch.addBatch("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
                 batch.addBatch("INSERT INTO TEST VALUES (1, 'a')");
                 batch.addBatch("INSERT INTO TEST VALUES (2, 'b')");

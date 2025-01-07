@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.*;
-import org.itsallcode.jdbc.batch.BatchInsert;
+import org.itsallcode.jdbc.batch.PreparedStatementBatch;
 import org.itsallcode.jdbc.batch.StatementBatch;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -66,7 +66,7 @@ class ExampleTest {
         final ConnectionFactory connectionFactory = ConnectionFactory
                 .create(Context.builder().build());
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
-            try (StatementBatch batch = connection.batch().maxBatchSize(3).build()) {
+            try (StatementBatch batch = connection.statementBatch().maxBatchSize(3).build()) {
                 batch.addBatch("CREATE TABLE TEST(ID INT, NAME VARCHAR(255))");
                 batch.addBatch("INSERT INTO TEST VALUES (1, 'a')");
                 batch.addBatch("INSERT INTO TEST VALUES (2, 'b')");
@@ -88,7 +88,7 @@ class ExampleTest {
                 .create(Context.builder().build());
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             connection.executeScript(readResource("/schema.sql"));
-            connection.batchInsert(Name.class)
+            connection.preparedStatementBatch(Name.class)
                     .into("NAMES", List.of("ID", "NAME"))
                     .rows(Stream.of(new Name(1, "a"), new Name(2, "b"), new Name(3, "c")))
                     .mapping(Name::setPreparedStatement)
@@ -110,7 +110,7 @@ class ExampleTest {
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             try (Transaction transaction = connection.startTransaction()) {
                 transaction.executeScript(readResource("/schema.sql"));
-                try (BatchInsert batch = transaction.batchInsert()
+                try (PreparedStatementBatch batch = transaction.preparedStatementBatch()
                         .into("NAMES", List.of("ID", "NAME"))
                         .maxBatchSize(100)
                         .build()) {
@@ -142,7 +142,7 @@ class ExampleTest {
         try (SimpleConnection connection = connectionFactory.create("jdbc:h2:mem:", "user", "password")) {
             try (Transaction transaction = connection.startTransaction()) {
                 transaction.executeScript(readResource("/schema.sql"));
-                try (BatchInsert batch = transaction.batchInsert()
+                try (PreparedStatementBatch batch = transaction.preparedStatementBatch()
                         .into("NAMES", List.of("ID", "NAME"))
                         .maxBatchSize(100)
                         .build()) {

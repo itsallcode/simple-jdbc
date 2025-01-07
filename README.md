@@ -56,7 +56,7 @@ See complete example code in [ExampleTest](src/test/java/org/itsallcode/jdbc/exa
 import org.itsallcode.jdbc.ConnectionFactory;
 import org.itsallcode.jdbc.SimpleConnection;
 import org.itsallcode.jdbc.Transaction;
-import org.itsallcode.jdbc.resultset.batch.BatchInsert;
+import org.itsallcode.jdbc.resultset.batch.StatementBatch;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
 ```
@@ -93,7 +93,7 @@ connection.batchInsert(Name.class)
 This allows using batch inserts without creating objects for each row to avoid memory allocations.
 
 ```java
-try (BatchInsert batch = transaction.batchInsert().into("NAMES", List.of("ID", "NAME")).build()) {
+try (PreparedStatementBatch batch = transaction.preparedStatementBatch().into("NAMES", List.of("ID", "NAME")).build()) {
     for (int i = 0; i < 5; i++) {
         final int id = i + 1;
         batch.add(ps -> {
