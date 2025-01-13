@@ -109,6 +109,18 @@ class ConnectionWrapper implements AutoCloseable {
         }
     }
 
+    DbMetaData getMetaData() {
+        return new DbMetaData(this.context, getMetaDataInternal());
+    }
+
+    private DatabaseMetaData getMetaDataInternal() {
+        try {
+            return connection.getMetaData();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Failed to get metadata ", e);
+        }
+    }
+
     void setAutoCommit(final boolean autoCommit) {
         try {
             connection.setAutoCommit(autoCommit);

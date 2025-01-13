@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [PR #45](https://github.com/itsallcode/simple-jdbc/pull/45): Rename `executeStatement()` to `executeUpdate()` and return row count (**Breaking change**)
 - [PR #46](https://github.com/itsallcode/simple-jdbc/pull/46): Close `Statement` / `PreparedStatement` when closing the result set.
 - [PR #47](https://github.com/itsallcode/simple-jdbc/pull/47): Rename `BatchInsert` to `PreparedStatementBatch`, allow specifying a custom SQL statement (**Breaking change**)
+- [PR #48](https://github.com/itsallcode/simple-jdbc/pull/48): Add support for database metadata
 
 ## [0.9.0] - 2024-12-23
 

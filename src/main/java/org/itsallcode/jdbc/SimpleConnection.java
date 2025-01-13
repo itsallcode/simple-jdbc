@@ -117,6 +117,16 @@ public class SimpleConnection implements DbOperations {
         return connection.rowPreparedStatementBatch();
     }
 
+    /**
+     * Get database metadata.
+     * 
+     * @return metadata
+     */
+    public DbMetaData getMetaData() {
+        checkOperationAllowed();
+        return connection.getMetaData();
+    }
+
     public Connection getOriginalConnection() {
         checkOperationAllowed();
         return connection.getOriginalConnection();

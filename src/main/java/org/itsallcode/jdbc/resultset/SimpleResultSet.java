@@ -8,6 +8,7 @@ import java.util.stream.StreamSupport;
 
 import org.itsallcode.jdbc.Context;
 import org.itsallcode.jdbc.UncheckedSQLException;
+import org.itsallcode.jdbc.resultset.generic.SimpleMetaData;
 
 /**
  * This class wraps a {@link ResultSet} and allows easy iteration via
@@ -37,6 +38,15 @@ public class SimpleResultSet<T> implements AutoCloseable, Iterable<T> {
         this.resultSet = resultSet;
         this.rowMapper = rowMapper;
         this.statement = statement;
+    }
+
+    /**
+     * Get result set metadata.
+     * 
+     * @return metadata
+     */
+    public SimpleMetaData getMetaData() {
+        return SimpleMetaData.create(this.resultSet);
     }
 
     /**
