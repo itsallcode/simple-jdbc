@@ -48,25 +48,25 @@ public class DbMetaData {
 
     /**
      * Description of a table.
-     * <OL>
-     * <LI><B>TABLE_CAT</B> String {@code =>} table catalog (may be {@code null})
-     * <LI><B>TABLE_SCHEM</B> String {@code =>} table schema (may be {@code null})
-     * <LI><B>TABLE_NAME</B> String {@code =>} table name
-     * <LI><B>TABLE_TYPE</B> String {@code =>} table type. Typical types are
-     * "TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY",
-     * "ALIAS", "SYNONYM".
-     * <LI><B>REMARKS</B> String {@code =>} explanatory comment on the table (may be
-     * {@code null})
-     * <LI><B>TYPE_CAT</B> String {@code =>} the types catalog (may be {@code null})
-     * <LI><B>TYPE_SCHEM</B> String {@code =>} the types schema (may be
-     * {@code null})
-     * <LI><B>TYPE_NAME</B> String {@code =>} type name (may be {@code null})
-     * <LI><B>SELF_REFERENCING_COL_NAME</B> String {@code =>} name of the designated
-     * "identifier" column of a typed table (may be {@code null})
-     * <LI><B>REF_GENERATION</B> String {@code =>} specifies how values in
-     * SELF_REFERENCING_COL_NAME are created. Values are "SYSTEM", "USER",
-     * "DERIVED". (may be {@code null})
-     * </OL>
+     * 
+     * @param tableCatalog              table catalog (may be {@code null})
+     * @param tableSchema               table schema (may be {@code null})
+     * @param tableName                 table name
+     * @param tableType                 table type. Typical types are "TABLE",
+     *                                  "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY",
+     *                                  "LOCAL TEMPORARY", "ALIAS", "SYNONYM".
+     * @param remarks                   explanatory comment on the table (may be
+     *                                  {@code null})
+     * @param typeCatalog               the types catalog (may be {@code null})
+     * @param typeSchema                the types schema (may be {@code null})
+     * @param typeName                  type name (may be {@code null})
+     * @param selfReferencingColumnName name of the designated "identifier" column
+     *                                  of a typed table (may be {@code null})
+     * @param refGeneration             specifies how values in
+     *                                  SELF_REFERENCING_COL_NAME are created.
+     *                                  Values are "SYSTEM", "USER", "DERIVED". (may
+     *                                  be {@code null})
+     * @see DatabaseMetaData#getTables(String, String, String, String[])
      */
     public record TableMetaData(String tableCatalog, String tableSchema, String tableName, String tableType,
             String remarks, String typeCatalog, String typeSchema, String typeName, String selfReferencingColumnName,
@@ -137,69 +137,67 @@ public class DbMetaData {
     }
 
     /**
-     * <OL>
-     * <LI><B>TABLE_CAT</B> String {@code =>} table catalog (may be {@code null})
-     * <LI><B>TABLE_SCHEM</B> String {@code =>} table schema (may be {@code null})
-     * <LI><B>TABLE_NAME</B> String {@code =>} table name
-     * <LI><B>COLUMN_NAME</B> String {@code =>} column name
-     * <LI><B>DATA_TYPE</B> int {@code =>} SQL type from java.sql.Types
-     * <LI><B>TYPE_NAME</B> String {@code =>} Data source dependent type name, for a
-     * UDT the type name is fully qualified
-     * <LI><B>COLUMN_SIZE</B> int {@code =>} column size.
-     * <LI><B>BUFFER_LENGTH</B> is not used.
-     * <LI><B>DECIMAL_DIGITS</B> int {@code =>} the number of fractional digits.
-     * Null is returned for data types where DECIMAL_DIGITS is not applicable.
-     * <LI><B>NUM_PREC_RADIX</B> int {@code =>} Radix (typically either 10 or 2)
-     * <LI><B>NULLABLE</B> int {@code =>} is NULL allowed.
-     * <UL>
-     * <LI>columnNoNulls - might not allow {@code NULL} values
-     * <LI>columnNullable - definitely allows {@code NULL} values
-     * <LI>columnNullableUnknown - nullability unknown
-     * </UL>
-     * <LI><B>REMARKS</B> String {@code =>} comment describing column (may be
-     * {@code null})
-     * <LI><B>COLUMN_DEF</B> String {@code =>} default value for the column, which
-     * should be interpreted as a string when the value is enclosed in single quotes
-     * (may be {@code null})
-     * <LI><B>SQL_DATA_TYPE</B> int {@code =>} unused
-     * <LI><B>SQL_DATETIME_SUB</B> int {@code =>} unused
-     * <LI><B>CHAR_OCTET_LENGTH</B> int {@code =>} for char types the maximum number
-     * of bytes in the column
-     * <LI><B>ORDINAL_POSITION</B> int {@code =>} index of column in table (starting
-     * at 1)
-     * <LI><B>IS_NULLABLE</B> String {@code =>} ISO rules are used to determine the
-     * nullability for a column.
-     * <UL>
-     * <LI>YES --- if the column can include NULLs
-     * <LI>NO --- if the column cannot include NULLs
-     * <LI>empty string --- if the nullability for the column is unknown
-     * </UL>
-     * <LI><B>SCOPE_CATALOG</B> String {@code =>} catalog of table that is the scope
-     * of a reference attribute ({@code null} if DATA_TYPE isn't REF)
-     * <LI><B>SCOPE_SCHEMA</B> String {@code =>} schema of table that is the scope
-     * of a reference attribute ({@code null} if the DATA_TYPE isn't REF)
-     * <LI><B>SCOPE_TABLE</B> String {@code =>} table name that this the scope of a
-     * reference attribute ({@code null} if the DATA_TYPE isn't REF)
-     * <LI><B>SOURCE_DATA_TYPE</B> short {@code =>} source type of a distinct type
-     * or user-generated Ref type, SQL type from java.sql.Types ({@code null} if
-     * DATA_TYPE isn't DISTINCT or user-generated REF)
-     * <LI><B>IS_AUTOINCREMENT</B> String {@code =>} Indicates whether this column
-     * is auto incremented
-     * <UL>
-     * <LI>YES --- if the column is auto incremented
-     * <LI>NO --- if the column is not auto incremented
-     * <LI>empty string --- if it cannot be determined whether the column is auto
-     * incremented
-     * </UL>
-     * <LI><B>IS_GENERATEDCOLUMN</B> String {@code =>} Indicates whether this is a
-     * generated column
-     * <UL>
-     * <LI>YES --- if this a generated column
-     * <LI>NO --- if this not a generated column
-     * <LI>empty string --- if it cannot be determined whether this is a generated
-     * column
-     * </UL>
-     * </OL>
+     * Description of a column.
+     * 
+     * @param tableCatalog      table catalog (may be {@code null})
+     * @param tableSchema       table schema (may be {@code null})
+     * @param tableName         table name
+     * @param columnName        column name
+     * @param dataType          SQL type from java.sql.Types
+     * @param typeName          Data source dependent type name, for a UDT the type
+     *                          name is fully qualified
+     * @param columnSize        column size.
+     * @param decimalDigits     the number of fractional digits. Null is returned
+     *                          for data types where DECIMAL_DIGITS is not
+     *                          applicable.
+     * @param numPrecisionRadix Radix (typically either 10 or 2)
+     * @param nullable          is NULL allowed.
+     *                          <UL>
+     *                          <LI>columnNoNulls - might not allow {@code NULL}
+     *                          values
+     *                          <LI>columnNullable - definitely allows {@code NULL}
+     *                          values
+     *                          <LI>columnNullableUnknown - nullability unknown
+     *                          </UL>
+     * @param remarks           comment describing column (may be {@code null})
+     * @param columnDef         default value for the column, which should be
+     *                          interpreted as a string when the value is enclosed
+     *                          in single quotes (may be {@code null})
+     * @param charOctetLength   for char types the maximum number of bytes in the
+     *                          column
+     * @param ordinalPosition   index of column in table (starting at 1)
+     * @param isNullable        ISO rules are used to determine the nullability for
+     *                          a column.
+     *                          <UL>
+     *                          <LI>YES --- if the column can include NULLs
+     *                          <LI>NO --- if the column cannot include NULLs
+     *                          <LI>empty string --- if the nullability for the
+     *                          column is unknown
+     *                          </UL>
+     * @param scopeCatalog      catalog of table that is the scope of a reference
+     *                          attribute ({@code null} if DATA_TYPE isn't REF)
+     * @param scopeSchema       schema of table that is the scope of a reference
+     *                          attribute ({@code null} if the DATA_TYPE isn't REF)
+     * @param scopeTable        table name that this the scope of a reference
+     *                          attribute ({@code null} if the DATA_TYPE isn't REF)
+     * @param sourceDataType    source type of a distinct type or user-generated Ref
+     *                          type, SQL type from java.sql.Types ({@code null} if
+     *                          DATA_TYPE isn't DISTINCT or user-generated REF)
+     * @param isAutoIncrement   Indicates whether this column is auto incremented
+     *                          <UL>
+     *                          <LI>YES --- if the column is auto incremented
+     *                          <LI>NO --- if the column is not auto incremented
+     *                          <LI>empty string --- if it cannot be determined
+     *                          whether the column is auto incremented
+     *                          </UL>
+     * @param isGeneratedColumn Indicates whether this is a generated column
+     *                          <UL>
+     *                          <LI>YES --- if this a generated column
+     *                          <LI>NO --- if this not a generated column
+     *                          <LI>empty string --- if it cannot be determined
+     *                          whether this is a generated column
+     *                          </UL>
+     * @see DatabaseMetaData#getColumns(String, String, String, String)
      */
     public record ColumnMetaData(
             String tableCatalog,
@@ -214,8 +212,6 @@ public class DbMetaData {
             String nullable,
             String remarks,
             String columnDef,
-            int sqlDataType,
-            int sqlDatetimeSub,
             int charOctetLength,
             int ordinalPosition,
             String isNullable,
@@ -240,8 +236,6 @@ public class DbMetaData {
                     rs.getString("NULLABLE"),
                     rs.getString("REMARKS"),
                     rs.getString("COLUMN_DEF"),
-                    rs.getInt("SQL_DATA_TYPE"),
-                    rs.getInt("SQL_DATETIME_SUB"),
                     rs.getInt("CHAR_OCTET_LENGTH"),
                     rs.getInt("ORDINAL_POSITION"),
                     rs.getString("IS_NULLABLE"),
