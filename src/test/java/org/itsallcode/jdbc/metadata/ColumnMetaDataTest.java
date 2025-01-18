@@ -3,16 +3,17 @@ package org.itsallcode.jdbc.metadata;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.sql.DatabaseMetaData;
-
 import org.itsallcode.jdbc.metadata.ColumnMetaData.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class ColumnMetaDataTest {
 
-    @Test
-    void nullability() {
-        assertThat(Nullability.valueOf(DatabaseMetaData.columnNoNulls)).isEqualTo(Nullability.NO_NULLS);
+    @ParameterizedTest
+    @CsvSource({ "0,NO_NULLS", "1,NULLABLE", "2,NULLABLE_UNKNOWN" })
+    void nullability(final int value, final Nullability expected) {
+        assertThat(Nullability.valueOf(value)).isEqualTo(expected);
     }
 
     @Test
@@ -22,9 +23,10 @@ class ColumnMetaDataTest {
                 .hasMessage("Unknown value 3 for nullability");
     }
 
-    @Test
-    void isoNullability() {
-        assertThat(ISONullability.valueOfNullability("NO")).isEqualTo(ISONullability.NULLABLE);
+    @ParameterizedTest
+    @CsvSource({ "YES,NO_NULLS", "NO,NULLABLE", "'',NULLABLE_UNKNOWN" })
+    void isoNullability(final String value, final ISONullability expected) {
+        assertThat(ISONullability.valueOfNullability(value)).isEqualTo(expected);
     }
 
     @Test
@@ -34,9 +36,10 @@ class ColumnMetaDataTest {
                 .hasMessage("Unknown value 'unknown' for ISO nullability");
     }
 
-    @Test
-    void autoIncrement() {
-        assertThat(AutoIncrement.valueOfAutoIncrement("NO")).isEqualTo(AutoIncrement.NO_AUTO_INCREMENT);
+    @ParameterizedTest
+    @CsvSource({ "YES,AUTO_INCREMENT", "NO,NO_AUTO_INCREMENT", "'',UNKNOWN" })
+    void autoIncrement(final String value, final AutoIncrement expected) {
+        assertThat(AutoIncrement.valueOfAutoIncrement(value)).isEqualTo(expected);
     }
 
     @Test
@@ -46,9 +49,10 @@ class ColumnMetaDataTest {
                 .hasMessage("Unknown value 'unknown' for auto increment");
     }
 
-    @Test
-    void generated() {
-        assertThat(Generated.valueOfGenerated("NO")).isEqualTo(Generated.NOT_GENERATED);
+    @ParameterizedTest
+    @CsvSource({ "YES,GENERATED", "NO,NOT_GENERATED", "'',UNKNOWN" })
+    void generated(final String value, final Generated expected) {
+        assertThat(Generated.valueOfGenerated(value)).isEqualTo(expected);
     }
 
     @Test
