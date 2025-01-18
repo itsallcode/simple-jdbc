@@ -118,7 +118,7 @@ class ConnectionWrapper implements AutoCloseable {
         try {
             return connection.getMetaData();
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Failed to get metadata ", e);
+            throw new UncheckedSQLException("Failed to get metadata", e);
         }
     }
 

@@ -281,6 +281,20 @@ class ConnectionWrapperTest {
     }
 
     @Test
+    void getMetaData() {
+        assertThat(testee().getMetaData()).isNotNull();
+    }
+
+    @Test
+    void getMetaDataFails() throws SQLException {
+        when(connectionMock.getMetaData()).thenThrow(new SQLException("expected"));
+        final ConnectionWrapper testee = testee();
+        assertThatThrownBy(testee::getMetaData)
+                .isInstanceOf(UncheckedSQLException.class)
+                .hasMessage("Failed to get metadata: expected");
+    }
+
+    @Test
     void getOriginalConnection() {
         assertThat(testee().getOriginalConnection()).isSameAs(connectionMock);
     }

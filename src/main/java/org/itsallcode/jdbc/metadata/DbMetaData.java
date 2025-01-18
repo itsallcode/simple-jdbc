@@ -50,7 +50,7 @@ public class DbMetaData {
      */
     public SimpleResultSet<TableMetaData> getTables(final String catalog, final String schemaPattern,
             final String tableNamePattern, final String[] types) {
-        return createResultSet(getTablesInternal(catalog, schemaPattern, tableNamePattern, types),
+        return wrapResultSet(getTablesInternal(catalog, schemaPattern, tableNamePattern, types),
                 TableMetaData::create);
     }
 
@@ -88,7 +88,7 @@ public class DbMetaData {
      */
     public SimpleResultSet<ColumnMetaData> getColumns(final String catalog, final String schemaPattern,
             final String tableNamePattern, final String columnNamePattern) {
-        return createResultSet(getColumnsInternal(catalog, schemaPattern, tableNamePattern, columnNamePattern),
+        return wrapResultSet(getColumnsInternal(catalog, schemaPattern, tableNamePattern, columnNamePattern),
                 ColumnMetaData::create);
     }
 
@@ -97,11 +97,11 @@ public class DbMetaData {
         try {
             return metaData.getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern);
         } catch (final SQLException e) {
-            throw new UncheckedSQLException("Error getting tables", e);
+            throw new UncheckedSQLException("Error getting columns", e);
         }
     }
 
-    private <T> SimpleResultSet<T> createResultSet(final ResultSet resultSet, final SimpleRowMapper<T> rowMapper) {
+    private <T> SimpleResultSet<T> wrapResultSet(final ResultSet resultSet, final SimpleRowMapper<T> rowMapper) {
         return new SimpleResultSet<>(context, resultSet, ContextRowMapper.create(rowMapper), () -> {
         });
     }

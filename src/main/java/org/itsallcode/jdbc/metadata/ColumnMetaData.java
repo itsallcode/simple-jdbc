@@ -137,7 +137,7 @@ public record ColumnMetaData(
                     .filter(n -> n.value.equals(value))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException(
-                            "Unknown value %s for nullability".formatted(value)));
+                            "Unknown value '%s' for ISO nullability".formatted(value)));
         }
     }
 
@@ -163,7 +163,7 @@ public record ColumnMetaData(
                     .filter(n -> n.value.equals(value))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException(
-                            "Unknown value %s for auto increment".formatted(value)));
+                            "Unknown value '%s' for auto increment".formatted(value)));
         }
     }
 
@@ -189,7 +189,7 @@ public record ColumnMetaData(
                     .filter(n -> n.value.equals(value))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException(
-                            "Unknown value %s for auto increment".formatted(value)));
+                            "Unknown value '%s' for column generated".formatted(value)));
         }
     }
 }

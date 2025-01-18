@@ -1,13 +1,13 @@
-package org.itsallcode.jdbc;
+package org.itsallcode.jdbc.metadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.JDBCType;
 import java.util.List;
 
-import org.itsallcode.jdbc.metadata.ColumnMetaData;
+import org.itsallcode.jdbc.H2TestFixture;
+import org.itsallcode.jdbc.SimpleConnection;
 import org.itsallcode.jdbc.metadata.ColumnMetaData.*;
-import org.itsallcode.jdbc.metadata.TableMetaData;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.junit.jupiter.api.Test;
 
