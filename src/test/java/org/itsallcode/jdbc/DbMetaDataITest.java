@@ -2,10 +2,12 @@ package org.itsallcode.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.sql.JDBCType;
 import java.util.List;
 
-import org.itsallcode.jdbc.DbMetaData.ColumnMetaData;
-import org.itsallcode.jdbc.DbMetaData.TableMetaData;
+import org.itsallcode.jdbc.metadata.ColumnMetaData;
+import org.itsallcode.jdbc.metadata.ColumnMetaData.*;
+import org.itsallcode.jdbc.metadata.TableMetaData;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.junit.jupiter.api.Test;
 
@@ -60,8 +62,10 @@ class DbMetaDataITest {
                     .hasSize(451)
                     .first()
                     .isEqualTo(new ColumnMetaData("UNNAMED", "INFORMATION_SCHEMA", "CHECK_CONSTRAINTS",
-                            "CONSTRAINT_CATALOG", 12, "CHARACTER VARYING", 1000000000, 0,
-                            0, "1", null, null, 0, 0, 1000000000, 1, "YES", null, null, null, (short) 0, "NO", "NO"));
+                            "CONSTRAINT_CATALOG", JDBCType.VARCHAR, "CHARACTER VARYING", 1000000000, 0, 0,
+                            Nullability.NULLABLE, null,
+                            null, 1000000000, 1, ISONullability.NO_NULLS, null, null, null, (short) 0,
+                            AutoIncrement.NO_AUTO_INCREMENT, Generated.NOT_GENERATED));
         }
     }
 

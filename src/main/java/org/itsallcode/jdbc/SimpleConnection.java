@@ -4,6 +4,7 @@ import java.sql.Connection;
 
 import org.itsallcode.jdbc.batch.*;
 import org.itsallcode.jdbc.dialect.DbDialect;
+import org.itsallcode.jdbc.metadata.DbMetaData;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;

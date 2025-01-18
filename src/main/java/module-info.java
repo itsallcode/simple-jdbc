@@ -74,6 +74,7 @@ module org.itsallcode.jdbc {
     exports org.itsallcode.jdbc.resultset;
     exports org.itsallcode.jdbc.resultset.generic;
     exports org.itsallcode.jdbc.dialect;
+    exports org.itsallcode.jdbc.metadata;
 
     requires java.logging;
     requires transitive java.sql;

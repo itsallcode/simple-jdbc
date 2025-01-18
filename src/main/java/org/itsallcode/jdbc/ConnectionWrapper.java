@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import org.itsallcode.jdbc.batch.*;
 import org.itsallcode.jdbc.dialect.DbDialect;
+import org.itsallcode.jdbc.metadata.DbMetaData;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.itsallcode.jdbc.statement.ConvertingPreparedStatement;
