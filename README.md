@@ -28,7 +28,7 @@ Add dependency to your Gradle project:
 
 ```groovy
 dependencies {
-    implementation 'org.itsallcode:simple-jdbc:0.9.0'
+    implementation 'org.itsallcode:simple-jdbc:0.10.0'
 }
 ```
 
@@ -38,7 +38,7 @@ Add dependency to your Maven project:
 <dependency>
   <groupId>org.itsallcode</groupId>
   <artifactId>simple-jdbc</artifactId>
-  <version>0.9.0</version>
+  <version>0.10.0</version>
 </dependency>
 ```
 
