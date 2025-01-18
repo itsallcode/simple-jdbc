@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import org.itsallcode.jdbc.batch.*;
 import org.itsallcode.jdbc.dialect.DbDialect;
+import org.itsallcode.jdbc.metadata.DbMetaData;
 import org.itsallcode.jdbc.resultset.*;
 import org.itsallcode.jdbc.resultset.generic.Row;
 import org.itsallcode.jdbc.statement.ConvertingPreparedStatement;
@@ -106,6 +107,18 @@ class ConnectionWrapper implements AutoCloseable {
             return connection.createStatement();
         } catch (final SQLException e) {
             throw new UncheckedSQLException("Error creating statement", e);
+        }
+    }
+
+    DbMetaData getMetaData() {
+        return new DbMetaData(this.context, getMetaDataInternal());
+    }
+
+    private DatabaseMetaData getMetaDataInternal() {
+        try {
+            return connection.getMetaData();
+        } catch (final SQLException e) {
+            throw new UncheckedSQLException("Failed to get metadata", e);
         }
     }
 

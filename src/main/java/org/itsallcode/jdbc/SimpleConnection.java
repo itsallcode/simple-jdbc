@@ -4,6 +4,7 @@ import java.sql.Connection;
 
 import org.itsallcode.jdbc.batch.*;
 import org.itsallcode.jdbc.dialect.DbDialect;
+import org.itsallcode.jdbc.metadata.DbMetaData;
 import org.itsallcode.jdbc.resultset.RowMapper;
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
 import org.itsallcode.jdbc.resultset.generic.Row;
@@ -115,6 +116,16 @@ public class SimpleConnection implements DbOperations {
     public <T> RowPreparedStatementBatchBuilder<T> preparedStatementBatch(final Class<T> rowType) {
         checkOperationAllowed();
         return connection.rowPreparedStatementBatch();
+    }
+
+    /**
+     * Get database metadata.
+     * 
+     * @return metadata
+     */
+    public DbMetaData getMetaData() {
+        checkOperationAllowed();
+        return connection.getMetaData();
     }
 
     public Connection getOriginalConnection() {

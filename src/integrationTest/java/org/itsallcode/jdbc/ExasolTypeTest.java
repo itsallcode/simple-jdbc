@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.itsallcode.jdbc.resultset.SimpleResultSet;
-import org.itsallcode.jdbc.resultset.generic.*;
+import org.itsallcode.jdbc.resultset.generic.ColumnValue;
+import org.itsallcode.jdbc.resultset.generic.Row;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -155,8 +156,7 @@ class ExasolTypeTest {
                 final SimpleResultSet<Row> result = connection
                         .query("select count(*) from (select 1 from dual)")) {
             final Row row = result.toList().get(0);
-            final ColumnMetaData columnMetaData = row.columns().get(0);
-            assertThat(columnMetaData.type().jdbcType()).isEqualTo(JDBCType.BIGINT);
+            assertThat(row.columns().get(0).type().jdbcType()).isEqualTo(JDBCType.BIGINT);
         }
     }
 

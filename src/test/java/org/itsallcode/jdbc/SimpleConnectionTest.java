@@ -74,7 +74,8 @@ class SimpleConnectionTest {
                 operation(con -> con.getOriginalConnection()),
                 operation(con -> con.statementBatch()),
                 operation(con -> con.preparedStatementBatch()),
-                operation(con -> con.preparedStatementBatch(null)));
+                operation(con -> con.preparedStatementBatch(null)),
+                operation(con -> con.getMetaData()));
     }
 
     static Arguments operation(final Consumer<SimpleConnection> operation) {
