@@ -13,7 +13,7 @@ dependencyResolutionManagement {
             version('mockito', '5.15.2')
             version('junitJupiter', '5.11.2')
 
-            library('assertj', 'org.assertj:assertj-core:3.27.2')
+            library('assertj', 'org.assertj:assertj-core:3.27.3')
             library('h2', 'com.h2database:h2:2.3.232')
             library('junitPioneer', 'org.junit-pioneer:junit-pioneer:2.2.0')
             library('equalsverifier', 'nl.jqno.equalsverifier:equalsverifier:3.18.1')
