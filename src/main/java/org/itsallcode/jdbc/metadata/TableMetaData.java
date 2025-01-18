@@ -27,7 +27,7 @@ import java.sql.*;
 public record TableMetaData(String tableCatalog, String tableSchema, String tableName, String tableType,
         String remarks, String typeCatalog, String typeSchema, String typeName, String selfReferencingColumnName,
         String refGeneration) {
-    static TableMetaData create(final ResultSet rs, final int rowNum) throws SQLException {
+    static TableMetaData create(final ResultSet rs) throws SQLException {
         return new TableMetaData(
                 rs.getString("TABLE_CAT"),
                 rs.getString("TABLE_SCHEM"),

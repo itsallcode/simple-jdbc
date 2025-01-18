@@ -64,7 +64,7 @@ public record ColumnMetaData(
         AutoIncrement isAutoIncrement,
         Generated isGeneratedColumn) {
 
-    static ColumnMetaData create(final ResultSet rs, final int rowNum) throws SQLException {
+    static ColumnMetaData create(final ResultSet rs) throws SQLException {
         return new ColumnMetaData(
                 rs.getString("TABLE_CAT"),
                 rs.getString("TABLE_SCHEM"),

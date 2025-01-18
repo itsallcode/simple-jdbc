@@ -54,6 +54,19 @@ public interface ContextRowMapper<T> {
     }
 
     /**
+     * Creates a new new {@link ContextRowMapper} from a {@link SimpleRowMapper}.
+     * <p>
+     * Use this if the mapper doesn't need the {@link Context}.
+     * 
+     * @param <T>    generic row type
+     * @param mapper the simple row mapper
+     * @return a new {@link ContextRowMapper}
+     */
+    static <T> ContextRowMapper<T> create(final SimpleRowMapper<T> mapper) {
+        return (context, resultSet, rowNum) -> mapper.mapRow(resultSet);
+    }
+
+    /**
      * Creates a new new {@link ContextRowMapper} from a {@link RowMapper}.
      * <p>
      * Use this if the mapper doesn't need the {@link Context}.

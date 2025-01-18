@@ -101,7 +101,7 @@ public class DbMetaData {
         }
     }
 
-    private <T> SimpleResultSet<T> createResultSet(final ResultSet resultSet, final RowMapper<T> rowMapper) {
+    private <T> SimpleResultSet<T> createResultSet(final ResultSet resultSet, final SimpleRowMapper<T> rowMapper) {
         return new SimpleResultSet<>(context, resultSet, ContextRowMapper.create(rowMapper), () -> {
         });
     }
