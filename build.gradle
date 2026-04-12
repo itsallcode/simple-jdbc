@@ -68,6 +68,15 @@ testing {
             }
         }
         test {
+            targets {
+                all {
+                    testTask.configure {
+                        systemProperty 'junit.jupiter.execution.parallel.enabled', 'true'
+                        systemProperty 'junit.jupiter.execution.parallel.mode.default', 'concurrent'
+                        systemProperty 'junit.jupiter.execution.parallel.mode.classes.default', 'concurrent'
+                    }
+                }
+            }
             dependencies {
                 implementation libs.h2
                 implementation libs.tostringverifier
@@ -82,6 +91,7 @@ testing {
             targets {
                 all {
                     testTask.configure {
+                        systemProperty 'junit.jupiter.execution.parallel.enabled', 'false'
                         shouldRunAfter(test)
                     }
                 }
