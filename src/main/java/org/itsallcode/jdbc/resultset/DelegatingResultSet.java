@@ -481,8 +481,19 @@ class DelegatingResultSet implements ResultSet {
     }
 
     @Override
+    public void updateObject(final int columnIndex, final Object x, final SQLType targetSqlType,
+            final int scaleOrLength) throws SQLException {
+        delegate.updateObject(columnIndex, x, targetSqlType, scaleOrLength);
+    }
+
+    @Override
     public void updateObject(final int columnIndex, final Object x) throws SQLException {
         delegate.updateObject(columnIndex, x);
+    }
+
+    @Override
+    public void updateObject(final int columnIndex, final Object x, final SQLType targetSqlType) throws SQLException {
+        delegate.updateObject(columnIndex, x, targetSqlType);
     }
 
     @Override
@@ -578,8 +589,21 @@ class DelegatingResultSet implements ResultSet {
     }
 
     @Override
+    public void updateObject(final String columnLabel, final Object x, final SQLType targetSqlType,
+            final int scaleOrLength)
+            throws SQLException {
+        delegate.updateObject(columnLabel, x, targetSqlType, scaleOrLength);
+    }
+
+    @Override
     public void updateObject(final String columnLabel, final Object x) throws SQLException {
         delegate.updateObject(columnLabel, x);
+    }
+
+    @Override
+    public void updateObject(final String columnLabel, final Object x, final SQLType targetSqlType)
+            throws SQLException {
+        delegate.updateObject(columnLabel, x, targetSqlType);
     }
 
     @Override

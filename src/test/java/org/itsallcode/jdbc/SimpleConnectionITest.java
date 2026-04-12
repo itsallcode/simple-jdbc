@@ -57,7 +57,7 @@ class SimpleConnectionITest {
                     .isInstanceOf(UncheckedSQLException.class)
                     .hasMessage(
                             "Error executing statement 'select count(*) from missing_table': Table \"MISSING_TABLE\" not found (this database is empty); SQL statement:\n"
-                                    + "select count(*) from missing_table [42104-232]")
+                                    + "select count(*) from missing_table [42104-240]")
                     .hasCauseInstanceOf(SQLException.class);
         }
     }
@@ -78,7 +78,7 @@ class SimpleConnectionITest {
                     () -> connection.query("select count(*) from missing_table"))
                     .isInstanceOf(UncheckedSQLException.class).hasMessage(
                             "Error executing query 'select count(*) from missing_table': Table \"MISSING_TABLE\" not found (this database is empty); SQL statement:\n"
-                                    + "select count(*) from missing_table [42104-232]");
+                                    + "select count(*) from missing_table [42104-240]");
         }
     }
 
