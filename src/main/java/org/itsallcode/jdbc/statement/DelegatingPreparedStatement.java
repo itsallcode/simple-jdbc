@@ -28,6 +28,11 @@ class DelegatingPreparedStatement extends DelegatingStatement implements Prepare
     }
 
     @Override
+    public long executeLargeUpdate() throws SQLException {
+        return preparedDelegate.executeLargeUpdate();
+    }
+
+    @Override
     public void setNull(final int parameterIndex, final int sqlType) throws SQLException {
         preparedDelegate.setNull(parameterIndex, sqlType);
     }
@@ -120,6 +125,11 @@ class DelegatingPreparedStatement extends DelegatingStatement implements Prepare
 
     @Override
     public void setObject(final int parameterIndex, final Object x, final int targetSqlType) throws SQLException {
+        preparedDelegate.setObject(parameterIndex, x, targetSqlType);
+    }
+
+    @Override
+    public void setObject(final int parameterIndex, final Object x, final SQLType targetSqlType) throws SQLException {
         preparedDelegate.setObject(parameterIndex, x, targetSqlType);
     }
 
@@ -244,6 +254,12 @@ class DelegatingPreparedStatement extends DelegatingStatement implements Prepare
     @Override
     public void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength)
             throws SQLException {
+        preparedDelegate.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
+    }
+
+    @Override
+    public void setObject(final int parameterIndex, final Object x, final SQLType targetSqlType,
+            final int scaleOrLength) throws SQLException {
         preparedDelegate.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
     }
 

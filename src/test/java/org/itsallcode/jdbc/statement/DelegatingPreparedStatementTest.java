@@ -36,6 +36,12 @@ class DelegatingPreparedStatementTest extends DelegatingStatementTest {
     }
 
     @Test
+    void executeLargeUpdateWithoutArg() throws SQLException {
+        when(getStatementMock().executeLargeUpdate()).thenReturn(1L);
+        assertEquals(1L, testee().executeLargeUpdate());
+    }
+
+    @Test
     void setNull() throws SQLException {
         testee().setNull(1, 2);
         verify(getStatementMock()).setNull(1, 2);
@@ -154,6 +160,24 @@ class DelegatingPreparedStatementTest extends DelegatingStatementTest {
     void setObjectWithTargetType(@Mock final Object object) throws SQLException {
         testee().setObject(1, object, 2);
         verify(getStatementMock()).setObject(eq(1), same(object), eq(2));
+    }
+
+    @Test
+    void setObjectWithTargetType(@Mock final Object object, @Mock final SQLType type) throws SQLException {
+        testee().setObject(1, object, type);
+        verify(getStatementMock()).setObject(eq(1), same(object), same(type));
+    }
+
+    @Test
+    void setObjectWithTypeAndLength(@Mock final Object object) throws SQLException {
+        testee().setObject(1, object, 2, 3);
+        verify(getStatementMock()).setObject(eq(1), same(object), eq(2), eq(3));
+    }
+
+    @Test
+    void setObjectWithTargetTypeAndScale(@Mock final Object object, @Mock final SQLType type) throws SQLException {
+        testee().setObject(1, object, type, 3);
+        verify(getStatementMock()).setObject(eq(1), same(object), same(type), eq(3));
     }
 
     @Test
@@ -287,12 +311,6 @@ class DelegatingPreparedStatementTest extends DelegatingStatementTest {
     void setSQLXML(@Mock final SQLXML xmlObject) throws SQLException {
         testee().setSQLXML(1, xmlObject);
         verify(getStatementMock()).setSQLXML(eq(1), same(xmlObject));
-    }
-
-    @Test
-    void setObjectWithTypeAndLength(@Mock final Object x) throws SQLException {
-        testee().setObject(1, x, 2, 3);
-        verify(getStatementMock()).setObject(eq(1), same(x), eq(2), eq(3));
     }
 
     @Test
