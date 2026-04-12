@@ -573,10 +573,24 @@ class DelegatingResultSetTest {
     }
 
     @Test
+    void updateObjectIndexScaleOrLength(@Mock final SQLType sqlType) throws SQLException {
+        final Object object = new Object();
+        testee().updateObject(COL_INDEX, object, sqlType, 3);
+        verify(resultSetMock).updateObject(eq(COL_INDEX), same(object), eq(sqlType), eq(3));
+    }
+
+    @Test
     void updateObjectIndex() throws SQLException {
         final Object object = new Object();
         testee().updateObject(COL_INDEX, object);
         verify(resultSetMock).updateObject(eq(COL_INDEX), same(object));
+    }
+
+    @Test
+    void updateObjectIndex(@Mock final SQLType sqlType) throws SQLException {
+        final Object object = new Object();
+        testee().updateObject(COL_INDEX, object, sqlType);
+        verify(resultSetMock).updateObject(eq(COL_INDEX), same(object), eq(sqlType));
     }
 
     @Test
@@ -695,10 +709,24 @@ class DelegatingResultSetTest {
     }
 
     @Test
+    void updateObjectLabelScaleOrLenght(@Mock final SQLType sqlType) throws SQLException {
+        final Object object = new Object();
+        testee().updateObject(COL_LABEL, object, sqlType, 3);
+        verify(resultSetMock).updateObject(eq(COL_LABEL), same(object), same(sqlType), eq(3));
+    }
+
+    @Test
     void updateObjectLabel() throws SQLException {
         final Object object = new Object();
         testee().updateObject(COL_LABEL, object);
         verify(resultSetMock).updateObject(eq(COL_LABEL), same(object));
+    }
+
+    @Test
+    void updateObjectLabel(@Mock final SQLType sqlType) throws SQLException {
+        final Object object = new Object();
+        testee().updateObject(COL_LABEL, object, sqlType);
+        verify(resultSetMock).updateObject(eq(COL_LABEL), same(object), same(sqlType));
     }
 
     @Test
