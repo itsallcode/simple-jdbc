@@ -8,6 +8,7 @@ plugins {
     id 'org.sonarqube' version '7.2.3.7755'
     id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
     id 'com.github.ben-manes.versions' version '0.53.0'
+    id 'org.sonatype.gradle.plugins.scan' version '3.1.5'
 }
 
 group = 'org.itsallcode'
@@ -184,3 +185,29 @@ tasks.named("dependencyUpdates").configure {
         isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
     }
 }
+
+def ossIndexUsername = providers.gradleProperty("ossIndexUsername")
+        .orElse(providers.environmentVariable("OSSINDEX_USERNAME"))
+def ossIndexPassword = providers.gradleProperty("ossIndexPassword")
+        .orElse(providers.environmentVariable("OSSINDEX_PASSWORD"))
+
+ossIndexAudit {
+  username = ossIndexUsername.orNull
+  password = ossIndexPassword.orNull
+  allConfigurations = true
+  useCache = true
+  excludeVulnerabilityIds = ['CVE-2018-14335' /* H2 only used in tests */ ]
+  printBanner = false
+}
+
+tasks.named("ossIndexAudit").configure {
+    onlyIf {
+        if (ossIndexUsername.present && ossIndexPassword.present) {
+            return true
+        }
+        logger.lifecycle("Skipping ossIndexAudit because OSS Index credentials are not configured")
+        return false
+    }
+}
+
+rootProject.tasks["build"].dependsOn(tasks["ossIndexAudit"])
