@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.12.0] - unreleased
 
 
-## [0.10.1] - 2026-04-12
+## [0.10.1] - 2026-04-15
 
 - [PR #50](https://github.com/itsallcode/simple-jdbc/pull/50): Added missing default methods from interfaces to delegating classes
 
