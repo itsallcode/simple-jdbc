@@ -47,6 +47,9 @@ jobs:
 
     - name: Build with Java ${{ matrix.java }} without integration tests
       run: ./gradlew clean build --info --exclude-task integrationTest -PjavaVersion=${{matrix.java}}
+      env:
+        OSSINDEX_USERNAME: ${{ secrets.OSSINDEX_USERNAME }}
+        OSSINDEX_PASSWORD: ${{ secrets.OSSINDEX_TOKEN }}
 
     - name: Build with Java ${{ matrix.java }} with integration tests
       if: ${{ env.DEFAULT_JAVA == matrix.java }}
